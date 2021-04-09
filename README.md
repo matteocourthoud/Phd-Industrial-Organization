@@ -1,7 +1,7 @@
 # Empirical Industrial Organization
-In this repository I collect the lecture notes and code for an advanced course in Empirical Industrial Organization. All code is written in Julia.
+In this repository, I collect the lecture notes and code for an advanced course in Empirical Industrial Organization. All code is written in Julia.
 
-
+The goal of the class is to make Empirical Industrial Organization knowledge and tools available to everyone. Therefore, I will devote most of the focus on the logic behind theory and on the connection between theory and practical implementation. This is also the reason why I decided to make the lecture notes and code publicly available on Github and picked Julia as a programming language. Julia has the advantage of being extremely readable for what concerns algebra, while being faster than Matlab and, most importantly, free.
 
 ## Content
 
