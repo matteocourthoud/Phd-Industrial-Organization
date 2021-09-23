@@ -13,7 +13,7 @@ The course will cover the following content
 - Demand function estimation
 - Merger Analysis
 - Entry and Exit
-- Single-Agent Dynamics
+- [Single-Agent Dynamics](https://nbviewer.jupyter.org//github/matteocourthoud/Empirical-Industrial-Organization/blob/master/7_single_agent_dynamics.ipynb)
 - Dynamic Games
 - Auctions
 - Media
