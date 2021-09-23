@@ -8,7 +8,7 @@ printf "\nMaking slides...\n\n"
 cd Dropbox/Projects/Empirical-io/
 
 # Convert slides
-jupyter nbconvert 6_single_agent_dynamics.ipynb --to slides
+jupyter nbconvert 7_single_agent_dynamics.ipynb --to slides
 
 # Terminate
 exit
