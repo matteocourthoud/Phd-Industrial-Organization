@@ -14,6 +14,8 @@ The course will cover the following content
 - Merger Analysis
 - Entry and Exit
 - [Single-Agent Dynamics](https://nbviewer.jupyter.org//github/matteocourthoud/Empirical-Industrial-Organization/blob/master/7_single_agent_dynamics.ipynb)
+  - [test1](https://rawcdn.githack.com/matteocourthoud/Empirical-Industrial-Organization/main/7_single_agent_dynamics.slides.html)
+  - [test2](https://htmlpreview.github.io/?https://github.com/matteocourthoud/Empirical-Industrial-Organization/blob/main/7_single_agent_dynamics.slides.html)
 - Dynamic Games
 - Auctions
 - Media
