@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 
 
-<title>7_single_agent slides</title>
+<title>3-production slides</title>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.10/require.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
@@ -13207,32 +13207,19 @@ a.anchor-link {
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h1 id="Single-Agent-Dynamics">Single Agent Dynamics<a class="anchor-link" href="#Single-Agent-Dynamics">&#182;</a></h1><p>Rust (1987)</p>
-<p><em>Optimal Replacement of GMC Bus Engines: An Empirical Model of Harold Zurcher</em></p>
-
+<h1 id="3.-Production-Function-Estimation">3. Production Function Estimation<a class="anchor-link" href="#3.-Production-Function-Estimation">&#182;</a></h1>
 </div>
 </div>
 </div></section></section><section><section>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Setting">Setting<a class="anchor-link" href="#Setting">&#182;</a></h2><ul>
-<li>An agent owns a fleed to buses</li>
-<li>Buses get old over time</li>
-<li>The older the bus is, the most costly it is to mantain</li>
-<li>The agent can decide to replace the bus engine with a new one, at a cost</li>
-<li><strong>Dynamic trade-off</strong><ul>
-<li>What is the best moment to replace the engine?</li>
-<li>You don't want to replace an engine too early<ul>
-<li>doesn't change much</li>
-</ul>
-</li>
-<li>You don't want to replace an engine too late<ul>
-<li>avoid unnecessary maintenance costs</li>
-</ul>
-</li>
-</ul>
-</li>
+<h1 id="Motivation">Motivation<a class="anchor-link" href="#Motivation">&#182;</a></h1><ul>
+<li>Estimating production and cost functions of producers is the cornerstone of economic analysis.</li>
+<li>Estimating the functions includes to separate the contribution of observed inputs and the other factors, which is often referred to as the productivity.</li>
+<li>“What determines productivity?” <a href="https://www.aeaweb.org/articles?id=10.1257/jel.49.2.326">Syverson, 2011</a>-type research questions naturally follow.</li>
+<li>The methods covered in this chapter are widely used across different fields.</li>
+<li>Some of them are variants from the standard methods.</li>
 </ul>
 
 </div>
@@ -13241,446 +13228,21 @@ a.anchor-link {
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<ul>
-<li><p><strong>State</strong>: mileage of the bus</p>
-<p>$$x_t \in \{1, ..., 10\}$$</p>
-</li>
-<li><p><strong>State transitions</strong>: with probability $\lambda$ the mileage of the bus increases</p>
-<p>$$
-  x_{t+1} = \begin{cases}
-  \min \left\{ x_t + 1,10 \right\}  &amp; \text { with probability } \lambda \\ 
-  x_t &amp; \text { with probability } 1 - \lambda
-  \end{cases}
-  $$</p>
-<p>Note that $\lambda$ does not depend on the value of the state</p>
-</li>
-</ul>
-
-</div>
-</div>
-</div></section></section><section><section>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<ul>
-<li><p><strong>Action</strong>: replacement decision</p>
-<p>$$
-  i_t \in \{0, 1 \}
-  $$</p>
-</li>
-<li><p><strong>Payoffs</strong></p>
-<ul>
-<li>Per-period maintenance cost </li>
-<li><p>Cost of replacement</p>
-<p>$$
-u\left(x_{t}, i_{t}, \epsilon_{1 t}, \epsilon_{2 t} ; \theta\right)= 
-\begin{cases}
--\theta_{1} x_{t}-\theta_{2} x_{t}^{2}+\epsilon_{0 t}, &amp; \text { if } i_{t}=0 \\ 
--\theta_{3}+\epsilon_{1 t}, &amp; \text { if } i_{t}=1
-\end{cases}
-$$</p>
-</li>
-</ul>
-</li>
-</ul>
-
-</div>
-</div>
-</div></section></section><section><section>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h1 id="Simulation">Simulation<a class="anchor-link" href="#Simulation">&#182;</a></h1><ul>
-<li>Start with an initial value function $V(x_t)=0$</li>
-<li><p>Compute expected value w.r.t. $\lambda$</p>
-<p>$$
-W(x_t) = \begin{cases}
--\theta_1 x_t - \theta_2 x_t^2 + \beta \Big[(1-\lambda) V(x_t) + \lambda V(\min \{x_t+1,10 \}) \Big] , &amp; \text { if } i_t=0 \\
--\theta_3 + \beta \Big[(1-\lambda) V(0) + \lambda V(1) \Big] , &amp; \text { if } i_t=1
-\end{cases}
-$$</p>
-</li>
-<li><p>Compute the new value of V</p>
-<p>$$
-V'(x_t) = \log \Big( e^{W(x_t|i_t=0)} + e^{W(x_t|i_t=1)} \Big)
-$$</p>
-</li>
-<li><p>Repeat until convergence</p>
-</li>
-</ul>
+<p>To go to code, press <code>arrow-down</code>.</p>
 
 </div>
 </div>
 </div></section><section>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[532]:</div>
+<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-julia"><pre><span></span><span class="c"># Set parameters</span>
-<span class="n">theta</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.13</span><span class="p">;</span> <span class="o">-</span><span class="mf">0.004</span><span class="p">;</span> <span class="mf">3.1</span><span class="p">]</span>
-<span class="n">lambda</span> <span class="o">=</span> <span class="mf">0.82</span>
-<span class="n">beta</span> <span class="o">=</span> <span class="mf">0.95</span><span class="p">;</span>
+<div class=" highlight hl-julia"><pre><span></span><span class="c"># Here you can put code </span>
+<span class="n">a</span> <span class="o">=</span> <span class="mi">1</span>
 </pre></div>
 
     </div>
-</div>
-</div>
-
-</div></section><section>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[533]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-julia"><pre><span></span><span class="c"># State space</span>
-<span class="n">x</span> <span class="o">=</span> <span class="mi">0</span><span class="o">:</span><span class="mi">10</span>
-
-<span class="c"># Index for lambda and for investment</span>
-<span class="n">index_lambda</span> <span class="o">=</span> <span class="kt">Int8</span><span class="p">[</span><span class="mi">1</span><span class="o">:</span><span class="mi">11</span> <span class="p">[</span><span class="mi">2</span><span class="o">:</span><span class="mi">11</span><span class="p">;</span><span class="mi">11</span><span class="p">]]</span> 
-<span class="n">index_i</span> <span class="o">=</span> <span class="kt">Int8</span><span class="p">[</span><span class="mi">1</span><span class="o">:</span><span class="mi">11</span> <span class="n">ones</span><span class="p">(</span><span class="mi">11</span><span class="p">,</span><span class="mi">1</span><span class="p">)];</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-</div></section><section>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[541]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-julia"><pre><span></span><span class="k">function</span> <span class="n">compute_V</span><span class="p">(</span><span class="n">theta</span><span class="p">,</span> <span class="n">lambda</span><span class="p">,</span> <span class="n">beta</span><span class="p">)</span>
-    <span class="n">dist</span> <span class="o">=</span> <span class="mi">100</span><span class="p">;</span>
-    <span class="n">iter</span> <span class="o">=</span> <span class="mi">0</span>
-    <span class="n">V</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">(</span><span class="mi">11</span><span class="p">);</span>
-    <span class="n">V_bar</span> <span class="o">=</span> <span class="n">V</span><span class="p">;</span>
-    <span class="n">U</span> <span class="o">=</span> <span class="p">[</span><span class="o">-</span> <span class="n">theta</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">x</span> <span class="o">-</span> <span class="n">theta</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">*</span><span class="n">x</span><span class="o">.^</span><span class="mi">2</span> <span class="p">(</span><span class="o">-</span><span class="n">theta</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span><span class="o">*</span><span class="n">ones</span><span class="p">(</span><span class="mi">11</span><span class="p">,</span><span class="mi">1</span><span class="p">)]</span>
-
-    <span class="c"># Iterate the Bellman equation until convergence</span>
-    <span class="k">while</span> <span class="n">dist</span><span class="o">&gt;</span><span class="mf">1e-20</span>
-
-        <span class="c"># Expected future values (mean over possible shocks)</span>
-        <span class="n">Exp_V</span> <span class="o">=</span> <span class="n">V</span><span class="p">[</span><span class="n">index_lambda</span><span class="p">]</span> <span class="o">*</span> <span class="p">[</span><span class="mi">1</span><span class="o">-</span><span class="n">lambda</span><span class="p">;</span> <span class="n">lambda</span><span class="p">];</span>
-        <span class="n">V_bar</span> <span class="o">=</span> <span class="n">beta</span> <span class="o">*</span> <span class="p">(</span><span class="n">U</span> <span class="o">+</span> <span class="n">Exp_V</span><span class="p">[</span><span class="n">index_i</span><span class="p">])</span>
-        <span class="n">V_new</span> <span class="o">=</span> <span class="n">log</span><span class="o">.</span><span class="p">(</span><span class="n">sum</span><span class="p">(</span><span class="n">exp</span><span class="o">.</span><span class="p">(</span><span class="n">V_bar</span><span class="p">),</span> <span class="n">dims</span><span class="o">=</span><span class="mi">2</span><span class="p">))</span>
-
-        <span class="c"># Check distance for convergence</span>
-        <span class="n">dist</span> <span class="o">=</span> <span class="n">max</span><span class="p">(</span><span class="n">abs</span><span class="o">.</span><span class="p">(</span><span class="n">V_new</span> <span class="o">-</span> <span class="n">V</span><span class="p">)</span><span class="o">...</span><span class="p">);</span>
-        <span class="n">iter</span> <span class="o">+=</span> <span class="mi">1</span><span class="p">;</span>
-
-        <span class="c"># Update value function</span>
-        <span class="n">V</span> <span class="o">=</span> <span class="n">V_new</span> 
-    <span class="k">end</span>
-    <span class="k">return</span> <span class="n">V</span><span class="p">,</span> <span class="n">V_bar</span>
-<span class="k">end</span>
-
-<span class="n">V</span><span class="p">,</span> <span class="n">V_bar</span> <span class="o">=</span> <span class="n">compute_V</span><span class="p">(</span><span class="n">theta</span><span class="p">,</span> <span class="n">lambda</span><span class="p">,</span> <span class="n">beta</span><span class="p">)</span>
-<span class="n">print</span><span class="p">(</span><span class="s">&quot;Converged after &quot;</span><span class="p">,</span> <span class="n">iter</span><span class="p">,</span> <span class="s">&quot; iterations!&quot;</span><span class="p">)</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area">
-
-    <div class="prompt"></div>
-
-
-<div class="output_subarea output_stream output_stdout output_text">
-<pre>Converged after 680 iterations!</pre>
-</div>
-</div>
-
-</div>
-</div>
-
-</div></section><section>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[542]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-julia"><pre><span></span><span class="k">using</span> <span class="n">Distributions</span>
-
-<span class="c"># Draw shocks</span>
-<span class="n">k</span> <span class="o">=</span> <span class="mi">100000</span>
-<span class="nb">e</span> <span class="o">=</span> <span class="n">rand</span><span class="p">(</span><span class="n">Gumbel</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span> <span class="n">k</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
-
-<span class="c"># Draw states</span>
-<span class="n">x_t</span> <span class="o">=</span> <span class="n">rand</span><span class="p">(</span><span class="n">x</span><span class="o">.+</span><span class="mi">1</span><span class="p">,</span><span class="n">k</span><span class="p">)</span>
-
-<span class="c"># Compute investment decisions</span>
-<span class="nb">I</span> <span class="o">=</span> <span class="p">((</span><span class="n">V_bar</span><span class="p">[</span><span class="n">x_t</span><span class="p">,</span><span class="o">:</span><span class="p">]</span> <span class="o">+</span> <span class="nb">e</span><span class="p">)</span> <span class="o">*</span> <span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">;</span><span class="mi">1</span><span class="p">])</span> <span class="o">.&gt;</span> <span class="mi">0</span>
-
-<span class="c"># Compute next state</span>
-<span class="n">x_t1</span> <span class="o">=</span> <span class="n">min</span><span class="o">.</span><span class="p">(</span><span class="n">x_t</span> <span class="o">.*</span> <span class="p">(</span><span class="nb">I</span><span class="o">.==</span><span class="mi">0</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">rand</span><span class="p">(</span><span class="n">Uniform</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span><span class="n">k</span><span class="p">)</span><span class="o">.&lt;</span><span class="n">lambda</span><span class="p">),</span> <span class="mi">10</span><span class="p">)</span>
-
-<span class="n">print</span><span class="p">(</span><span class="s">&quot;we observe &quot;</span><span class="p">,</span> <span class="n">sum</span><span class="p">(</span><span class="nb">I</span><span class="p">),</span> <span class="s">&quot; investment decisions in &quot;</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="s">&quot; observations&quot;</span><span class="p">)</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area">
-
-    <div class="prompt"></div>
-
-
-<div class="output_subarea output_stream output_stdout output_text">
-<pre>we observe 22132 investment decisions in 100000 observations</pre>
-</div>
-</div>
-
-</div>
-</div>
-
-</div></section></section><section><section>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h1 id="Estimation---lambda">Estimation - lambda<a class="anchor-link" href="#Estimation---lambda">&#182;</a></h1><ul>
-<li><p>First we can estimate the value of lambda as the mean</p>
-<p>$$
-\hat \lambda = \mathbb E_n \Big[ (x_{t+1}-x_t) \mid i_{t}=0 \wedge x_{t}&lt;10 \Big]
-$$</p>
-</li>
-</ul>
-
-</div>
-</div>
-</div></section><section>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[552]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-julia"><pre><span></span><span class="k">import</span> <span class="n">Statistics</span>
-
-<span class="c"># Estimate lambda</span>
-<span class="n">delta</span> <span class="o">=</span> <span class="n">x_t1</span> <span class="o">-</span> <span class="n">x_t</span>
-<span class="n">lambda_hat</span> <span class="o">=</span> <span class="n">mean</span><span class="p">(</span><span class="n">delta</span><span class="p">[(</span><span class="nb">I</span><span class="o">.==</span><span class="mi">0</span><span class="p">)</span> <span class="o">.&amp;</span> <span class="p">(</span><span class="n">x_t</span><span class="o">.&lt;</span><span class="mi">10</span><span class="p">)])</span>
-
-<span class="n">print</span><span class="p">(</span><span class="s">&quot;Estimated lambda: &quot;</span><span class="p">,</span> <span class="n">lambda_hat</span><span class="p">)</span>
-<span class="n">print</span><span class="p">(</span><span class="s">&quot;</span><span class="se">\n</span><span class="s">True lambda:      &quot;</span><span class="p">,</span> <span class="n">lambda</span><span class="p">)</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area">
-
-    <div class="prompt"></div>
-
-
-<div class="output_subarea output_stream output_stdout output_text">
-<pre>Estimated lambda: 0.8205259511401632
-True lambda:      0.82</pre>
-</div>
-</div>
-
-</div>
-</div>
-
-</div></section></section><section><section>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h1 id="Estimation---theta">Estimation - theta<a class="anchor-link" href="#Estimation---theta">&#182;</a></h1><ul>
-<li>Take a parameter guess $\theta_0$</li>
-<li>Compute the corresponding value function $V(x_t | \hat \lambda, \theta_0)$</li>
-<li>Compute the implied choice probabilities</li>
-<li><p>Compute the likelihood</p>
-<p>$$
-\mathcal{L}(\theta)=\prod_{t=1}^{T}\left(\hat{\operatorname{Pr}}\left(i=1 \mid x_{t}, \theta\right) \mathbb{1}\left(i_{t}=1\right)+\left(1-\hat{\operatorname{Pr}}\left(i=0 \mid x_{t}, \theta\right)\right) \mathbb{1}\left(i_{t}=0\right)\right)
-$$</p>
-</li>
-<li><p>Repeat the above to find a minimum of the likelihood function</p>
-</li>
-</ul>
-
-</div>
-</div>
-</div></section><section>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[571]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-julia"><pre><span></span><span class="k">function</span> <span class="n">logL</span><span class="p">(</span><span class="n">theta0</span><span class="p">,</span> <span class="n">lambda_hat</span><span class="p">,</span> <span class="n">beta</span><span class="p">,</span> <span class="n">x_t</span><span class="p">)</span>
-    <span class="c"># Compute value</span>
-    <span class="n">V</span><span class="p">,</span> <span class="n">V_bar</span> <span class="o">=</span> <span class="n">compute_V</span><span class="p">(</span><span class="n">theta0</span><span class="p">,</span> <span class="n">lambda_hat</span><span class="p">,</span> <span class="n">beta</span><span class="p">)</span>
-    
-    <span class="c"># Implied choice probabilities</span>
-    <span class="n">pr_I</span> <span class="o">=</span> <span class="n">exp</span><span class="o">.</span><span class="p">(</span><span class="n">V_bar</span><span class="p">[</span><span class="o">:</span><span class="p">,</span><span class="mi">2</span><span class="p">])</span> <span class="o">./</span> <span class="p">(</span><span class="n">exp</span><span class="o">.</span><span class="p">(</span><span class="n">V_bar</span><span class="p">[</span><span class="o">:</span><span class="p">,</span><span class="mi">1</span><span class="p">])</span> <span class="o">+</span> <span class="n">exp</span><span class="o">.</span><span class="p">(</span><span class="n">V_bar</span><span class="p">[</span><span class="o">:</span><span class="p">,</span><span class="mi">2</span><span class="p">]))</span>
-    
-    <span class="c"># Likelihood</span>
-    <span class="n">L</span> <span class="o">=</span> <span class="n">sum</span><span class="p">(</span><span class="n">log</span><span class="o">.</span><span class="p">(</span><span class="n">pr_I</span><span class="p">[</span><span class="n">x_t</span><span class="p">[</span><span class="nb">I</span><span class="o">.==</span><span class="mi">1</span><span class="p">]]))</span> <span class="o">+</span> <span class="n">sum</span><span class="p">(</span><span class="n">log</span><span class="o">.</span><span class="p">(</span><span class="mi">1</span> <span class="o">.-</span> <span class="n">pr_I</span><span class="p">[</span><span class="n">x_t</span><span class="p">[</span><span class="nb">I</span><span class="o">.==</span><span class="mi">0</span><span class="p">]]))</span>
-    <span class="k">return</span> <span class="n">L</span>
-<span class="k">end</span>
-
-<span class="n">print</span><span class="p">(</span><span class="s">&quot;The likelihood at the true values is &quot;</span><span class="p">,</span> <span class="n">logL</span><span class="p">(</span><span class="n">theta</span><span class="p">,</span> <span class="n">lambda</span><span class="p">,</span> <span class="n">beta</span><span class="p">,</span> <span class="n">x_t</span><span class="p">))</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area">
-
-    <div class="prompt"></div>
-
-
-<div class="output_subarea output_stream output_stdout output_text">
-<pre>The likelihood at the true values is -49246.706953102825</pre>
-</div>
-</div>
-
-</div>
-</div>
-
-</div></section><section>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[570]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-julia"><pre><span></span><span class="k">using</span> <span class="n">Optim</span>
-
-<span class="c"># Initialize</span>
-<span class="n">theta0</span> <span class="o">=</span> <span class="kt">Float64</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span>
-
-<span class="c"># Optimize</span>
-<span class="n">opt</span> <span class="o">=</span> <span class="n">optimize</span><span class="p">((</span><span class="n">x</span> <span class="o">-&gt;</span> <span class="o">-</span><span class="n">logL</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">lambda_hat</span><span class="p">,</span> <span class="n">beta</span><span class="p">,</span> <span class="n">x_t</span><span class="p">)),</span> <span class="n">theta0</span><span class="p">)</span>
-<span class="n">print</span><span class="p">(</span><span class="s">&quot;Estimated thetas: &quot;</span><span class="p">,</span> <span class="n">opt</span><span class="o">.</span><span class="n">minimizer</span><span class="p">)</span>
-<span class="n">print</span><span class="p">(</span><span class="s">&quot;</span><span class="se">\n</span><span class="s">True thetas:      &quot;</span><span class="p">,</span> <span class="n">theta</span><span class="p">)</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area">
-
-    <div class="prompt"></div>
-
-
-<div class="output_subarea output_stream output_stdout output_text">
-<pre>Estimated thetas: [0.12035090601820495, -0.0032215240288903956, 3.0547532223686016]
-True thetas:      [0.13, -0.004, 3.1]</pre>
-</div>
-</div>
-
-</div>
-</div>
-
-</div></section><section>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[551]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-julia"><pre><span></span><span class="c"># We can also get info on the optimum</span>
-<span class="n">opt</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area">
-
-    <div class="prompt output_prompt">Out[551]:</div>
-
-
-
-
-<div class="output_text output_subarea output_execute_result">
-<pre> * Status: success
-
- * Candidate solution
-    Final objective value:     4.924557e+04
-
- * Found with
-    Algorithm:     Nelder-Mead
-
- * Convergence measures
-    √(Σ(yᵢ-ȳ)²)/n ≤ 1.0e-08
-
- * Work counters
-    Seconds run:   1  (vs limit Inf)
-    Iterations:    99
-    f(x) calls:    188
-</pre>
-</div>
-
-</div>
-
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[568]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-julia"><pre><span></span><span class="c"># Not all initial values are equally good</span>
-<span class="n">theta0</span> <span class="o">=</span> <span class="kt">Float64</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span>
-
-<span class="c"># Optimize</span>
-<span class="n">opt</span> <span class="o">=</span> <span class="n">optimize</span><span class="p">((</span><span class="n">x</span> <span class="o">-&gt;</span> <span class="o">-</span><span class="n">logL</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">lambda_hat</span><span class="p">,</span> <span class="n">beta</span><span class="p">,</span> <span class="n">x_t</span><span class="p">)),</span> <span class="n">theta0</span><span class="p">)</span>
-<span class="n">print</span><span class="p">(</span><span class="s">&quot;Estimated thetas: &quot;</span><span class="p">,</span> <span class="n">opt</span><span class="o">.</span><span class="n">minimizer</span><span class="p">)</span>
-<span class="n">print</span><span class="p">(</span><span class="s">&quot;</span><span class="se">\n</span><span class="s">True thetas:      &quot;</span><span class="p">,</span> <span class="n">theta</span><span class="p">)</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area">
-
-    <div class="prompt"></div>
-
-
-<div class="output_subarea output_stream output_stdout output_text">
-<pre>Estimated thetas: [1.0, 1.0, 1.0]
-True thetas:      [0.13, -0.004, 3.1]</pre>
-</div>
-</div>
-
 </div>
 </div>
 
