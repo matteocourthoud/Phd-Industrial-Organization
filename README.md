@@ -7,13 +7,13 @@ The goal of the class is to make Empirical Industrial Organization knowledge and
 
 The course will cover the following content
 
-- [Introduction](https://nbviewer.jupyter.org//github/matteocourthoud/Empirical-Industrial-Organization/blob/master/1_introduction.ipynb)
-- [Econometrics](https://nbviewer.jupyter.org//github/matteocourthoud/Empirical-Industrial-Organization/blob/master/2_econometrics.ipynb)
-- [Production function estimation](https://nbviewer.jupyter.org//github/matteocourthoud/Empirical-Industrial-Organization/blob/master/3_production.ipynb)
+- [Introduction](https://matteocourthoud.github.io/course/empirical-io/1-introduction)
+- [Econometrics](https://matteocourthoud.github.io/course/empirical-io/2-econometrics)
+- [Production function estimation](https://matteocourthoud.github.io/course/empirical-io/3-production)
 - Demand function estimation
 - Merger Analysis
 - Entry and Exit
-- [Single-Agent Dynamics](https://nbviewer.jupyter.org//github/matteocourthoud/Empirical-Industrial-Organization/blob/master/7_single_agent_dynamics.ipynb)
+- [Single-Agent Dynamics](https://matteocourthoud.github.io/course/empirical-io/7-single-agent)
 - Dynamic Games
 - Auctions
 - Media
