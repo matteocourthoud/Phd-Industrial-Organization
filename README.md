@@ -7,18 +7,20 @@ The goal of the class is to make Empirical Industrial Organization knowledge and
 
 The course will cover the following content
 
-1. [Introduction](https://matteocourthoud.github.io/course/empirical-io/1-introduction/)
-2. [Econometrics](https://matteocourthoud.github.io/course/empirical-io/2-econometrics/)
-3. [Production function estimation](https://matteocourthoud.github.io/course/empirical-io/3-production/)
-4. Demand function estimation
+1. Introduction
+2. Production function estimation
+4. Demand Estimation [[html](https://htmlpreview.github.io/?https://github.com/matteocourthoud/Empirical-Industrial-Organization/tree/main/docs/07_demand_estimation.html) | [slides](https://htmlpreview.github.io/?https://github.com/matteocourthoud/Empirical-Industrial-Organization/tree/main/slides/02_demand_estimation.html)]
+4. Demand Identification
 5. Merger Analysis
 6. Entry and Exit
-7. [Single-Agent Dynamics](https://matteocourthoud.github.io/course/empirical-io/7-single-agent/)
+7. Single-Agent Dynamics [[html](https://htmlpreview.github.io/?https://github.com/matteocourthoud/Empirical-Industrial-Organization/tree/main/docs/07_dynamics_singleagent.html) | [slides](https://htmlpreview.github.io/?https://github.com/matteocourthoud/Empirical-Industrial-Organization/tree/main/slides/07_dynamics_singleagent.html)]
 8. Dynamic Games
 9. Auctions
 10. Media
 
+The course also covers the baseline replication of the following papers
 
+1. Rust (1987) [[html](https://htmlpreview.github.io/?https://github.com/matteocourthoud/Empirical-Industrial-Organization/tree/main/docs/07_dynamics_singleagent.html) | [slides](https://htmlpreview.github.io/?https://github.com/matteocourthoud/Empirical-Industrial-Organization/tree/main/slides/07_dynamics_singleagent.html)]
 
 ## Sources
 
@@ -26,4 +28,5 @@ The course heavily borrows from the following sources
 
 - Kohei Kawaguchi's [Empirical IO](https://kohei-kawaguchi.github.io/EmpiricalIO/) course in R
 - Gregory Crawford Graduate Empirical IO course at UZH
+- Phil Haile and Mitrsuru Igami Graduate Empirical IO course at Yale
 

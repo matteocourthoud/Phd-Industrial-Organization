@@ -1,0 +1,295 @@
+---
+title: "Coding: Rust (1987)"
+author: "Matteo Courthoud"
+type: book
+weight: 17
+date: 2021-10-29
+bibliography: references.bib
+output: 
+  html_notebook: 
+    toc: true
+    toc_depth: 2
+  html_document:
+    toc: true
+    toc_depth: 3
+    toc_float: true
+    toc_collapsed: true
+  ioslides_presentation:
+    widescreen: true
+    smaller: true
+    transition: 0
+    slide_level: 3
+  md_document:
+    variant: markdown_mmd
+    preserve_yaml: true
+---
+
+```{r setup, include=FALSE, echo=FALSE}
+library(JuliaCall)
+julia <- julia_setup("/Users/mcourt/Documents/Julia-1.5.app/Contents/Resources/julia/bin")
+```
+
+```{julia, include=FALSE, echo=FALSE}
+#import Pkg
+#Pkg.add("Optim")
+#Pkg.add("Statistics")
+#Pkg.add("Distributions")
+
+using Optim
+using Distributions
+using Statistics
+```
+
+### Setting
+
+From @rust
+
+-   An agent owns a fleet to buses
+
+-   Buses get old over time
+
+-   The older the bus is, the most costly it is to maintain
+
+-   The agent can decide to replace the bus engine with a new one, at a cost
+
+-   **Dynamic trade-off**
+
+    -   What is the best moment to replace the engine?
+
+    -   You don't want to replace an engine too early
+
+        -   doesn't change much
+
+    -   You don't want to replace an engine too late
+
+        -   avoid unnecessary maintenance costs
+
+### State
+
+-   **State**: mileage of the bus
+
+    $$x_t \in \lbrace 1, ..., 10 \rbrace $$
+
+-   **State transitions**: with probability $\lambda$ the mileage of the bus increases
+
+    $$
+      x_{t+1} = \begin{cases}
+      \min \lbrace x_t + 1,10 \rbrace  & \text { with probability } \lambda \newline 
+      x_t & \text { with probability } 1 - \lambda
+      \end{cases}
+    $$
+
+    Note that $\lambda$ does not depend on the value of the state
+
+### Actions
+
+-   **Action**: replacement decision $$
+      i_t \in \lbrace 0, 1 \rbrace
+      $$
+
+-   **Payoffs**
+
+    -   Per-period maintenance cost
+
+    -   Cost of replacement $$
+         u\left(x_{t}, i_{t}, \epsilon_{1 t}, \epsilon_{2 t} ; \theta\right)= 
+         \begin{cases}
+         -\theta_{1} x_{t}-\theta_{2} x_{t}^{2}+\epsilon_{0 t}, & \text { if } i_{t}=0 \newline 
+         -\theta_{3}+\epsilon_{1 t}, & \text { if } i_{t}=1
+         \end{cases}
+         $$
+
+### Simulation
+
+-   Start with an initial value function $V(x_t)=0$
+
+-   Compute expected value w.r.t. $\lambda$
+
+    $$
+    W(x_t) = \begin{cases}
+    -\theta_1 x_t - \theta_2 x_t^2 + \beta \Big[(1-\lambda) V(x_t) + \lambda V(\min \lbrace x_t+1,10 \rbrace ) \Big] , & \text { if } i_t=0 \newline
+    -\theta_3 + \beta \Big[(1-\lambda) V(0) + \lambda V(1) \Big] , & \text { if } i_t=1
+    \end{cases}
+    $$
+
+-   Compute the new value of V $$
+    V'(x_t) = \log \Big( e^{W(x_t|i_t=0)} + e^{W(x_t|i_t=1)} \Big)
+    $$
+
+-   Repeat until convergence
+
+### Code
+
+First we set the parameter values.
+
+```{julia}
+## Set parameters
+theta = [0.13; -0.004; 3.1];
+lambda = 0.82;
+beta = 0.95;
+```
+
+Then we set the state space.
+
+```{julia}
+## State space
+x = 0:10;
+
+## Index for lambda and for investment
+index_lambda = Int8[1:11 [2:11;11]];
+index_i = Int8[1:11 ones(11,1)];
+```
+
+### Code
+
+We are now ready to set up the value function iteration.
+
+```{julia}
+function compute_V(theta, lambda, beta)
+    dist = 100;
+    iter = 0;
+    V = zeros(11);
+    V_bar = V;
+    U = [- theta[1]*x - theta[2]*x.^2 (-theta[3])*ones(11,1)]
+
+    ## Iterate the Bellman equation until convergence
+    while dist>1e-20
+
+        ## Expected future values (mean over possible shocks)
+        Exp_V = V[index_lambda] * [1-lambda; lambda];
+        V_bar = beta * (U + Exp_V[index_i])
+        V_new = log.(sum(exp.(V_bar), dims=2))
+
+        ## Check distance for convergence
+        dist = max(abs.(V_new - V)...);
+        iter += 1;
+
+        ## Update value function
+        V = V_new 
+    end
+    return V, V_bar, iter
+end;
+```
+
+### Code
+
+We can now solve for the value function.
+
+```{julia}
+V, V_bar, iter = compute_V(theta, lambda, beta);
+print("Converged after ", iter, " iterations!")
+```
+
+### DGP
+
+Now that we know how to compute the equilibrium, we can simulate the data.
+
+```{julia}
+## Draw shocks
+k = 100000;
+e = rand(Gumbel(0,1), k, 2);
+
+## Draw states
+x_t = rand(x.+1,k);
+
+## Compute investment decisions
+I = ((V_bar[x_t,:] + e) * [-1;1]) .> 0;
+
+## Compute next state
+x_t1 = min.(x_t .* (I.==0) + (rand(Uniform(0,1),k).<lambda), 10);
+
+print("we observe ", sum(I), " investment decisions in ", k, " observations")
+```
+
+### Estimation - Lambda
+
+-   First we can estimate the value of lambda as the mean
+
+    $$
+    \hat \lambda = \mathbb E_n \Big[ (x_{t+1}-x_t) \mid i_{t}=0 \wedge x_{t}<10 \Big]
+    $$
+
+```{julia}
+## Estimate lambda
+delta = x_t1 - x_t;
+lambda_hat = mean(delta[(I.==0) .& (x_t.<10)]);
+
+print("Estimated lambda: ", lambda_hat)
+print("True lambda:      ", lambda)
+```
+
+### Estimation - theta
+
+-   Take a parameter guess $\theta_0$
+
+-   Compute the corresponding value function $V(x_t | \hat \lambda, \theta_0)$
+
+-   Compute the implied choice probabilities
+
+-   Compute the likelihood
+
+    $$
+    \mathcal{L}(\theta)=\prod_{t=1}^{T}\left(\hat{\operatorname{Pr}}\left(i=1 \mid x_{t}, \theta\right) \mathbb{1}\left(i_{t}=1\right)+\left(1-\hat{\operatorname{Pr}}\left(i=0 \mid x_{t}, \theta\right)\right) \mathbb{1}\left(i_{t}=0\right)\right)
+    $$
+
+-   Repeat the above to find a minimum of the likelihood function
+
+### Code
+
+```{julia}
+function logL(theta0, lambda_hat, beta, x_t)
+    ## Compute value
+    V, V_bar = compute_V(theta0, lambda_hat, beta)
+    
+    ## Implied choice probabilities
+    pr_I = exp.(V_bar[:,2]) ./ (exp.(V_bar[:,1]) + exp.(V_bar[:,2]))
+    
+    ## Likelihood
+    L = sum(log.(pr_I[x_t[I.==1]])) + sum(log.(1 .- pr_I[x_t[I.==0]]))
+    return L
+end;
+```
+
+We can check the likelihood at the true value:
+
+```{julia}
+print("The likelihood at the true values is ", logL(theta, lambda, beta, x_t))
+```
+
+### Estimating sigma
+
+```{julia}
+## Select starting values
+theta0 = Float64[0,0,0];
+
+## Optimize
+opt = optimize((x -> -logL(x, lambda_hat, beta, x_t)), theta0);
+print("Estimated thetas: ", opt.minimizer)
+print("True thetas:      ", theta)
+```
+
+### Optimization Info
+
+We can also get info on the optimum
+
+```{julia}
+opt
+```
+
+### Starting Values
+
+Starting values are important!
+
+```{julia}
+## Not all initial values are equally good
+theta0 = Float64[1,1,1];
+
+## Optimize
+opt = optimize((x -> -logL(x, lambda_hat, beta, x_t)), theta0);
+print("Estimated thetas: ", opt.minimizer)
+print("True thetas:      ", theta)
+```
+
+## References
+
+------------------------------------------------------------------------
