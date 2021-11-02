@@ -13,7 +13,7 @@
 
 <meta name="date" content="2021-10-29" />
 
-<title>Demand Estimation</title>
+<title>Dynamic Games</title>
 
 <script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
 // be compatible with the behavior of Pandoc < 2.8).
@@ -1528,208 +1528,454 @@ div.tocify {
 
 
 
-<h1 class="title toc-ignore">Demand Estimation</h1>
+<h1 class="title toc-ignore">Dynamic Games</h1>
 <h4 class="author">Matteo Courthoud</h4>
 <h4 class="date">2021-10-29</h4>
 
 </div>
 
 
-<div id="supply" class="section level2">
-<h2>Supply</h2>
-<div id="setting" class="section level3">
-<h3>Setting</h3>
-<p>Oligopoly Supply</p>
+<div id="model" class="section level2">
+<h2>Model</h2>
+<div id="intro" class="section level3">
+<h3>Intro</h3>
+<p>Setting: agents making <strong>strategic decisions</strong> in <strong>dynamic environments</strong>.</p>
 <ul>
-<li><p>firms produce differentiated goods/products</p></li>
-<li><p>selling to consumers with heterogeneous preferences</p></li>
-<li><p>static model, complete information</p>
+<li>Entry and exit: <span class="citation">Collard-Wexler (<a href="#ref-collard2013demand" role="doc-biblioref">2013</a>)</span></li>
+<li>Sunk costs: <span class="citation">Ryan (<a href="#ref-ryan2012costs" role="doc-biblioref">2012</a>)</span></li>
+<li>Innovation: <span class="citation">Igami (<a href="#ref-igami2017estimating" role="doc-biblioref">2017</a>)</span>
 <ul>
-<li><p>products are given</p></li>
-<li><p>equilibrium: NE for each product/market</p></li>
+<li>(or whatever changes in response to investment)</li>
 </ul></li>
-</ul>
-<p>Workhorse model: <span class="citation">Berry, Levinsohn, and Pakes (1995)</span></p>
-</div>
-<div id="cost-function" class="section level3">
-<h3>Cost Function</h3>
-<p>Variable cost of product <span class="math inline">\(j\)</span>: <span class="math inline">\(C_j (Q_j , w_{jt} , \omega_{jt}, \gamma)\)</span></p>
-<ul>
-<li><p><span class="math inline">\(Q_j\)</span>: total quantity of good j sold</p></li>
-<li><p><span class="math inline">\(w_{jt}\)</span> observable cost shifters; may include product characteristics <span class="math inline">\(x_{jt}\)</span> that will affect demand (later)</p></li>
-<li><p><span class="math inline">\(\omega_{jt}\)</span> unobserved cost shifters (“cost shocks”); may be correlated with latent demand shocks (later)</p></li>
-<li><p><span class="math inline">\(\gamma\)</span>: parameters</p></li>
-</ul>
-<p>Notes</p>
-<ul>
-<li><p>for multi-product firms, we’ll assume variable cost additive across products for simplicity</p></li>
-<li><p>we ignore fixed costs: these affect entry/exit/innovation but not pricing, <em>conditional on these things</em></p></li>
+<li>Learning-by-doing</li>
+<li>Switching costs</li>
+<li>Stockpiling: <span class="citation">Hendel and Nevo (<a href="#ref-hendel2006measuring" role="doc-biblioref">2006</a>)</span></li>
 </ul>
 </div>
-<div id="notation" class="section level3">
-<h3>Notation</h3>
+<div id="simple-example" class="section level3">
+<h3>Simple Example</h3>
+<p>Lousely taken from <span class="citation">Ericson and Pakes (<a href="#ref-ericson1995markov" role="doc-biblioref">1995</a>)</span></p>
 <ul>
-<li><p><span class="math inline">\(J_t\)</span>: products/goods/choices in market t (for now <span class="math inline">\(J_t = J\)</span>)</p></li>
-<li><p><span class="math inline">\(\boldsymbol p_t = (p_{1t},...,p_{Jt})\)</span>: prices of all goods</p></li>
-<li><p><span class="math inline">\(\boldsymbol \chi_t = ( \chi_{1t} , … , \chi_{Jt})\)</span> : other characteristics of goods affecting demand (observed and unobserved to us)</p></li>
+<li><p>Builds on <span class="citation">Maskin and Tirole (<a href="#ref-maskin1988theory" role="doc-biblioref">1988</a>)</span>, <span class="citation">Maskin and Tirole (<a href="#ref-maskin1988theory" role="doc-biblioref">1988</a>)</span>, <span class="citation">Maskin and Tirole (<a href="#ref-maskin1987theory" role="doc-biblioref">1987</a>)</span></p></li>
+<li><p>Firms invest to increase the future quality of their product</p></li>
+<li><p>State <span class="math inline">\(s_{it}\)</span>: quality of product <span class="math inline">\(i\)</span> in period <span class="math inline">\(t\)</span></p></li>
+<li><p>Per period profits <span class="math display">\[
+\pi ( s_{it}, s_{-it}, ; \theta^\pi)
+\]</span> where</p>
+<ul>
+<li><span class="math inline">\(s_{-it}\)</span>: state vector of all other firms in period <span class="math inline">\(t\)</span></li>
+<li><span class="math inline">\(\theta^\pi\)</span>: parameters that govern static profits</li>
+</ul></li>
+<li><p>We can micro-fund profits with some demand and supply functions</p></li>
 </ul>
 </div>
-<div id="equilibrium-pricing" class="section level3">
-<h3>Equilibrium Pricing</h3>
-<ul>
-<li><p>Demand system:</p>
-<p><span class="math display">\[
-q_{jt} = \boldsymbol q_j (\boldsymbol p_t, \boldsymbol \chi_t) \quad \text{for} \quad j = 1,...,J.
-\]</span></p></li>
-<li><p>Profit function</p>
-<p><span class="math display">\[
-\pi_{jt} = \boldsymbol q_j (\boldsymbol p_t, \boldsymbol \chi_t) [p_{jt} − mc_j (w_{jt}, \omega_{jt}, \gamma)]
-\]</span></p></li>
-<li><p>FOC wrt to <span class="math inline">\(p_{jt}\)</span>:</p>
-<p><span class="math display">\[
-p_{jt} = mc_{jt} - q_j (\boldsymbol p_t, \boldsymbol \chi_t) \left(\frac{\partial \boldsymbol q_j}{\partial p_{jt}}\right)^{-1}
-\]</span></p></li>
-<li><p>Inverse elasticity pricing (i.e., monopoly pricing) against the “residual demand curve” <span class="math inline">\(q_j (\boldsymbol p_t, \boldsymbol \chi_t)\)</span>:</p>
-<p><span class="math display">\[
-\frac{p_{jt} - mc_{jt}}{p_{jt}} = - \frac{q_j (\boldsymbol p_t, \boldsymbol \chi_t)}{p_{jt}} \left(\frac{\partial \boldsymbol q_j}{\partial p_{jt}}\right)^{-1}
-\]</span></p></li>
-</ul>
-</div>
-<div id="what-do-we-get" class="section level3">
-<h3>What do we get?</h3>
+<div id="dynamic-decisions" class="section level3">
+<h3>Dynamic Decisions</h3>
+<p>In each period firms have 3 choices (in order)</p>
 <ol style="list-style-type: decimal">
-<li><p>Holding all else fixed, markups/prices depend on the own-price elasticities of residual demand. Equilibrium depends, further, on how a change in price of one good affects the quantities sold of others, i.e., on cross-price demand elasticities</p></li>
-<li><p>If we known demand, we can also perform a <strong>small miracle</strong>:</p>
+<li><p>If entrant, <span class="math inline">\(e_{it}\)</span>: whether to enter the market or not</p></li>
+<li><p>If incumbent, <span class="math inline">\(d_{it}\)</span>: whether to exit the market or not</p></li>
+<li><p>If incumbent, <span class="math inline">\(a_{it}\)</span>: investment</p>
 <ul>
-<li><p>Re-arrange FOC</p>
-<p><span class="math display">\[
-mc_{jt} = p_{jt} + q_j (\boldsymbol p_t, \boldsymbol \chi_t) \left(\frac{\partial \boldsymbol q_j}{\partial p_{jt}}\right)^{-1}
-\]</span></p></li>
-<li><p>Supply model + estimated demand→estimates of marginal costs!</p></li>
+<li><p>Influences your state transition probability <span class="math inline">\(f\)</span> <span class="math display">\[
+s_{i, t+1} = f(s_{it}, a_{it}, \epsilon_{it} ; \theta^f)
+\]</span> where</p>
+<ul>
+<li><span class="math inline">\(\epsilon_{it}\)</span>: shock that is not known to the firm when making the decision
+<ul>
+<li>it does not need to be there</li>
 </ul></li>
-<li><p>If we know demand and marginal costs, we can”predict” a lot of stuff—i.e., give the quantitative implications of the model for counterfactual worlds</p></li>
+<li><span class="math inline">\(\theta^f\)</span>: parameters that govern state transitions</li>
+</ul></li>
+<li><p>Example of transition <span class="math display">\[
+s_{i, t+1} = \delta s_{it} + a_{it} + \epsilon_{it}
+\]</span> I.e. depreciation of capital + investment and noise</p></li>
+</ul></li>
 </ol>
 </div>
-<div id="issues" class="section level3">
-<h3>Issues</h3>
+<div id="value-function" class="section level3">
+<h3>Value Function</h3>
+<p>Belman Equation incumbent <span class="math inline">\(i\)</span> at time <span class="math inline">\(t\)</span> <span class="math display">\[
+\begin{aligned}
+V (s_{i t}, s_{-i t} ; \theta) = &amp; \pi(s_{i t}, s_{-i t} ; \theta^{\pi}) + \max_{d_{i} \in \lbrace 0,1 \rbrace} 
+\Bigg\lbrace
+\begin{array}{c}
+\beta \phi \ ; \newline
+\max _{a_{i t} \geq 0} \Big\lbrace - a_{i t} + \beta \mathbb E \Big[V (s_{i, t+1}, s_{-i, t+1} \ ; ] \theta) \Big| s_{i t}, s_{-i t}, a_{i t} \Big] \Big\rbrace 
+\end{array}
+\Bigg\rbrace
+\end{aligned}
+\]</span> where</p>
 <ul>
-<li><p>Typically we need to know levels/elasticities of demand at particular points; i.e., effects of one price change holding all else fixed</p></li>
-<li><p>The main challenge: unobserved demand shifters (“demand shocks”) at the level of the good×market (e.g., unobserved product char or market-specific variation in mean tastes for products)</p></li>
-<li><p>demand shocks are among the things that must be held fixed to measure the relevant demand elasticities etc.</p></li>
-<li><p>explicit modeling of these demand shocks central in the applied IO literature following Berry-Levinsohn-Pakes 1995 (often ignored outside this literature).</p></li>
-</ul>
-</div>
-<div id="key-challenge" class="section level3">
-<h3>Key Challenge</h3>
-<p>Let’s ignore <span class="math inline">\(t\)</span>.</p>
-<p>The demand of product <span class="math inline">\(j\)</span></p>
-<p><span class="math display">\[
-q_j (\boldsymbol x, \boldsymbol p, \boldsymbol \xi)
-\]</span></p>
-<p>depends on:</p>
+<li><span class="math inline">\(\beta \in (0,1)\)</span>: discount factor</li>
+<li><span class="math inline">\(\phi\)</span>: exit scrap value</li>
+<li><span class="math inline">\(a_{it} \in \mathbb R_+\)</span>: investment decision, in dollars</li>
+<li><span class="math inline">\(d_{it} \in \lbrace 0,1 \rbrace\)</span>: exit decision</li>
+<li>The expectation <span class="math inline">\(\mathbb E\)</span> is over
 <ul>
-<li><p><span class="math inline">\(\boldsymbol p\)</span>: <span class="math inline">\(J\)</span>-vector of <em>all</em> goods’ prices</p></li>
-<li><p><span class="math inline">\(\boldsymbol x\)</span>: <span class="math inline">\(J \times k\)</span> matrix of <em>all</em> non-price observables</p></li>
-<li><p><span class="math inline">\(\boldsymbol \xi\)</span>: J-vector of demand shocks for <em>all</em> goods</p></li>
-</ul>
-<p><strong>Key insight</strong>: we have an endogeneity problem even if prices were exogenous!</p>
-</div>
-<div id="price-endogeneity-adds-to-the-challenge" class="section level3">
-<h3>Price Endogeneity Adds to the Challenge</h3>
-<ul>
-<li><p>all <span class="math inline">\(J\)</span> endogenous prices are on RHS of demand for each good</p></li>
-<li><p>equilibrium pricing implies that each price depends on all demand shocks and all cost shocks</p>
-<ul>
-<li><p>prices endogenous</p></li>
-<li><p>control function generally is not a valid solution</p></li>
-</ul></li>
-<li><p>clear that we need sources of exogenous price variation, but</p>
-<ul>
-<li><p>what exactly is required?</p></li>
-<li><p>how do we proceed?</p></li>
+<li>The shocks <span class="math inline">\(\epsilon_{it}\)</span></li>
+<li>Rivals future states <span class="math inline">\(s_{-i,t+1}\)</span></li>
 </ul></li>
 </ul>
 </div>
+<div id="entry" class="section level3">
+<h3>Entry</h3>
+<p>We can also incorporate endogenous entry.</p>
+<ul>
+<li>One or more <strong>potential entrants</strong> exist outside the market</li>
+<li>They can pay an entry cost <span class="math inline">\(\kappa\)</span> and enter the market at a quality state <span class="math inline">\(\bar s\)</span></li>
+</ul>
+<p>Value function <span class="math display">\[
+V^{\text {e}} (s_{i t}, s_{-i t} ; \theta) = \max_{e \in \lbrace 0,1 \rbrace }
+\Bigg\lbrace
+\begin{array}{c}
+0 \ ; \newline
+-\kappa + \beta \mathbb E \Big[ V(\bar s, s_{-i, t+1} ; \theta) \Big| s_{t} \Big]
+\end{array}
+\Bigg\rbrace
+\]</span> where</p>
+<ul>
+<li><span class="math inline">\(e \in \lbrace 0,1 \rbrace\)</span>: entry decision</li>
+<li><span class="math inline">\(\kappa\)</span>: entry cost</li>
+</ul>
+<p>Do we observe potential entrants?</p>
+<ul>
+<li><span class="citation">Igami (<a href="#ref-igami2017estimating" role="doc-biblioref">2017</a>)</span>: tech industry announce their entry</li>
+<li>Critique: not really potential entrants, they are half-way inside</li>
+</ul>
 </div>
-<div id="blp-model" class="section level2">
-<h2>BLP Model</h2>
-<div id="goals-of-blp" class="section level3">
-<h3>Goals of BLP</h3>
-<p>Model of <span class="citation">Berry, Levinsohn, and Pakes (1995)</span></p>
+<div id="equilibrium" class="section level3">
+<h3>Equilibrium</h3>
+<p>Equillibrium notion: <strong>Markow Perfect Equilibrium</strong> <span class="citation">(<a href="#ref-maskin1988theory" role="doc-biblioref">Maskin and Tirole 1988</a>)</span></p>
+<ul>
+<li><p>A set value, policy functions and transition probabilities <span class="math display">\[
+\Big \lbrace \ V(\cdot), \ V^{e n t}(\cdot), \ d(\cdot), \ a(\cdot), \ e(\cdot), \ f(s_{-i, t+1} | s_{t}) \ \Big \rbrace
+\]</span> such that</p>
 <ol style="list-style-type: decimal">
-<li>parsimonious specification to generate the distribution <span class="math inline">\(F_U (\cdot| \boldsymbol p, \boldsymbol \xi)\)</span> of random utilities</li>
-<li>sufficiently rich heterogeneity in preferences to permit reasonable/flexible substitution patterns</li>
-<li>be explicit about unobservables, including the nature of endogeneity “problem(s)”</li>
-<li>use the model to reveal solutions to the identification problem, including appropriate instruments</li>
-<li>computationally feasible (in early 1990s!) algorithm for consistent estimation of the model and standard errors.</li>
+<li><span class="math inline">\(V(\cdot), \ V^{e n t}(\cdot), \ d(\cdot), \ a(\cdot), \ e(\cdot)\)</span> solve their respective equations <em>given</em> <span class="math inline">\(f(s_{-i, t+1} | s_{t})\)</span></li>
+<li>the transition probabilities <span class="math inline">\(f(s_{-i, t+1} | s_{t})\)</span> are generated by the strategies <span class="math inline">\(d(\cdot), \ a(\cdot), \ e(\cdot)\)</span></li>
+</ol></li>
+</ul>
+<p>What is it basically?</p>
+<ul>
+<li>Nash Equilibrium in the policy functions</li>
+<li>What are we ruling out?
+<ul>
+<li>Strategies that depend on longer histories</li>
+<li>E.g. “has anyone ever cheated in a cartel?”</li>
+</ul></li>
+</ul>
+</div>
+<div id="solving-the-model" class="section level3">
+<h3>Solving the model</h3>
+<p>Numerically!</p>
+<ol style="list-style-type: decimal">
+<li>Given parameter values <span class="math inline">\(\theta\)</span></li>
+<li>Start with a guess for the value and policy functions</li>
+<li>They will imply some transition probabilities</li>
+<li>That will imply some new policies and so on…</li>
+<li>… until what?</li>
+</ol>
+<p><strong>Issues</strong></p>
+<ul>
+<li>No guarantee of convergence
+<ul>
+<li><span class="citation">Doraszelski and Satterthwaite (<a href="#ref-doraszelski2010computable" role="doc-biblioref">2010</a>)</span>: prove existence of MPE with random costs/scrap values</li>
+<li>The BR iteration can never find mixed-strategy equilibria</li>
+</ul></li>
+<li>Multiple equilibria issues</li>
+<li>Curse of dimensionality (computational issue, not conceptual)</li>
+</ul>
+</div>
+<div id="multiple-equilibria" class="section level3">
+<h3>Multiple Equilibria</h3>
+<ul>
+<li><span class="citation">Besanko et al. (<a href="#ref-besanko2010learning" role="doc-biblioref">2010</a>)</span> and <span class="citation">Borkovsky, Doraszelski, and Kryukov (<a href="#ref-borkovsky2010user" role="doc-biblioref">2010</a>)</span>: homotopy method
+<ul>
+<li>can find some equilibria</li>
+<li>not all</li>
+<li>complicated to implement</li>
+</ul></li>
+<li><span class="citation">Iskhakov et al. (<a href="#ref-iskhakov2017endogenous" role="doc-biblioref">2017</a>)</span>: grid method
+<ul>
+<li>can find all equilibria</li>
+<li>but for very specific class of dynamic games</li>
+<li>must always proceed “forward”
+<ul>
+<li>e.g. either entry or exit but not both</li>
+</ul></li>
+</ul></li>
+<li><span class="citation">Pesendorfer and Schmidt-Dengler (<a href="#ref-pesendorfer2010sequential" role="doc-biblioref">2010</a>)</span>: the BR iteration cannot find all possible equilibria, because some equilibria are not Lyapunov-stable, which means you cannot find one unless you start your numerical search from the exact solution</li>
+<li><span class="citation">Su and Judd (<a href="#ref-su2012constrained" role="doc-biblioref">2012</a>)</span> and <span class="citation">Egesdal, Lai, and Su (<a href="#ref-egesdal2015estimating" role="doc-biblioref">2015</a>)</span>: show this point numerically, by using their proposed Mathematical Programming with Equilibrium Constraints (MPEC) approach.</li>
+</ul>
+</div>
+<div id="curse-of-dimensionality" class="section level3">
+<h3>Curse of Dimensionality</h3>
+<p>Two potential solutions:</p>
+<ol style="list-style-type: decimal">
+<li><strong>Computational</strong>: approximate the equilibrium
+<ul>
+<li><span class="citation">Doraszelski and Judd (<a href="#ref-doraszelski2019dynamic" role="doc-biblioref">2019</a>)</span>: games with random moves</li>
+<li><span class="citation">Farias, Saure, and Weintraub (<a href="#ref-farias2012approximate" role="doc-biblioref">2012</a>)</span>: solve the global problem approximately</li>
+</ul></li>
+<li><strong>Conceptual</strong>: define another game
+<ul>
+<li><span class="citation">Weintraub, Benkard, and Van Roy (<a href="#ref-weintraub2008markov" role="doc-biblioref">2008</a>)</span>: oblivious equilibrium</li>
+<li><span class="citation">Pakes and McGuire (<a href="#ref-pakes2001stochastic" role="doc-biblioref">2001</a>)</span> and <span class="citation">Fershtman and Pakes (<a href="#ref-fershtman2012dynamic" role="doc-biblioref">2012</a>)</span>: experience-based equilibrium</li>
+<li><span class="citation">Doraszelski and Judd (<a href="#ref-doraszelski2012avoiding" role="doc-biblioref">2012</a>)</span>: games in continuous time</li>
+</ul></li>
 </ol>
 </div>
-<div id="utility-specification" class="section level3">
-<h3>Utility Specification</h3>
-<p>Utility of consumer <span class="math inline">\(i\)</span> for product <span class="math inline">\(j\)</span></p>
-<p><span class="math display">\[
-u_{ij} = x_j \beta_i - \alpha p_j + \xi_j + \epsilon_{ij}
-\]</span></p>
-<p>Where</p>
+</div>
+<div id="estimation---bajari-benkard-levin-2008" class="section level2">
+<h2>Estimation - Bajari, Benkard, Levin (2008)</h2>
+<div id="methods" class="section level3">
+<h3>Methods</h3>
+<p>We want to estimate 3 sets of <strong>parameters</strong>:</p>
 <ul>
-<li><p><span class="math inline">\(x_j\)</span>: <span class="math inline">\(K\)</span>-vector of characteristics of product <span class="math inline">\(j\)</span></p></li>
-<li><p><span class="math inline">\(\beta_{i} = (\beta_{i}^{1}, \ldots, \beta_{i}^K)\)</span>: vector of tastes for characteristics <span class="math inline">\(1,…,K\)</span></p>
+<li><span class="math inline">\(\theta^\pi\)</span>: parameterizes period profit function <span class="math inline">\(\pi()\)</span></li>
+<li><span class="math inline">\(\theta^f\)</span>: parameterizes state transition function <span class="math inline">\(f()\)</span></li>
+<li><span class="math inline">\(\theta^{ddc}\)</span>: scrap value <span class="math inline">\(\phi\)</span> and entry cost <span class="math inline">\(\kappa\)</span></li>
+</ul>
+<p>Generally 2 <strong>approaches</strong></p>
+<ol style="list-style-type: decimal">
+<li>Full solution
 <ul>
-<li><p><span class="math inline">\(\beta_{i}^k = \beta_0^k + \sigma_k \zeta_{i}^k\)</span></p>
-<ul>
-<li><p><span class="math inline">\(\beta_0^k\)</span>: usual taste for characteristic <span class="math inline">\(k\)</span></p></li>
-<li><p><span class="math inline">\(\zeta_{i}^k\)</span>: random taste, i.i.d. across consumers and markets</p></li>
+<li>Impractical</li>
 </ul></li>
+<li><span class="citation">Hotz and Miller (<a href="#ref-hotz1993conditional" role="doc-biblioref">1993</a>)</span> CCP inversion
+<ul>
+<li><span class="citation">Aguirregabiria and Mira (<a href="#ref-aguirregabiria2007sequential" role="doc-biblioref">2007</a>)</span></li>
+<li><span class="citation">Bajari, Benkard, and Levin (<a href="#ref-bajari2007estimating" role="doc-biblioref">2007</a>)</span></li>
+<li><span class="citation">Pakes, Ostrovsky, and Berry (<a href="#ref-pakes2007simple" role="doc-biblioref">2007</a>)</span></li>
+<li><span class="citation">Pesendorfer and Schmidt-Dengler (<a href="#ref-pesendorfer2008asymptotic" role="doc-biblioref">2008</a>)</span></li>
 </ul></li>
-<li><p><span class="math inline">\(\alpha\)</span>: price elasticity</p></li>
-<li><p><span class="math inline">\(p_{j}\)</span> price of product <span class="math inline">\(j\)</span></p></li>
-<li><p><span class="math inline">\(\xi_{j}\)</span>: unobservable product shock at the level of products <span class="math inline">\(\times\)</span> market</p></li>
-<li><p><span class="math inline">\(\epsilon_{ij}\)</span>: idiosyncratic (and latent) taste</p></li>
+</ol>
+</div>
+<div id="bbl-first-stage" class="section level3">
+<h3>BBL: First Stage</h3>
+<p>First stage: estimate the policy functions (CCP) non-parametrically</p>
+<ul>
+<li>Directly retrievable from data
+<ul>
+<li>Entry decisions <span class="math inline">\(\hat e (s_{i t}, s_{-i t})\)</span></li>
+<li>Exit decisions <span class="math inline">\(\hat d (s_{i t}, s_{-i t})\)</span></li>
+<li>Investment decisions <span class="math inline">\(\hat a (s_{i t}, s_{-i t})\)</span></li>
+<li>Transition probabilities <span class="math inline">\(\hat f (s_{i t}, s_{-i t} ; \theta^f)\)</span></li>
+</ul></li>
+<li>Conditional on having enough data
+<ul>
+<li><strong>Note</strong>: need to estimate choice probabilities, conditional on each state</li>
+<li>Problem with many states but especially with many players
+<ul>
+<li>Curse of dimensionality</li>
+</ul></li>
+<li>Problem especially for transition probabilities: state <span class="math inline">\(\times\)</span> state</li>
+</ul></li>
+<li>Important to do it non-parametrically: parametric assumptions would contradict the model for the estimation of value/polify functions</li>
 </ul>
 </div>
-<div id="exogenous-and-endogenous-product-characteristics" class="section level3">
-<h3>Exogenous and Endogenous Product Characteristics</h3>
-<p>Utility of consumer <span class="math inline">\(i\)</span> for product <span class="math inline">\(j\)</span></p>
-<p><span class="math display">\[
-u_{ij} = x_j \beta_i - \alpha p_j + \xi_j + \epsilon_{ij}
-\]</span></p>
+<div id="bbl-second-stage" class="section level3">
+<h3>BBL: Second Stage</h3>
+<p>We now have the policy functions, CCPs and state transition probabilities</p>
 <ul>
-<li><p>exogenous characteristics: <span class="math inline">\(x_{j} \perp \xi_{j}\)</span></p></li>
-<li><p>endogenous characteristics: <span class="math inline">\(p_{j}\)</span> (usually a scalar, price)</p>
+<li>We can use them together to simulate <strong>histories</strong></li>
+<li>If we have a candidate value of <span class="math inline">\(\theta^\pi\)</span>, we can compute static payoffs</li>
+<li>Simulated history + static payoffs = simualted value function</li>
+<li>We can average over may simulated value functions to get an <strong>expected value function</strong></li>
+</ul>
+<p>What is the objective function?</p>
 <ul>
-<li><p>typically each <span class="math inline">\(p_j\)</span> will depend on whole vector <span class="math inline">\(\boldsymbol \xi = (\xi_1 , . . . , \xi_J )\)</span> (and on own and others’ costs)</p></li>
-<li><p>we need to distinguish true effects of prices on demand from the</p></li>
-<li><p>effects of <span class="math inline">\(\boldsymbol \xi\)</span> ; this will require instruments</p></li>
-<li><p>of course the equation above is not an estimating equation (<span class="math inline">\(u_{ij}\)</span> not observed)</p></li>
-<li><p>because prices and quantities are all endogenous - indeed determined - simultaneously, you may suspect (correctly) that instruments for prices alone may not suffice.</p></li>
+<li>Potentially many options</li>
+<li>We want parameters that give firms the highest values, given those strategies (CCPs)</li>
+</ul>
+</div>
+<div id="in-practice" class="section level3">
+<h3>In Practice</h3>
+<p>Take a parameter <span class="math inline">\(\theta\)</span>.</p>
+<p>For many simulations do:</p>
+<ul>
+<li>Initialize firms value to zero</li>
+<li>Fot <span class="math inline">\(t=0 ... \infty\)</span> do
+<ul>
+<li>For each state do:
+<ul>
+<li>For each firm do:
+<ul>
+<li>Compute static profits <span class="math inline">\(\pi(s_{i t}, s_{-i t} ; \theta^{\pi})\)</span></li>
+<li>Compute firms actions using <span class="math inline">\(\hat a (s_{i t}, s_{-i t})\)</span> and <span class="math inline">\(\hat d (s_{i t}, s_{-i t})\)</span></li>
+<li>If firm exits, <span class="math inline">\(\hat d = 0\)</span>, end</li>
+<li>If not, <span class="math inline">\(\hat d = 1\)</span>, subtract <span class="math inline">\(a_{i,t}\)</span> from profits</li>
+<li>Use <span class="math inline">\(\hat f (s_{i t}, s_{-i t} ; \theta^f)\)</span> to <em>simulate</em> next state for firm <span class="math inline">\(i\)</span></li>
+<li>Add discounted profits to the value function <span class="math inline">\(\beta^t \pi(s_{i t}, s_{-i t} ; \theta^{\pi})\)</span></li>
+</ul></li>
+<li>Use the next state, <span class="math inline">\((s_{i t+1}, s_{-i t+1})\)</span> as current state for the next iteration</li>
+</ul></li>
+</ul></li>
+</ul>
+<p>Then average all the value functions together to obtain an <strong>expected value function</strong> <span class="math inline">\(\mathbb E \Big[ V (s_{i t}, s_{-i t} ; \theta) \Big]\)</span></p>
+<ul>
+<li><strong>Note</strong>: advantage of simulations: can be parallelized</li>
+</ul>
+</div>
+<div id="objective-function" class="section level3">
+<h3>Objective Function</h3>
+<p><strong>Idea</strong></p>
+<ul>
+<li><p>If the observed choices <span class="math inline">\(\hat a (s_{i t}, s_{-i t})\)</span> and <span class="math inline">\(\hat d (s_{i t}, s_{-i t})\)</span> are optimal,</p>
+<ul>
+<li><p>All other choices <span class="math inline">\(\tilde a (s_{i t}, s_{-i t})\)</span> and <span class="math inline">\(\tilde d (s_{i t}, s_{-i t})\)</span></p></li>
+<li><p>At the true parameters <span class="math inline">\(\theta\)</span></p></li>
+<li><p>Should give a lower expected value <span class="math display">\[
+\mathbb E \Big[ \tilde V (s_{i t}, s_{-i t} ; \theta) \Big] \leq \mathbb E \Big[ V (s_{i t}, s_{-i t} ; \theta) \Big]
+\]</span></p></li>
+</ul></li>
+<li><p>So which are the true parameters?</p>
+<ul>
+<li><p>Those for which any deviation from the policy yields a lowe value</p></li>
+<li><p><strong>Objective function</strong>: minimize the violations <span class="math display">\[
+\hat{\theta}= \arg \min_{\theta} \sum_{\left(s_{i t}, s_{-i t}\right)} \sum_{(\tilde{a}, \tilde{d})} \Bigg[\min \bigg\lbrace \mathbb E \Big[ \tilde V (s_{i t}, s_{-i t} ; \theta) \Big] - \mathbb E \Big[ V (s_{i t}, s_{-i t} ; \theta) \Big], 0 \bigg\rbrace \Bigg]^{2}
+\]</span></p></li>
 </ul></li>
 </ul>
 </div>
-<div id="utility-specification-rewritten" class="section level3">
-<h3>Utility Specification, Rewritten</h3>
-<p>Rewrite</p>
-<p><span class="math display">\[
-\begin{align}
-u_{ij} &amp;= x_j \beta_i - \alpha p_j + \xi_j + \epsilon_{ij} = \newline
-&amp;= \delta_j + \nu_{ij}
-\end{align}
+<div id="comments" class="section level3">
+<h3>Comments</h3>
+<p><strong>Objective function</strong>: minimization of the violations for any other policy <span class="math display">\[
+\hat{\theta}= \arg \min_{\theta} \sum_{\left(s_{i t}, s_{-i t}\right)} \sum_{(\tilde{a}, \tilde{d})} \Bigg[\min \bigg\lbrace \mathbb E \Big[ \tilde V (s_{i t}, s_{-i t} ; \theta) \Big] - \mathbb E \Big[ V (s_{i t}, s_{-i t} ; \theta) \Big], 0 \bigg\rbrace \Bigg]^{2}
 \]</span></p>
-<p>where</p>
 <ul>
-<li><span class="math inline">\(\delta_j = x_j \beta_0 - \alpha p_j + \xi_j + \epsilon_{ij}\)</span>: mean utility of good <span class="math inline">\(j\)</span> in market <span class="math inline">\(t\)</span></li>
-<li><span class="math inline">\(\nu_{i j}=\sum_{k} x_{j t}^{k} \sigma^{k} \zeta_{i t}^{k}+\epsilon_{i j} \equiv x_{j} \tilde{\beta}_{i} + \epsilon_{i j}\)</span>
+<li><span class="math inline">\(\min \lbrace g(\cdot), 0 \rbrace\)</span> to pick only the violations
 <ul>
-<li>We split <span class="math inline">\(\beta_i\)</span> into its random (<span class="math inline">\(\tilde{\beta}_{i}\)</span>) and non-random (<span class="math inline">\(\beta_0\)</span>) part</li>
+<li>If inequality is respected, we can ignore</li>
+<li>Doesn’t matter by how much you respect the inequality</li>
+</ul></li>
+<li>Which perturbation <span class="math inline">\(\tilde a (s_{i t}, s_{-i t})\)</span> and <span class="math inline">\(\tilde d (s_{i t}, s_{-i t})\)</span> ?
+<ul>
+<li>In principle, any perturbation is ok</li>
+<li>But in practice, if we perturbe it too much, we can go too far off</li>
+<li>Tip 1: start with <em>very small perturbations</em></li>
+<li>Tip 2: use perturbation that sensibly affect the dynamics
+<ul>
+<li>E.g. exiting less in states with already low exit probability is probably irrelevant</li>
+</ul></li>
 </ul></li>
 </ul>
+</div>
+<div id="problems" class="section level3">
+<h3>Problems</h3>
+<ol style="list-style-type: decimal">
+<li>Computational <strong>curse of dimensionality</strong> is gone (in the state space)
+<ul>
+<li>But we have a curse of dimensionality in data</li>
+<li>Need a lot of markets because <strong>now 1 market is 1 observation</strong></li>
+</ul></li>
+<li><strong>Multiple equilibria</strong>??
+<ul>
+<li>We are basically assuming it away</li>
+<li>Estimating the CCPs in the first stage we assume that is the equilibrium tht is played in all markets at all times</li>
+<li>To run counterfactuals, we still need to solve the model</li>
+</ul></li>
+<li>Unobserved heterogeneity
+<ul>
+<li><span class="citation">Kasahara and Shimotsu (<a href="#ref-kasahara2009nonparametric" role="doc-biblioref">2009</a>)</span>: how to identify the (minimum) number of unobserved types</li>
+<li><span class="citation">Arcidiacono and Miller (<a href="#ref-arcidiacono2011conditional" role="doc-biblioref">2011</a>)</span>: how to use an EM algorithm for the 1st stage estimation with unobserved types, conditional on the number of types</li>
+<li><span class="citation">Berry and Compiani (<a href="#ref-berry2021empirical" role="doc-biblioref">2021</a>)</span>: instrumental variables approach, relying on observed states in the distant past</li>
+</ul></li>
+<li><strong>Non-stationarity</strong>
+<ul>
+<li>If we have a long time period, something fundamentally might have changed</li>
+</ul></li>
+</ol>
 </div>
 </div>
 <div id="references" class="section level2">
 <h2>References</h2>
 <hr />
 <div id="refs" class="references csl-bib-body hanging-indent">
-<div id="ref-berry1995automobile" class="csl-entry">
-Berry, Steven, James Levinsohn, and Ariel Pakes. 1995. <span>“Automobile Prices in Market Equilibrium.”</span> <em>Econometrica: Journal of the Econometric Society</em>, 841–90.
+<div id="ref-aguirregabiria2007sequential" class="csl-entry">
+Aguirregabiria, Victor, and Pedro Mira. 2007. <span>“Sequential Estimation of Dynamic Discrete Games.”</span> <em>Econometrica</em> 75 (1): 1–53.
+</div>
+<div id="ref-arcidiacono2011conditional" class="csl-entry">
+Arcidiacono, Peter, and Robert A Miller. 2011. <span>“Conditional Choice Probability Estimation of Dynamic Discrete Choice Models with Unobserved Heterogeneity.”</span> <em>Econometrica</em> 79 (6): 1823–67.
+</div>
+<div id="ref-bajari2007estimating" class="csl-entry">
+Bajari, Patrick, C Lanier Benkard, and Jonathan Levin. 2007. <span>“Estimating Dynamic Models of Imperfect Competition.”</span> <em>Econometrica</em> 75 (5): 1331–70.
+</div>
+<div id="ref-berry2021empirical" class="csl-entry">
+Berry, Steven T, and Giovanni Compiani. 2021. <span>“Empirical Models of Industry Dynamics with Endogenous Market Structure.”</span> <em>Annual Review of Economics</em> 13.
+</div>
+<div id="ref-besanko2010learning" class="csl-entry">
+Besanko, David, Ulrich Doraszelski, Yaroslav Kryukov, and Mark Satterthwaite. 2010. <span>“Learning-by-Doing, Organizational Forgetting, and Industry Dynamics.”</span> <em>Econometrica</em> 78 (2): 453–508.
+</div>
+<div id="ref-borkovsky2010user" class="csl-entry">
+Borkovsky, Ron N, Ulrich Doraszelski, and Yaroslav Kryukov. 2010. <span>“A User’s Guide to Solving Dynamic Stochastic Games Using the Homotopy Method.”</span> <em>Operations Research</em> 58 (4-part-2): 1116–32.
+</div>
+<div id="ref-collard2013demand" class="csl-entry">
+Collard-Wexler, Allan. 2013. <span>“Demand Fluctuations in the Ready-Mix Concrete Industry.”</span> <em>Econometrica</em> 81 (3): 1003–37.
+</div>
+<div id="ref-doraszelski2012avoiding" class="csl-entry">
+Doraszelski, Ulrich, and Kenneth L Judd. 2012. <span>“Avoiding the Curse of Dimensionality in Dynamic Stochastic Games.”</span> <em>Quantitative Economics</em> 3 (1): 53–93.
+</div>
+<div id="ref-doraszelski2019dynamic" class="csl-entry">
+———. 2019. <span>“Dynamic Stochastic Games with Random Moves.”</span> <em>Quantitative Marketing and Economics</em> 17 (1): 59–79.
+</div>
+<div id="ref-doraszelski2010computable" class="csl-entry">
+Doraszelski, Ulrich, and Mark Satterthwaite. 2010. <span>“Computable Markov-Perfect Industry Dynamics.”</span> <em>The RAND Journal of Economics</em> 41 (2): 215–43.
+</div>
+<div id="ref-egesdal2015estimating" class="csl-entry">
+Egesdal, Michael, Zhenyu Lai, and Che-Lin Su. 2015. <span>“Estimating Dynamic Discrete-Choice Games of Incomplete Information.”</span> <em>Quantitative Economics</em> 6 (3): 567–97.
+</div>
+<div id="ref-ericson1995markov" class="csl-entry">
+Ericson, Richard, and Ariel Pakes. 1995. <span>“Markov-Perfect Industry Dynamics: A Framework for Empirical Work.”</span> <em>The Review of Economic Studies</em> 62 (1): 53–82.
+</div>
+<div id="ref-farias2012approximate" class="csl-entry">
+Farias, Vivek, Denis Saure, and Gabriel Y Weintraub. 2012. <span>“An Approximate Dynamic Programming Approach to Solving Dynamic Oligopoly Models.”</span> <em>The RAND Journal of Economics</em> 43 (2): 253–82.
+</div>
+<div id="ref-fershtman2012dynamic" class="csl-entry">
+Fershtman, Chaim, and Ariel Pakes. 2012. <span>“Dynamic Games with Asymmetric Information: A Framework for Empirical Work.”</span> <em>The Quarterly Journal of Economics</em> 127 (4): 1611–61.
+</div>
+<div id="ref-hendel2006measuring" class="csl-entry">
+Hendel, Igal, and Aviv Nevo. 2006. <span>“Measuring the Implications of Sales and Consumer Inventory Behavior.”</span> <em>Econometrica</em> 74 (6): 1637–73.
+</div>
+<div id="ref-hotz1993conditional" class="csl-entry">
+Hotz, V Joseph, and Robert A Miller. 1993. <span>“Conditional Choice Probabilities and the Estimation of Dynamic Models.”</span> <em>The Review of Economic Studies</em> 60 (3): 497–529.
+</div>
+<div id="ref-igami2017estimating" class="csl-entry">
+Igami, Mitsuru. 2017. <span>“Estimating the Innovator’s Dilemma: Structural Analysis of Creative Destruction in the Hard Disk Drive Industry, 1981–1998.”</span> <em>Journal of Political Economy</em> 125 (3): 798–847.
+</div>
+<div id="ref-iskhakov2017endogenous" class="csl-entry">
+Iskhakov, Fedor, Thomas H Jørgensen, John Rust, and Bertel Schjerning. 2017. <span>“The Endogenous Grid Method for Discrete-Continuous Dynamic Choice Models with (or Without) Taste Shocks.”</span> <em>Quantitative Economics</em> 8 (2): 317–65.
+</div>
+<div id="ref-kasahara2009nonparametric" class="csl-entry">
+Kasahara, Hiroyuki, and Katsumi Shimotsu. 2009. <span>“Nonparametric Identification of Finite Mixture Models of Dynamic Discrete Choices.”</span> <em>Econometrica</em> 77 (1): 135–75.
+</div>
+<div id="ref-maskin1987theory" class="csl-entry">
+Maskin, Eric, and Jean Tirole. 1987. <span>“A Theory of Dynamic Oligopoly, III: Cournot Competition.”</span> <em>European Economic Review</em> 31 (4): 947–68.
+</div>
+<div id="ref-maskin1988theory" class="csl-entry">
+———. 1988. <span>“A Theory of Dynamic Oligopoly, II: Price Competition, Kinked Demand Curves, and Edgeworth Cycles.”</span> <em>Econometrica: Journal of the Econometric Society</em>, 571–99.
+</div>
+<div id="ref-pakes2001stochastic" class="csl-entry">
+Pakes, Ariel, and Paul McGuire. 2001. <span>“Stochastic Algorithms, Symmetric Markov Perfect Equilibrium, and the ‘Curse’of Dimensionality.”</span> <em>Econometrica</em> 69 (5): 1261–81.
+</div>
+<div id="ref-pakes2007simple" class="csl-entry">
+Pakes, Ariel, Michael Ostrovsky, and Steven Berry. 2007. <span>“Simple Estimators for the Parameters of Discrete Dynamic Games (with Entry/Exit Examples).”</span> <em>The RAND Journal of Economics</em> 38 (2): 373–99.
+</div>
+<div id="ref-pesendorfer2008asymptotic" class="csl-entry">
+Pesendorfer, Martin, and Philipp Schmidt-Dengler. 2008. <span>“Asymptotic Least Squares Estimators for Dynamic Games.”</span> <em>The Review of Economic Studies</em> 75 (3): 901–28.
+</div>
+<div id="ref-pesendorfer2010sequential" class="csl-entry">
+———. 2010. <span>“Sequential Estimation of Dynamic Discrete Games: A Comment.”</span> <em>Econometrica</em> 78 (2): 833–42.
+</div>
+<div id="ref-ryan2012costs" class="csl-entry">
+Ryan, Stephen P. 2012. <span>“The Costs of Environmental Regulation in a Concentrated Industry.”</span> <em>Econometrica</em> 80 (3): 1019–61.
+</div>
+<div id="ref-su2012constrained" class="csl-entry">
+Su, Che-Lin, and Kenneth L Judd. 2012. <span>“Constrained Optimization Approaches to Estimation of Structural Models.”</span> <em>Econometrica</em> 80 (5): 2213–30.
+</div>
+<div id="ref-weintraub2008markov" class="csl-entry">
+Weintraub, Gabriel Y, C Lanier Benkard, and Benjamin Van Roy. 2008. <span>“Markov Perfect Industry Dynamics with Many Firms.”</span> <em>Econometrica</em> 76 (6): 1375–1411.
 </div>
 </div>
 </div>

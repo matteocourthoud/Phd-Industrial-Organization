@@ -1,5 +1,5 @@
 ---
-title: "Demand"
+title: "Demand Estimation"
 author: "Matteo Courthoud"
 type: book
 weight: 2
@@ -40,6 +40,7 @@ Oligopoly Supply
 
     -   equilibrium: NE for each product/market
     
+
 Workhorse model: @berry1995automobile
 
 ### Cost Function
