@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Coding: Rust (1987)</title>
+  <title>Dynamic Games</title>
 
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="chrome=1">
@@ -20,7 +20,7 @@
     var SLIDE_CONFIG = {
       // Slide settings
       settings: {
-                title: 'Coding: Rust (1987)',
+                title: 'Dynamic Games',
                         useBuilds: true,
         usePrettify: true,
         enableSlideAreas: true,
@@ -3125,70 +3125,7 @@ slide:not(.current) .plotly.html-widget{
     div.column{display: inline-block; vertical-align: top; width: 50%;}
     div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
     ul.task-list{list-style: none;}
-            pre > code.sourceCode { white-space: pre; position: relative; }
-            pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
-            pre > code.sourceCode > span:empty { height: 1.2em; }
-            .sourceCode { overflow: visible; }
-            code.sourceCode > span { color: inherit; text-decoration: inherit; }
-            div.sourceCode { margin: 1em 0; }
-            pre.sourceCode { margin: 0; }
-            @media screen {
-            div.sourceCode { overflow: auto; }
-            }
-            @media print {
-            pre > code.sourceCode { white-space: pre-wrap; }
-            pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
-            }
-            pre.numberSource code
-              { counter-reset: source-line 0; }
-            pre.numberSource code > span
-              { position: relative; left: -4em; counter-increment: source-line; }
-            pre.numberSource code > span > a:first-child::before
-              { content: counter(source-line);
-                position: relative; left: -1em; text-align: right; vertical-align: baseline;
-                border: none; display: inline-block;
-                -webkit-touch-callout: none; -webkit-user-select: none;
-                -khtml-user-select: none; -moz-user-select: none;
-                -ms-user-select: none; user-select: none;
-                padding: 0 4px; width: 4em;
-                color: #aaaaaa;
-              }
-            pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
-            div.sourceCode
-              {   }
-            @media screen {
-            pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
-            }
-            code span.al { color: #ff0000; font-weight: bold; } /* Alert */
-            code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
-            code span.at { color: #7d9029; } /* Attribute */
-            code span.bn { color: #40a070; } /* BaseN */
-            code span.bu { } /* BuiltIn */
-            code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
-            code span.ch { color: #4070a0; } /* Char */
-            code span.cn { color: #880000; } /* Constant */
-            code span.co { color: #60a0b0; font-style: italic; } /* Comment */
-            code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
-            code span.do { color: #ba2121; font-style: italic; } /* Documentation */
-            code span.dt { color: #902000; } /* DataType */
-            code span.dv { color: #40a070; } /* DecVal */
-            code span.er { color: #ff0000; font-weight: bold; } /* Error */
-            code span.ex { } /* Extension */
-            code span.fl { color: #40a070; } /* Float */
-            code span.fu { color: #06287e; } /* Function */
-            code span.im { } /* Import */
-            code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
-            code span.kw { color: #007020; font-weight: bold; } /* Keyword */
-            code span.op { color: #666666; } /* Operator */
-            code span.ot { color: #007020; } /* Other */
-            code span.pp { color: #bc7a00; } /* Preprocessor */
-            code span.sc { color: #4070a0; } /* SpecialChar */
-            code span.ss { color: #bb6688; } /* SpecialString */
-            code span.st { color: #4070a0; } /* String */
-            code span.va { color: #19177c; } /* Variable */
-            code span.vs { color: #4070a0; } /* VerbatimString */
-            code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
-        
+            
   </style>
 
 
@@ -3208,276 +3145,534 @@ slide:not(.current) .plotly.html-widget{
           </hgroup>
   </slide>
 
-<slide class=""><hgroup><h2>Setting</h2></hgroup><article  id="setting" class="smaller ">
+<slide class="segue dark nobackground level2"><hgroup class = 'auto-fadein'><h2>Model</h2></hgroup><article  id="model" class="smaller ">
+
+</article></slide><slide class=""><hgroup><h2>Intro</h2></hgroup><article  id="intro" class="smaller ">
+
+<p>Setting: agents making <strong>strategic decisions</strong> in <strong>dynamic environments</strong>.</p>
 
 <ul>
-<li><p>An agent owns a fleet to buses</p></li>
-<li><p>Buses get old over time</p></li>
-<li><p>The older the bus is, the most costly it is to maintain</p></li>
-<li><p>The agent can decide to replace the bus engine with a new one, at a cost</p></li>
-<li><p><strong>Dynamic trade-off</strong></p>
+<li>Entry and exit: <span class="cite">Collard-Wexler (<a href='#ref-collard2013demand' title=''>2013</a>)</span></li>
+<li>Sunk costs: <span class="cite">Ryan (<a href='#ref-ryan2012costs' title=''>2012</a>)</span></li>
+<li>Innovation: <span class="cite">Igami (<a href='#ref-igami2017estimating' title=''>2017</a>)</span>
 
 <ul>
-<li><p>What is the best moment to replace the engine?</p></li>
-<li><p>You don’t want to replace an engine too early</p>
-
-<ul>
-<li>doesn’t change much</li>
+<li>(or whatever changes in response to investment)</li>
 </ul></li>
-<li><p>You don’t want to replace an engine too late</p>
+<li>Learning-by-doing</li>
+<li>Switching costs</li>
+<li>Stockpiling: <span class="cite">Hendel and Nevo (<a href='#ref-hendel2006measuring' title=''>2006</a>)</span></li>
+</ul>
+
+</article></slide><slide class=""><hgroup><h2>Simple Example</h2></hgroup><article  id="simple-example" class="smaller ">
+
+<p>Lousely taken from <span class="cite">Ericson and Pakes (<a href='#ref-ericson1995markov' title=''>1995</a>)</span></p>
 
 <ul>
-<li>avoid unnecessary maintenance costs</li>
+<li><p>Builds on <span class="cite">Maskin and Tirole (<a href='#ref-maskin1988theory' title=''>1988</a>)</span>, <span class="cite">Maskin and Tirole (<a href='#ref-maskin1988theory' title=''>1988</a>)</span>, <span class="cite">Maskin and Tirole (<a href='#ref-maskin1987theory' title=''>1987</a>)</span></p></li>
+<li><p>Firms invest to increase the future quality of their product</p></li>
+<li><p>State \(s_{it}\): quality of product \(i\) in period \(t\)</p></li>
+<li><p>Per period profits \[
+\pi ( s_{it}, s_{-it}, ; \theta^\pi)
+\] where</p>
+
+<ul>
+<li>\(s_{-it}\): state vector of all other firms in period \(t\)</li>
+<li>\(\theta^\pi\): parameters that govern static profits</li>
+</ul></li>
+<li><p>We can micro-fund profits with some demand and supply functions</p></li>
+</ul>
+
+</article></slide><slide class=""><hgroup><h2>Dynamic Decisions</h2></hgroup><article  id="dynamic-decisions" class="smaller ">
+
+<p>In each period firms have 3 choices (in order)</p>
+
+<ol>
+<li><p>If entrant, \(e_{it}\): whether to enter the market or not</p></li>
+<li><p>If incumbent, \(d_{it}\): whether to exit the market or not</p></li>
+<li><p>If incumbent, \(a_{it}\): investment</p>
+
+<ul>
+<li><p>Influences your state transition probability \(f\) \[
+s_{i, t+1} = f(s_{it}, a_{it}, \epsilon_{it} ; \theta^f)
+\] where</p>
+
+<ul>
+<li>\(\epsilon_{it}\): shock that is not known to the firm when making the decision
+
+<ul>
+<li>it does not need to be there</li>
+</ul></li>
+<li>\(\theta^f\): parameters that govern state transitions</li>
+</ul></li>
+<li><p>Example of transition \[
+s_{i, t+1} = \delta s_{it} + a_{it} + \epsilon_{it}
+\] I.e. depreciation of capital + investment and noise</p></li>
+</ul></li>
+</ol>
+
+</article></slide><slide class=""><hgroup><h2>Value Function</h2></hgroup><article  id="value-function" class="smaller ">
+
+<p>Belman Equation incumbent \(i\) at time \(t\) \[
+\begin{aligned}
+V (s_{i t}, s_{-i t} ; \theta) = &amp; \pi(s_{i t}, s_{-i t} ; \theta^{\pi}) + \max_{d_{i} \in \lbrace 0,1 \rbrace} 
+\Bigg\lbrace
+\begin{array}{c}
+\beta \phi \ ; \newline
+\max _{a_{i t} \geq 0} \Big\lbrace - a_{i t} + \beta \mathbb E \Big[V (s_{i, t+1}, s_{-i, t+1} \ ; ] \theta) \Big| s_{i t}, s_{-i t}, a_{i t} \Big] \Big\rbrace 
+\end{array}
+\Bigg\rbrace
+\end{aligned}
+\] where</p>
+
+<ul>
+<li>\(\beta \in (0,1)\): discount factor</li>
+<li>\(\phi\): exit scrap value</li>
+<li>\(a_{it} \in \mathbb R_+\): investment decision, in dollars</li>
+<li>\(d_{it} \in \lbrace 0,1 \rbrace\): exit decision</li>
+<li>The expectation \(\mathbb E\) is over
+
+<ul>
+<li>The shocks \(\epsilon_{it}\)</li>
+<li>Rivals future states \(s_{-i,t+1}\)</li>
+</ul></li>
+</ul>
+
+</article></slide><slide class=""><hgroup><h2>Entry</h2></hgroup><article  id="entry" class="smaller ">
+
+<p>We can also incorporate endogenous entry.</p>
+
+<ul>
+<li>One or more <strong>potential entrants</strong> exist outside the market</li>
+<li>They can pay an entry cost \(\kappa\) and enter the market at a quality state \(\bar s\)</li>
+</ul>
+
+<p>Value function \[
+V^{\text {e}} (s_{i t}, s_{-i t} ; \theta) = \max_{e \in \lbrace 0,1 \rbrace }
+\Bigg\lbrace
+\begin{array}{c}
+0 \ ; \newline
+-\kappa + \beta \mathbb E \Big[ V(\bar s, s_{-i, t+1} ; \theta) \Big| s_{t} \Big]
+\end{array}
+\Bigg\rbrace
+\] where</p>
+
+<ul>
+<li>\(e \in \lbrace 0,1 \rbrace\): entry decision</li>
+<li>\(\kappa\): entry cost</li>
+</ul>
+
+<p>Do we observe potential entrants?</p>
+
+<ul>
+<li><span class="cite">Igami (<a href='#ref-igami2017estimating' title=''>2017</a>)</span>: tech industry announce their entry</li>
+<li>Critique: not really potential entrants, they are half-way inside</li>
+</ul>
+
+</article></slide><slide class=""><hgroup><h2>Equilibrium</h2></hgroup><article  id="equilibrium" class="smaller ">
+
+<p>Equillibrium notion: <strong>Markow Perfect Equilibrium</strong> <span class="cite">(<a href='#ref-maskin1988theory' title=''>Maskin and Tirole 1988</a>)</span></p>
+
+<ul>
+<li><p>A set value, policy functions and transition probabilities \[
+\Big \lbrace \ V(\cdot), \ V^{e n t}(\cdot), \ d(\cdot), \ a(\cdot), \ e(\cdot), \ f(s_{-i, t+1} | s_{t}) \ \Big \rbrace
+\] such that</p>
+
+<ol>
+<li>\(V(\cdot), \ V^{e n t}(\cdot), \ d(\cdot), \ a(\cdot), \ e(\cdot)\) solve their respective equations <em>given</em> \(f(s_{-i, t+1} | s_{t})\)</li>
+<li>the transition probabilities \(f(s_{-i, t+1} | s_{t})\) are generated by the strategies \(d(\cdot), \ a(\cdot), \ e(\cdot)\)</li>
+</ol></li>
+</ul>
+
+<p>What is it basically?</p>
+
+<ul>
+<li>Nash Equilibrium in the policy functions</li>
+<li>What are we ruling out?
+
+<ul>
+<li>Strategies that depend on longer histories</li>
+<li>E.g. &ldquo;has anyone ever cheated in a cartel?&rdquo;</li>
+</ul></li>
+</ul>
+
+</article></slide><slide class=""><hgroup><h2>Solving the model</h2></hgroup><article  id="solving-the-model" class="smaller ">
+
+<p>Numerically!</p>
+
+<ol>
+<li>Given parameter values \(\theta\)</li>
+<li>Start with a guess for the value and policy functions</li>
+<li>They will imply some transition probabilities</li>
+<li>That will imply some new policies and so on…</li>
+<li>… until what?</li>
+</ol>
+
+<p><strong>Issues</strong></p>
+
+<ul>
+<li>No guarantee of convergence
+
+<ul>
+<li><span class="cite">Doraszelski and Satterthwaite (<a href='#ref-doraszelski2010computable' title=''>2010</a>)</span>: prove existence of MPE with random costs/scrap values</li>
+<li>The BR iteration can never find mixed-strategy equilibria</li>
+</ul></li>
+<li>Multiple equilibria issues</li>
+<li>Curse of dimensionality (computational issue, not conceptual)</li>
+</ul>
+
+</article></slide><slide class=""><hgroup><h2>Multiple Equilibria</h2></hgroup><article  id="multiple-equilibria" class="smaller ">
+
+<ul>
+<li><span class="cite">Besanko et al. (<a href='#ref-besanko2010learning' title=''>2010</a>)</span> and <span class="cite">Borkovsky, Doraszelski, and Kryukov (<a href='#ref-borkovsky2010user' title=''>2010</a>)</span>: homotopy method
+
+<ul>
+<li>can find some equilibria</li>
+<li>not all</li>
+<li>complicated to implement</li>
+</ul></li>
+<li><span class="cite">Iskhakov et al. (<a href='#ref-iskhakov2017endogenous' title=''>2017</a>)</span>: grid method
+
+<ul>
+<li>can find all equilibria</li>
+<li>but for very specific class of dynamic games</li>
+<li>must always proceed &ldquo;forward&rdquo;
+
+<ul>
+<li>e.g. either entry or exit but not both</li>
+</ul></li>
+</ul></li>
+<li><span class="cite">Pesendorfer and Schmidt-Dengler (<a href='#ref-pesendorfer2010sequential' title=''>2010</a>)</span>: the BR iteration cannot find all possible equilibria, because some equilibria are not Lyapunov-stable, which means you cannot find one unless you start your numerical search from the exact solution</li>
+<li><span class="cite">Su and Judd (<a href='#ref-su2012constrained' title=''>2012</a>)</span> and <span class="cite">Egesdal, Lai, and Su (<a href='#ref-egesdal2015estimating' title=''>2015</a>)</span>: show this point numerically, by using their proposed Mathematical Programming with Equilibrium Constraints (MPEC) approach.</li>
+</ul>
+
+</article></slide><slide class=""><hgroup><h2>Curse of Dimensionality</h2></hgroup><article  id="curse-of-dimensionality" class="smaller ">
+
+<p>Two potential solutions:</p>
+
+<ol>
+<li><strong>Computational</strong>: approximate the equilibrium
+
+<ul>
+<li><span class="cite">Doraszelski and Judd (<a href='#ref-doraszelski2019dynamic' title=''>2019</a>)</span>: games with random moves</li>
+<li><span class="cite">Farias, Saure, and Weintraub (<a href='#ref-farias2012approximate' title=''>2012</a>)</span>: solve the global problem approximately</li>
+</ul></li>
+<li><strong>Conceptual</strong>: define another game
+
+<ul>
+<li><span class="cite">Weintraub, Benkard, and Van Roy (<a href='#ref-weintraub2008markov' title=''>2008</a>)</span>: oblivious equilibrium</li>
+<li><span class="cite">Pakes and McGuire (<a href='#ref-pakes2001stochastic' title=''>2001</a>)</span> and <span class="cite">Fershtman and Pakes (<a href='#ref-fershtman2012dynamic' title=''>2012</a>)</span>: experience-based equilibrium</li>
+<li><span class="cite">Doraszelski and Judd (<a href='#ref-doraszelski2012avoiding' title=''>2012</a>)</span>: games in continuous time</li>
+</ul></li>
+</ol>
+
+</article></slide><slide class="segue dark nobackground level2"><hgroup class = 'auto-fadein'><h2>Estimation - Bajari, Benkard, Levin (2008)</h2></hgroup><article  id="estimation---bajari-benkard-levin-2008" class="smaller ">
+
+</article></slide><slide class=""><hgroup><h2>Methods</h2></hgroup><article  id="methods" class="smaller ">
+
+<p>We want to estimate 3 sets of <strong>parameters</strong>:</p>
+
+<ul>
+<li>\(\theta^\pi\): parameterizes period profit function \(\pi()\)</li>
+<li>\(\theta^f\): parameterizes state transition function \(f()\)</li>
+<li>\(\theta^{ddc}\): scrap value \(\phi\) and entry cost \(\kappa\)</li>
+</ul>
+
+<p>Generally 2 <strong>approaches</strong></p>
+
+<ol>
+<li>Full solution
+
+<ul>
+<li>Impractical</li>
+</ul></li>
+<li><span class="cite">Hotz and Miller (<a href='#ref-hotz1993conditional' title=''>1993</a>)</span> CCP inversion
+
+<ul>
+<li><span class="cite">Aguirregabiria and Mira (<a href='#ref-aguirregabiria2007sequential' title=''>2007</a>)</span></li>
+<li><span class="cite">Bajari, Benkard, and Levin (<a href='#ref-bajari2007estimating' title=''>2007</a>)</span></li>
+<li><span class="cite">Pakes, Ostrovsky, and Berry (<a href='#ref-pakes2007simple' title=''>2007</a>)</span></li>
+<li><span class="cite">Pesendorfer and Schmidt-Dengler (<a href='#ref-pesendorfer2008asymptotic' title=''>2008</a>)</span></li>
+</ul></li>
+</ol>
+
+</article></slide><slide class=""><hgroup><h2>BBL: First Stage</h2></hgroup><article  id="bbl-first-stage" class="smaller ">
+
+<p>First stage: estimate the policy functions (CCP) non-parametrically</p>
+
+<ul>
+<li>Directly retrievable from data
+
+<ul>
+<li>Entry decisions \(\hat e (s_{i t}, s_{-i t})\)</li>
+<li>Exit decisions \(\hat d (s_{i t}, s_{-i t})\)</li>
+<li>Investment decisions \(\hat a (s_{i t}, s_{-i t})\)</li>
+<li>Transition probabilities \(\hat f (s_{i t}, s_{-i t} ; \theta^f)\)</li>
+</ul></li>
+<li>Conditional on having enough data
+
+<ul>
+<li><strong>Note</strong>: need to estimate choice probabilities, conditional on each state</li>
+<li>Problem with many states but especially with many players
+
+<ul>
+<li>Curse of dimensionality</li>
+</ul></li>
+<li>Problem especially for transition probabilities: state \(\times\) state</li>
+</ul></li>
+<li>Important to do it non-parametrically: parametric assumptions would contradict the model for the estimation of value/polify functions</li>
+</ul>
+
+</article></slide><slide class=""><hgroup><h2>BBL: Second Stage</h2></hgroup><article  id="bbl-second-stage" class="smaller ">
+
+<p>We now have the policy functions, CCPs and state transition probabilities</p>
+
+<ul>
+<li>We can use them together to simulate <strong>histories</strong></li>
+<li>If we have a candidate value of \(\theta^\pi\), we can compute static payoffs</li>
+<li>Simulated history + static payoffs = simualted value function</li>
+<li>We can average over may simulated value functions to get an <strong>expected value function</strong></li>
+</ul>
+
+<p>What is the objective function?</p>
+
+<ul>
+<li>Potentially many options</li>
+<li>We want parameters that give firms the highest values, given those strategies (CCPs)</li>
+</ul>
+
+</article></slide><slide class=""><hgroup><h2>In Practice</h2></hgroup><article  id="in-practice" class="smaller ">
+
+<p>Take a parameter \(\theta\).</p>
+
+<p>For many simulations do:</p>
+
+<ul>
+<li>Initialize firms value to zero</li>
+<li>Fot \(t=0 ... \infty\) do
+
+<ul>
+<li>For each state do:
+
+<ul>
+<li>For each firm do:
+
+<ul>
+<li>Compute static profits \(\pi(s_{i t}, s_{-i t} ; \theta^{\pi})\)</li>
+<li>Compute firms actions using \(\hat a (s_{i t}, s_{-i t})\) and \(\hat d (s_{i t}, s_{-i t})\)</li>
+<li>If firm exits, \(\hat d = 0\), end</li>
+<li>If not, \(\hat d = 1\), subtract \(a_{i,t}\) from profits</li>
+<li>Use \(\hat f (s_{i t}, s_{-i t} ; \theta^f)\) to <em>simulate</em> next state for firm \(i\)</li>
+<li>Add discounted profits to the value function \(\beta^t \pi(s_{i t}, s_{-i t} ; \theta^{\pi})\)</li>
+</ul></li>
+<li>Use the next state, \((s_{i t+1}, s_{-i t+1})\) as current state for the next iteration</li>
 </ul></li>
 </ul></li>
 </ul>
 
-</article></slide><slide class=""><hgroup><h2>State</h2></hgroup><article  id="state" class="smaller ">
+<p>Then average all the value functions together to obtain an <strong>expected value function</strong> \(\mathbb E \Big[ V (s_{i t}, s_{-i t} ; \theta) \Big]\)</p>
 
 <ul>
-<li><p><strong>State</strong>: mileage of the bus</p>
+<li><strong>Note</strong>: advantage of simulations: can be parallelized</li>
+</ul>
 
-<p>\[x_t \in \lbrace 1, ..., 10 \rbrace\]</p></li>
-<li><p><strong>State transitions</strong>: with probability \(\lambda\) the mileage of the bus increases</p>
+</article></slide><slide class=""><hgroup><h2>Objective Function</h2></hgroup><article  id="objective-function" class="smaller ">
 
-<p>\[
-  x_{t+1} = \begin{cases}
-  \min \lbrace x_t + 1,10 \rbrace  &amp; \text { with probability } \lambda \newline 
-  x_t &amp; \text { with probability } 1 - \lambda
-  \end{cases}
+<p><strong>Idea</strong></p>
+
+<ul>
+<li><p>If the observed choices \(\hat a (s_{i t}, s_{-i t})\) and \(\hat d (s_{i t}, s_{-i t})\) are optimal,</p>
+
+<ul>
+<li><p>All other choices \(\tilde a (s_{i t}, s_{-i t})\) and \(\tilde d (s_{i t}, s_{-i t})\)</p></li>
+<li><p>At the true parameters \(\theta\)</p></li>
+<li><p>Should give a lower expected value \[
+\mathbb E \Big[ \tilde V (s_{i t}, s_{-i t} ; \theta) \Big] \leq \mathbb E \Big[ V (s_{i t}, s_{-i t} ; \theta) \Big]
+\]</p></li>
+</ul></li>
+<li><p>So which are the true parameters?</p>
+
+<ul>
+<li><p>Those for which any deviation from the policy yields a lowe value</p></li>
+<li><p><strong>Objective function</strong>: minimize the violations \[
+\hat{\theta}= \arg \min_{\theta} \sum_{\left(s_{i t}, s_{-i t}\right)} \sum_{(\tilde{a}, \tilde{d})} \Bigg[\min \bigg\lbrace \mathbb E \Big[ \tilde V (s_{i t}, s_{-i t} ; \theta) \Big] - \mathbb E \Big[ V (s_{i t}, s_{-i t} ; \theta) \Big], 0 \bigg\rbrace \Bigg]^{2}
+\]</p></li>
+</ul></li>
+</ul>
+
+</article></slide><slide class=""><hgroup><h2>Comments</h2></hgroup><article  id="comments" class="smaller ">
+
+<p><strong>Objective function</strong>: minimization of the violations for any other policy \[
+\hat{\theta}= \arg \min_{\theta} \sum_{\left(s_{i t}, s_{-i t}\right)} \sum_{(\tilde{a}, \tilde{d})} \Bigg[\min \bigg\lbrace \mathbb E \Big[ \tilde V (s_{i t}, s_{-i t} ; \theta) \Big] - \mathbb E \Big[ V (s_{i t}, s_{-i t} ; \theta) \Big], 0 \bigg\rbrace \Bigg]^{2}
 \]</p>
 
-<p>Note that \(\lambda\) does not depend on the value of the state</p></li>
-</ul>
-
-</article></slide><slide class=""><hgroup><h2>Actions</h2></hgroup><article  id="actions" class="smaller ">
+<ul>
+<li>\(\min \lbrace g(\cdot), 0 \rbrace\) to pick only the violations
 
 <ul>
-<li><p><strong>Action</strong>: replacement decision \[
-  i_t \in \lbrace0, 1 \rbrace
-  \]</p></li>
-<li><p><strong>Payoffs</strong></p>
+<li>If inequality is respected, we can ignore</li>
+<li>Doesn’t matter by how much you respect the inequality</li>
+</ul></li>
+<li>Which perturbation \(\tilde a (s_{i t}, s_{-i t})\) and \(\tilde d (s_{i t}, s_{-i t})\) ?
 
 <ul>
-<li><p>Per-period maintenance cost</p></li>
-<li><p>Cost of replacement \[
- u\left(x_{t}, i_{t}, \epsilon_{1 t}, \epsilon_{2 t} ; \theta\right)= 
- \begin{cases}
- -\theta_{1} x_{t}-\theta_{2} x_{t}^{2}+\epsilon_{0 t}, &amp; \text { if } i_{t}=0 \newline 
- -\theta_{3}+\epsilon_{1 t}, &amp; \text { if } i_{t}=1
- \end{cases}
- \]</p></li>
+<li>In principle, any perturbation is ok</li>
+<li>But in practice, if we perturbe it too much, we can go too far off</li>
+<li>Tip 1: start with <em>very small perturbations</em></li>
+<li>Tip 2: use perturbation that sensibly affect the dynamics
+
+<ul>
+<li>E.g. exiting less in states with already low exit probability is probably irrelevant</li>
+</ul></li>
 </ul></li>
 </ul>
 
-</article></slide><slide class=""><hgroup><h2>Simulation</h2></hgroup><article  id="simulation" class="smaller ">
+</article></slide><slide class=""><hgroup><h2>Problems</h2></hgroup><article  id="problems" class="smaller ">
+
+<ol>
+<li>Computational <strong>curse of dimensionality</strong> is gone (in the state space)
 
 <ul>
-<li><p>Start with an initial value function \(V(x_t)=0\)</p></li>
-<li><p>Compute expected value w.r.t. \(\lambda\)</p>
-
-<p>\[
-W(x_t) = \begin{cases}
--\theta_1 x_t - \theta_2 x_t^2 + \beta \Big[(1-\lambda) V(x_t) + \lambda V(\min \lbracex_t+1,10 \rbrace) \Big] , &amp; \text { if } i_t=0 \newline
--\theta_3 + \beta \Big[(1-\lambda) V(0) + \lambda V(1) \Big] , &amp; \text { if } i_t=1
-\end{cases}
-\]</p></li>
-<li><p>Compute the new value of V \[
-V&#39;(x_t) = \log \Big( e^{W(x_t|i_t=0)} + e^{W(x_t|i_t=1)} \Big)
-\]</p></li>
-<li><p>Repeat until convergence</p></li>
-</ul>
-
-</article></slide><slide class=""><hgroup><h2>Code</h2></hgroup><article  id="code" class="smaller ">
-
-<p>First we set the parameter values.</p>
-
-<pre class = 'prettyprint lang-julia'>## Set parameters
-theta = [0.13; -0.004; 3.1];
-lambda = 0.82;
-beta = 0.95;</pre>
-
-<p>Then we set the state space.</p>
-
-<pre class = 'prettyprint lang-julia'>## State space
-x = 0:10;
-
-## Index for lambda and for investment
-index_lambda = Int8[1:11 [2:11;11]];
-index_i = Int8[1:11 ones(11,1)];</pre>
-
-</article></slide><slide class=""><hgroup><h2>Code</h2></hgroup><article  id="code-1" class="smaller ">
-
-<p>We are now ready to set up the value function iteration.</p>
-
-<pre class = 'prettyprint lang-julia'>function compute_V(theta, lambda, beta)
-    dist = 100;
-    iter = 0;
-    V = zeros(11);
-    V_bar = V;
-    U = [- theta[1]*x - theta[2]*x.^2 (-theta[3])*ones(11,1)]
-
-    ## Iterate the Bellman equation until convergence
-    while dist&gt;1e-20
-
-        ## Expected future values (mean over possible shocks)
-        Exp_V = V[index_lambda] * [1-lambda; lambda];
-        V_bar = beta * (U + Exp_V[index_i])
-        V_new = log.(sum(exp.(V_bar), dims=2))
-
-        ## Check distance for convergence
-        dist = max(abs.(V_new - V)...);
-        iter += 1;
-
-        ## Update value function
-        V = V_new 
-    end
-    return V, V_bar, iter
-end;</pre>
-
-</article></slide><slide class=""><hgroup><h2>Code</h2></hgroup><article  id="code-2" class="smaller ">
-
-<p>We can now solve for the value function.</p>
-
-<pre class = 'prettyprint lang-julia'>V, V_bar, iter = compute_V(theta, lambda, beta);
-print(&quot;Converged after &quot;, iter, &quot; iterations!&quot;)</pre>
-
-<pre >## Converged after 680 iterations!</pre>
-
-</article></slide><slide class=""><hgroup><h2>DGP</h2></hgroup><article  id="dgp" class="smaller ">
-
-<p>Now that we know how to compute the equilibrium, we can simulate the data.</p>
-
-<pre class = 'prettyprint lang-julia'>## Draw shocks
-k = 100000;
-e = rand(Gumbel(0,1), k, 2);
-
-## Draw states
-x_t = rand(x.+1,k);
-
-## Compute investment decisions
-I = ((V_bar[x_t,:] + e) * [-1;1]) .&gt; 0;
-
-## Compute next state
-x_t1 = min.(x_t .* (I.==0) + (rand(Uniform(0,1),k).&lt;lambda), 10);
-
-print(&quot;we observe &quot;, sum(I), &quot; investment decisions in &quot;, k, &quot; observations&quot;)</pre>
-
-<pre >## we observe 22160 investment decisions in 100000 observations</pre>
-
-</article></slide><slide class=""><hgroup><h2>Estimation - Lambda</h2></hgroup><article  id="estimation---lambda" class="smaller ">
+<li>But we have a curse of dimensionality in data</li>
+<li>Need a lot of markets because <strong>now 1 market is 1 observation</strong></li>
+</ul></li>
+<li><strong>Multiple equilibria</strong>??
 
 <ul>
-<li><p>First we can estimate the value of lambda as the mean</p>
-
-<p>\[
-\hat \lambda = \mathbb E_n \Big[ (x_{t+1}-x_t) \mid i_{t}=0 \wedge x_{t}&lt;10 \Big]
-\]</p></li>
-</ul>
-
-<pre class = 'prettyprint lang-julia'>## Estimate lambda
-delta = x_t1 - x_t;
-lambda_hat = mean(delta[(I.==0) .&amp; (x_t.&lt;10)]);
-
-print(&quot;Estimated lambda: &quot;, lambda_hat)</pre>
-
-<pre >## Estimated lambda: 0.8181022250400024</pre>
-
-<pre class = 'prettyprint lang-julia'>print(&quot;True lambda:      &quot;, lambda)</pre>
-
-<pre >## True lambda:      0.82</pre>
-
-</article></slide><slide class=""><hgroup><h2>Estimation - theta</h2></hgroup><article  id="estimation---theta" class="smaller ">
+<li>We are basically assuming it away</li>
+<li>Estimating the CCPs in the first stage we assume that is the equilibrium tht is played in all markets at all times</li>
+<li>To run counterfactuals, we still need to solve the model</li>
+</ul></li>
+<li>Unobserved heterogeneity
 
 <ul>
-<li><p>Take a parameter guess \(\theta_0\)</p></li>
-<li><p>Compute the corresponding value function \(V(x_t | \hat \lambda, \theta_0)\)</p></li>
-<li><p>Compute the implied choice probabilities</p></li>
-<li><p>Compute the likelihood</p>
+<li><span class="cite">Kasahara and Shimotsu (<a href='#ref-kasahara2009nonparametric' title=''>2009</a>)</span>: how to identify the (minimum) number of unobserved types</li>
+<li><span class="cite">Arcidiacono and Miller (<a href='#ref-arcidiacono2011conditional' title=''>2011</a>)</span>: how to use an EM algorithm for the 1st stage estimation with unobserved types, conditional on the number of types</li>
+<li><span class="cite">Berry and Compiani (<a href='#ref-berry2021empirical' title=''>2021</a>)</span>: instrumental variables approach, relying on observed states in the distant past</li>
+</ul></li>
+<li><strong>Non-stationarity</strong>
 
-<p>\[
-\mathcal{L}(\theta)=\prod_{t=1}^{T}\left(\hat{\operatorname{Pr}}\left(i=1 \mid x_{t}, \theta\right) \mathbb{1}\left(i_{t}=1\right)+\left(1-\hat{\operatorname{Pr}}\left(i=0 \mid x_{t}, \theta\right)\right) \mathbb{1}\left(i_{t}=0\right)\right)
-\]</p></li>
-<li><p>Repeat the above to find a minimum of the likelihood function</p></li>
-</ul>
-
-</article></slide><slide class=""><hgroup><h2>Code</h2></hgroup><article  id="code-3" class="smaller ">
-
-<pre class = 'prettyprint lang-julia'>function logL(theta0, lambda_hat, beta, x_t)
-    ## Compute value
-    V, V_bar = compute_V(theta0, lambda_hat, beta)
-    
-    ## Implied choice probabilities
-    pr_I = exp.(V_bar[:,2]) ./ (exp.(V_bar[:,1]) + exp.(V_bar[:,2]))
-    
-    ## Likelihood
-    L = sum(log.(pr_I[x_t[I.==1]])) + sum(log.(1 .- pr_I[x_t[I.==0]]))
-    return L
-end;</pre>
-
-<p>We can check the likelihood at the true value:</p>
-
-<pre class = 'prettyprint lang-julia'>print(&quot;The likelihood at the true values is &quot;, logL(theta, lambda, beta, x_t))</pre>
-
-<pre >## The likelihood at the true values is -49192.80797843884</pre>
-
-</article></slide><slide class=""><hgroup><h2>Estimating sigma</h2></hgroup><article  id="estimating-sigma" class="smaller ">
-
-<pre class = 'prettyprint lang-julia'>## Select starting values
-theta0 = Float64[0,0,0];
-
-## Optimize
-opt = optimize((x -&gt; -logL(x, lambda_hat, beta, x_t)), theta0);
-print(&quot;Estimated thetas: &quot;, opt.minimizer)</pre>
-
-<pre >## Estimated thetas: [0.12700125098162157, -0.003667159134772176, 3.106854635707827]</pre>
-
-<pre class = 'prettyprint lang-julia'>print(&quot;True thetas:      &quot;, theta)</pre>
-
-<pre >## True thetas:      [0.13, -0.004, 3.1]</pre>
-
-</article></slide><slide class=""><hgroup><h2>Optimization Info</h2></hgroup><article  id="optimization-info" class="smaller ">
-
-<p>We can also get info on the optimum</p>
-
-<pre class = 'prettyprint lang-julia'>opt</pre>
-
-<pre >##  * Status: success
-## 
-##  * Candidate solution
-##     Final objective value:     4.919216e+04
-## 
-##  * Found with
-##     Algorithm:     Nelder-Mead
-## 
-##  * Convergence measures
-##     √(Σ(yᵢ-ȳ)²)/n ≤ 1.0e-08
-## 
-##  * Work counters
-##     Seconds run:   1  (vs limit Inf)
-##     Iterations:    153
-##     f(x) calls:    280</pre>
-
-</article></slide><slide class=""><hgroup><h2>Starting Values</h2></hgroup><article  id="starting-values" class="smaller ">
-
-<p>Starting values are important!</p>
-
-<pre class = 'prettyprint lang-julia'>## Not all initial values are equally good
-theta0 = Float64[1,1,1];
-
-## Optimize
-opt = optimize((x -&gt; -logL(x, lambda_hat, beta, x_t)), theta0);
-print(&quot;Estimated thetas: &quot;, opt.minimizer)</pre>
-
-<pre >## Estimated thetas: [1.0, 1.0, 1.0]</pre>
-
-<pre class = 'prettyprint lang-julia'>print(&quot;True thetas:      &quot;, theta)</pre>
-
-<pre >## True thetas:      [0.13, -0.004, 3.1]</pre>
+<ul>
+<li>If we have a long time period, something fundamentally might have changed</li>
+</ul></li>
+</ol>
 
 </article></slide><slide class="segue dark nobackground level2"><hgroup class = 'auto-fadein'><h2>References</h2></hgroup><article  id="references" class="smaller ">
 
-</article></slide><slide class="segue dark nobackground level2"><hgroup class = 'auto-fadein'><h2></h2></hgroup><article  class="smaller"></article></slide>
+</article></slide><slide class="segue dark nobackground level2"><hgroup class = 'auto-fadein'><h2></h2></hgroup><article  class="smaller">
+
+<div id="refs" class="references csl-bib-body hanging-indent">
+<div id="ref-aguirregabiria2007sequential" class="csl-entry">
+<p>Aguirregabiria, Victor, and Pedro Mira. 2007. <span>
+“Sequential Estimation of Dynamic Discrete Games.”</span> <em>Econometrica</em> 75 (1): 1–53.</p></div>
+
+<div id="ref-arcidiacono2011conditional" class="csl-entry">
+<p>Arcidiacono, Peter, and Robert A Miller. 2011. <span>
+“Conditional Choice Probability Estimation of Dynamic Discrete Choice Models with Unobserved Heterogeneity.”</span> <em>Econometrica</em> 79 (6): 1823–67.</p></div>
+
+<div id="ref-bajari2007estimating" class="csl-entry">
+<p>Bajari, Patrick, C Lanier Benkard, and Jonathan Levin. 2007. <span>
+“Estimating Dynamic Models of Imperfect Competition.”</span> <em>Econometrica</em> 75 (5): 1331–70.</p></div>
+
+<div id="ref-berry2021empirical" class="csl-entry">
+<p>Berry, Steven T, and Giovanni Compiani. 2021. <span>
+“Empirical Models of Industry Dynamics with Endogenous Market Structure.”</span> <em>Annual Review of Economics</em> 13.</p></div>
+
+<div id="ref-besanko2010learning" class="csl-entry">
+<p>Besanko, David, Ulrich Doraszelski, Yaroslav Kryukov, and Mark Satterthwaite. 2010. <span>
+“Learning-by-Doing, Organizational Forgetting, and Industry Dynamics.”</span> <em>Econometrica</em> 78 (2): 453–508.</p></div>
+
+<div id="ref-borkovsky2010user" class="csl-entry">
+<p>Borkovsky, Ron N, Ulrich Doraszelski, and Yaroslav Kryukov. 2010. <span>
+“A User’s Guide to Solving Dynamic Stochastic Games Using the Homotopy Method.”</span> <em>Operations Research</em> 58 (4-part-2): 1116–32.</p></div>
+
+<div id="ref-collard2013demand" class="csl-entry">
+<p>Collard-Wexler, Allan. 2013. <span>
+“Demand Fluctuations in the Ready-Mix Concrete Industry.”</span> <em>Econometrica</em> 81 (3): 1003–37.</p></div>
+
+<div id="ref-doraszelski2012avoiding" class="csl-entry">
+<p>Doraszelski, Ulrich, and Kenneth L Judd. 2012. <span>
+“Avoiding the Curse of Dimensionality in Dynamic Stochastic Games.”</span> <em>Quantitative Economics</em> 3 (1): 53–93.</p></div>
+
+<div id="ref-doraszelski2019dynamic" class="csl-entry">
+<p>———. 2019. <span>
+“Dynamic Stochastic Games with Random Moves.”</span> <em>Quantitative Marketing and Economics</em> 17 (1): 59–79.</p></div>
+
+<div id="ref-doraszelski2010computable" class="csl-entry">
+<p>Doraszelski, Ulrich, and Mark Satterthwaite. 2010. <span>
+“Computable Markov-Perfect Industry Dynamics.”</span> <em>The RAND Journal of Economics</em> 41 (2): 215–43.</p></div>
+
+<div id="ref-egesdal2015estimating" class="csl-entry">
+<p>Egesdal, Michael, Zhenyu Lai, and Che-Lin Su. 2015. <span>
+“Estimating Dynamic Discrete-Choice Games of Incomplete Information.”</span> <em>Quantitative Economics</em> 6 (3): 567–97.</p></div>
+
+<div id="ref-ericson1995markov" class="csl-entry">
+<p>Ericson, Richard, and Ariel Pakes. 1995. <span>
+“Markov-Perfect Industry Dynamics: A Framework for Empirical Work.”</span> <em>The Review of Economic Studies</em> 62 (1): 53–82.</p></div>
+
+<div id="ref-farias2012approximate" class="csl-entry">
+<p>Farias, Vivek, Denis Saure, and Gabriel Y Weintraub. 2012. <span>
+“An Approximate Dynamic Programming Approach to Solving Dynamic Oligopoly Models.”</span> <em>The RAND Journal of Economics</em> 43 (2): 253–82.</p></div>
+
+<div id="ref-fershtman2012dynamic" class="csl-entry">
+<p>Fershtman, Chaim, and Ariel Pakes. 2012. <span>
+“Dynamic Games with Asymmetric Information: A Framework for Empirical Work.”</span> <em>The Quarterly Journal of Economics</em> 127 (4): 1611–61.</p></div>
+
+<div id="ref-hendel2006measuring" class="csl-entry">
+<p>Hendel, Igal, and Aviv Nevo. 2006. <span>
+“Measuring the Implications of Sales and Consumer Inventory Behavior.”</span> <em>Econometrica</em> 74 (6): 1637–73.</p></div>
+
+<div id="ref-hotz1993conditional" class="csl-entry">
+<p>Hotz, V Joseph, and Robert A Miller. 1993. <span>
+“Conditional Choice Probabilities and the Estimation of Dynamic Models.”</span> <em>The Review of Economic Studies</em> 60 (3): 497–529.</p></div>
+
+<div id="ref-igami2017estimating" class="csl-entry">
+<p>Igami, Mitsuru. 2017. <span>
+“Estimating the Innovator’s Dilemma: Structural Analysis of Creative Destruction in the Hard Disk Drive Industry, 1981–1998.”</span> <em>Journal of Political Economy</em> 125 (3): 798–847.</p></div>
+
+<div id="ref-iskhakov2017endogenous" class="csl-entry">
+<p>Iskhakov, Fedor, Thomas H Jørgensen, John Rust, and Bertel Schjerning. 2017. <span>
+“The Endogenous Grid Method for Discrete-Continuous Dynamic Choice Models with (or Without) Taste Shocks.”</span> <em>Quantitative Economics</em> 8 (2): 317–65.</p></div>
+
+<div id="ref-kasahara2009nonparametric" class="csl-entry">
+<p>Kasahara, Hiroyuki, and Katsumi Shimotsu. 2009. <span>
+“Nonparametric Identification of Finite Mixture Models of Dynamic Discrete Choices.”</span> <em>Econometrica</em> 77 (1): 135–75.</p></div>
+
+<div id="ref-maskin1987theory" class="csl-entry">
+<p>Maskin, Eric, and Jean Tirole. 1987. <span>
+“A Theory of Dynamic Oligopoly, III: Cournot Competition.”</span> <em>European Economic Review</em> 31 (4): 947–68.</p></div>
+
+<div id="ref-maskin1988theory" class="csl-entry">
+<p>———. 1988. <span>
+“A Theory of Dynamic Oligopoly, II: Price Competition, Kinked Demand Curves, and Edgeworth Cycles.”</span> <em>Econometrica: Journal of the Econometric Society</em>, 571–99.</p></div>
+
+<div id="ref-pakes2001stochastic" class="csl-entry">
+<p>Pakes, Ariel, and Paul McGuire. 2001. <span>
+“Stochastic Algorithms, Symmetric Markov Perfect Equilibrium, and the ‘Curse’of Dimensionality.”</span> <em>Econometrica</em> 69 (5): 1261–81.</p></div>
+
+<div id="ref-pakes2007simple" class="csl-entry">
+<p>Pakes, Ariel, Michael Ostrovsky, and Steven Berry. 2007. <span>
+“Simple Estimators for the Parameters of Discrete Dynamic Games (with Entry/Exit Examples).”</span> <em>The RAND Journal of Economics</em> 38 (2): 373–99.</p></div>
+
+<div id="ref-pesendorfer2008asymptotic" class="csl-entry">
+<p>Pesendorfer, Martin, and Philipp Schmidt-Dengler. 2008. <span>
+“Asymptotic Least Squares Estimators for Dynamic Games.”</span> <em>The Review of Economic Studies</em> 75 (3): 901–28.</p></div>
+
+<div id="ref-pesendorfer2010sequential" class="csl-entry">
+<p>———. 2010. <span>
+“Sequential Estimation of Dynamic Discrete Games: A Comment.”</span> <em>Econometrica</em> 78 (2): 833–42.</p></div>
+
+<div id="ref-ryan2012costs" class="csl-entry">
+<p>Ryan, Stephen P. 2012. <span>
+“The Costs of Environmental Regulation in a Concentrated Industry.”</span> <em>Econometrica</em> 80 (3): 1019–61.</p></div>
+
+<div id="ref-su2012constrained" class="csl-entry">
+<p>Su, Che-Lin, and Kenneth L Judd. 2012. <span>
+“Constrained Optimization Approaches to Estimation of Structural Models.”</span> <em>Econometrica</em> 80 (5): 2213–30.</p></div>
+
+<div id="ref-weintraub2008markov" class="csl-entry">
+<p>Weintraub, Gabriel Y, C Lanier Benkard, and Benjamin Van Roy. 2008. <span>
+“Markov Perfect Industry Dynamics with Many Firms.”</span> <em>Econometrica</em> 76 (6): 1375–1411.</p></div></div></article></slide>
 
 
   <slide class="backdrop"></slide>

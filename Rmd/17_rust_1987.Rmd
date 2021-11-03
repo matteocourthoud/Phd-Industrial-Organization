@@ -24,9 +24,11 @@ output:
     preserve_yaml: true
 ---
 
-```{r setup, include=FALSE, echo=FALSE}
-library(JuliaCall)
-julia <- julia_setup("/Users/mcourt/Documents/Julia-1.5.app/Contents/Resources/julia/bin")
+```{r load julia if not loaded, include=FALSE, echo=FALSE}
+if (!("JuliaCall" %in% (.packages()))) {
+  library(JuliaCall)
+  julia <- julia_setup("/Users/mcourt/Documents/Julia-1.5.app/Contents/Resources/julia/bin")
+}
 ```
 
 ```{julia, include=FALSE, echo=FALSE}
@@ -42,7 +44,7 @@ using Statistics
 
 ### Setting
 
-From @rust
+From @rust1988maximum
 
 -   An agent owns a fleet to buses
 
@@ -136,8 +138,8 @@ Then we set the state space.
 x = 0:10;
 
 ## Index for lambda and for investment
-index_lambda = Int8[1:11 [2:11;11]];
-index_i = Int8[1:11 ones(11,1)];
+index_lambda = Int[1:11 [2:11;11]];
+index_i = Int[1:11 ones(11,1)];
 ```
 
 ### Code
@@ -145,7 +147,7 @@ index_i = Int8[1:11 ones(11,1)];
 We are now ready to set up the value function iteration.
 
 ```{julia}
-function compute_V(theta, lambda, beta)
+function compute_V(theta::Vector, lambda::Real, beta::Real)
     dist = 100;
     iter = 0;
     V = zeros(11);
@@ -237,7 +239,7 @@ print("True lambda:      ", lambda)
 ### Code
 
 ```{julia}
-function logL(theta0, lambda_hat, beta, x_t)
+function logL(theta0::Vector, lambda_hat::Real, beta::Real, x_t::Vector)
     ## Compute value
     V, V_bar = compute_V(theta0, lambda_hat, beta)
     
@@ -256,7 +258,7 @@ We can check the likelihood at the true value:
 print("The likelihood at the true values is ", logL(theta, lambda, beta, x_t))
 ```
 
-### Estimating sigma
+### Estimating Theta
 
 ```{julia}
 ## Select starting values
@@ -265,7 +267,7 @@ theta0 = Float64[0,0,0];
 ## Optimize
 opt = optimize((x -> -logL(x, lambda_hat, beta, x_t)), theta0);
 print("Estimated thetas: ", opt.minimizer)
-print("True thetas:      ", theta)
+print("True thetas: ", theta)
 ```
 
 ### Optimization Info
