@@ -3208,7 +3208,7 @@ slide:not(.current) .plotly.html-widget{
           </hgroup>
   </slide>
 
-<slide class=""><hgroup><h2>Setting</h2></hgroup><article  class="smaller " id="setting">
+<slide class=""><hgroup><h2>Setting</h2></hgroup><article  id="setting" class="smaller ">
 
 <p>From <span class="cite">Rust (1988)</span></p>
 
@@ -3234,7 +3234,7 @@ slide:not(.current) .plotly.html-widget{
 </ul></li>
 </ul>
 
-</article></slide><slide class=""><hgroup><h2>State</h2></hgroup><article  class="smaller " id="state">
+</article></slide><slide class=""><hgroup><h2>State</h2></hgroup><article  id="state" class="smaller ">
 
 <ul>
 <li><p><strong>State</strong>: mileage of the bus</p>
@@ -3252,7 +3252,7 @@ slide:not(.current) .plotly.html-widget{
 <p>Note that \(\lambda\) does not depend on the value of the state</p></li>
 </ul>
 
-</article></slide><slide class=""><hgroup><h2>Actions</h2></hgroup><article  class="smaller " id="actions">
+</article></slide><slide class=""><hgroup><h2>Actions</h2></hgroup><article  id="actions" class="smaller ">
 
 <ul>
 <li><p><strong>Action</strong>: replacement decision \[
@@ -3272,7 +3272,7 @@ slide:not(.current) .plotly.html-widget{
 </ul></li>
 </ul>
 
-</article></slide><slide class=""><hgroup><h2>Simulation</h2></hgroup><article  class="smaller " id="simulation">
+</article></slide><slide class=""><hgroup><h2>Simulation</h2></hgroup><article  id="simulation" class="smaller ">
 
 <ul>
 <li><p>Start with an initial value function \(V(x_t)=0\)</p></li>
@@ -3290,7 +3290,7 @@ V&#39;(x_t) = \log \Big( e^{W(x_t|i_t=0)} + e^{W(x_t|i_t=1)} \Big)
 <li><p>Repeat until convergence</p></li>
 </ul>
 
-</article></slide><slide class=""><hgroup><h2>Code</h2></hgroup><article  class="smaller " id="code">
+</article></slide><slide class=""><hgroup><h2>Code</h2></hgroup><article  id="code" class="smaller ">
 
 <p>First we set the parameter values.</p>
 
@@ -3308,7 +3308,7 @@ x = 0:10;
 index_lambda = Int[1:11 [2:11;11]];
 index_i = Int[1:11 ones(11,1)];</pre>
 
-</article></slide><slide class=""><hgroup><h2>Code</h2></hgroup><article  class="smaller " id="code-1">
+</article></slide><slide class=""><hgroup><h2>Code</h2></hgroup><article  id="code-1" class="smaller ">
 
 <p>We are now ready to set up the value function iteration.</p>
 
@@ -3337,7 +3337,7 @@ index_i = Int[1:11 ones(11,1)];</pre>
     return V, V_bar, iter
 end;</pre>
 
-</article></slide><slide class=""><hgroup><h2>Code</h2></hgroup><article  class="smaller " id="code-2">
+</article></slide><slide class=""><hgroup><h2>Code</h2></hgroup><article  id="code-2" class="smaller ">
 
 <p>We can now solve for the value function.</p>
 
@@ -3346,7 +3346,7 @@ print(&quot;Converged after &quot;, iter, &quot; iterations!&quot;)</pre>
 
 <pre >## Converged after 680 iterations!</pre>
 
-</article></slide><slide class=""><hgroup><h2>DGP</h2></hgroup><article  class="smaller " id="dgp">
+</article></slide><slide class=""><hgroup><h2>DGP</h2></hgroup><article  id="dgp" class="smaller ">
 
 <p>Now that we know how to compute the equilibrium, we can simulate the data.</p>
 
@@ -3365,9 +3365,9 @@ x_t1 = min.(x_t .* (I.==0) + (rand(Uniform(0,1),k).&lt;lambda), 10);
 
 print(&quot;we observe &quot;, sum(I), &quot; investment decisions in &quot;, k, &quot; observations&quot;)</pre>
 
-<pre >## we observe 22192 investment decisions in 100000 observations</pre>
+<pre >## we observe 22155 investment decisions in 100000 observations</pre>
 
-</article></slide><slide class=""><hgroup><h2>Estimation - Lambda</h2></hgroup><article  class="smaller " id="estimation---lambda">
+</article></slide><slide class=""><hgroup><h2>Estimation - Lambda</h2></hgroup><article  id="estimation---lambda" class="smaller ">
 
 <ul>
 <li><p>First we can estimate the value of lambda as the mean</p>
@@ -3383,13 +3383,13 @@ lambda_hat = mean(delta[(I.==0) .&amp; (x_t.&lt;10)]);
 
 print(&quot;Estimated lambda: &quot;, lambda_hat)</pre>
 
-<pre >## Estimated lambda: 0.8191955516605723</pre>
+<pre >## Estimated lambda: 0.8159552768754249</pre>
 
 <pre class = 'prettyprint lang-julia'>print(&quot;True lambda:      &quot;, lambda)</pre>
 
 <pre >## True lambda:      0.82</pre>
 
-</article></slide><slide class=""><hgroup><h2>Estimation - theta</h2></hgroup><article  class="smaller " id="estimation---theta">
+</article></slide><slide class=""><hgroup><h2>Estimation - theta</h2></hgroup><article  id="estimation---theta" class="smaller ">
 
 <ul>
 <li><p>Take a parameter guess \(\theta_0\)</p></li>
@@ -3403,7 +3403,7 @@ print(&quot;Estimated lambda: &quot;, lambda_hat)</pre>
 <li><p>Repeat the above to find a minimum of the likelihood function</p></li>
 </ul>
 
-</article></slide><slide class=""><hgroup><h2>Code</h2></hgroup><article  class="smaller " id="code-3">
+</article></slide><slide class=""><hgroup><h2>Code</h2></hgroup><article  id="code-3" class="smaller ">
 
 <pre class = 'prettyprint lang-julia'>function logL(theta0::Vector, lambda_hat::Real, beta::Real, x_t::Vector)
     ## Compute value
@@ -3421,9 +3421,9 @@ end;</pre>
 
 <pre class = 'prettyprint lang-julia'>print(&quot;The likelihood at the true values is &quot;, logL(theta, lambda, beta, x_t))</pre>
 
-<pre >## The likelihood at the true values is -49250.79907562354</pre>
+<pre >## The likelihood at the true values is -49168.916633271525</pre>
 
-</article></slide><slide class=""><hgroup><h2>Estimating Theta</h2></hgroup><article  class="smaller " id="estimating-theta">
+</article></slide><slide class=""><hgroup><h2>Estimating Theta</h2></hgroup><article  id="estimating-theta" class="smaller ">
 
 <pre class = 'prettyprint lang-julia'>## Select starting values
 theta0 = Float64[0,0,0];
@@ -3432,13 +3432,13 @@ theta0 = Float64[0,0,0];
 opt = optimize((x -&gt; -logL(x, lambda_hat, beta, x_t)), theta0);
 print(&quot;Estimated thetas: &quot;, opt.minimizer)</pre>
 
-<pre >## Estimated thetas: [0.13344528376249162, -0.004239386091417504, 3.119557932050442]</pre>
+<pre >## Estimated thetas: [0.13239457938635638, -0.00414838793317426, 3.1193682521105]</pre>
 
 <pre class = 'prettyprint lang-julia'>print(&quot;True thetas: &quot;, theta)</pre>
 
 <pre >## True thetas: [0.13, -0.004, 3.1]</pre>
 
-</article></slide><slide class=""><hgroup><h2>Optimization Info</h2></hgroup><article  class="smaller " id="optimization-info">
+</article></slide><slide class=""><hgroup><h2>Optimization Info</h2></hgroup><article  id="optimization-info" class="smaller ">
 
 <p>We can also get info on the optimum</p>
 
@@ -3447,7 +3447,7 @@ print(&quot;Estimated thetas: &quot;, opt.minimizer)</pre>
 <pre >##  * Status: success
 ## 
 ##  * Candidate solution
-##     Final objective value:     4.925050e+04
+##     Final objective value:     4.916860e+04
 ## 
 ##  * Found with
 ##     Algorithm:     Nelder-Mead
@@ -3457,10 +3457,10 @@ print(&quot;Estimated thetas: &quot;, opt.minimizer)</pre>
 ## 
 ##  * Work counters
 ##     Seconds run:   1  (vs limit Inf)
-##     Iterations:    154
-##     f(x) calls:    283</pre>
+##     Iterations:    147
+##     f(x) calls:    273</pre>
 
-</article></slide><slide class=""><hgroup><h2>Starting Values</h2></hgroup><article  class="smaller " id="starting-values">
+</article></slide><slide class=""><hgroup><h2>Starting Values</h2></hgroup><article  id="starting-values" class="smaller ">
 
 <p>Starting values are important!</p>
 
@@ -3477,12 +3477,12 @@ print(&quot;Estimated thetas: &quot;, opt.minimizer)</pre>
 
 <pre >## True thetas:      [0.13, -0.004, 3.1]</pre>
 
-</article></slide><slide class="segue dark nobackground level2"><hgroup class = 'auto-fadein'><h2>References</h2></hgroup><article  class="smaller " id="references">
+</article></slide><slide class="segue dark nobackground level2"><hgroup class = 'auto-fadein'><h2>References</h2></hgroup><article  id="references" class="smaller ">
 
 </article></slide><slide class="segue dark nobackground level2"><hgroup class = 'auto-fadein'><h2></h2></hgroup><article  class="smaller">
 
-<div class="references csl-bib-body hanging-indent" id="refs">
-<div class="csl-entry" id="ref-rust1988maximum">
+<div id="refs" class="references csl-bib-body hanging-indent">
+<div id="ref-rust1988maximum" class="csl-entry">
 <p>Rust, John. 1988. <span>
 “Maximum Likelihood Estimation of Discrete Control Processes.”</span> <em>SIAM Journal on Control and Optimization</em> 26 (5): 1006–24.</p></div></div></article></slide>
 
