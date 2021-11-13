@@ -5,6 +5,7 @@ type: book
 weight: 17
 date: 2021-10-29
 bibliography: references.bib
+link-citations: true
 output: 
   html_notebook: 
     toc: true
@@ -19,6 +20,7 @@ output:
     smaller: true
     transition: 0
     slide_level: 3
+    css: custom.css
   md_document:
     variant: markdown_mmd
     preserve_yaml: true
@@ -36,10 +38,14 @@ if (!("JuliaCall" %in% (.packages()))) {
 #Pkg.add("Optim")
 #Pkg.add("Statistics")
 #Pkg.add("Distributions")
+#Pkg.add("DataFrames")
+#Pkg.add("CSV")
 
 using Optim
 using Distributions
 using Statistics
+using DataFrames
+using CSV
 ```
 
 ### Setting
@@ -125,61 +131,70 @@ From @rust1988maximum
 First we set the parameter values.
 
 ```{julia}
-## Set parameters
-theta = [0.13; -0.004; 3.1];
-lambda = 0.82;
-beta = 0.95;
+# Set parameters
+θ = [0.13; -0.004; 3.1];
+λ = 0.82;
+β = 0.95;
 ```
 
 Then we set the state space.
 
 ```{julia}
-## State space
-x = 0:10;
-
-## Index for lambda and for investment
-index_lambda = Int[1:11 [2:11;11]];
-index_i = Int[1:11 ones(11,1)];
+# State space
+x = Vector(0:10);
 ```
 
-### Code
+### Static utility
 
-We are now ready to set up the value function iteration.
+First, we can compute static utility.
 
 ```{julia}
-function compute_V(theta::Vector, lambda::Real, beta::Real)
-    dist = 100;
-    iter = 0;
-    V = zeros(11);
-    V_bar = V;
-    U = [- theta[1]*x - theta[2]*x.^2 (-theta[3])*ones(11,1)]
-
-    ## Iterate the Bellman equation until convergence
-    while dist>1e-20
-
-        ## Expected future values (mean over possible shocks)
-        Exp_V = V[index_lambda] * [1-lambda; lambda];
-        V_bar = beta * (U + Exp_V[index_i])
-        V_new = log.(sum(exp.(V_bar), dims=2))
-
-        ## Check distance for convergence
-        dist = max(abs.(V_new - V)...);
-        iter += 1;
-
-        ## Update value function
-        V = V_new 
-    end
-    return V, V_bar, iter
+function compute_U(θ::Vector, x::Vector)::Matrix
+    """Compute static utility"""
+    u1 = - θ[1]*x - θ[2]*x.^2       # Utility of not investing
+    u2 = - θ[3]*ones(size(x))       # Utility of investing
+    U = [u1 u2]                     # Combine in a matrix
+    return U
 end;
 ```
 
-### Code
+
+### Value Function
+
+We can now set up the value function iteration
+
+```{julia}
+function compute_V(θ::Vector, λ::Number, β::Number, x::Vector)::Matrix
+    """Compute value function by Bellman iteration"""
+    K = length(x)                                 # Dimension of the state space
+    U = compute_U(θ, x)                           # Static utility
+    index_λ = Int[1:K [2:K; K]];                  # Mileage index
+    index_I = Int[1:K ones(K,1)];                 # Investment index
+
+    # Iterate the Bellman equation until convergence
+    V_bar = zeros(K, 2);
+    V_bar1 = V_bar;
+    dist = 1;
+    iter = 0;
+    while dist>1e-8
+        V = log.(sum(exp.(V_bar), dims=2))          # Compute value
+        Exp_V = V[index_λ] * [1-λ; λ]               # Compute exponential value
+        V_bar1 = β * (U + Exp_V[index_I])           # Compute v-specific
+        dist = max(abs.(V_bar1 - V_bar)...);        # Check distance
+        iter += 1;
+        V_bar = V_bar1                              # Update value function
+    end
+    return V_bar
+end;
+```
+
+### Solving the Model
 
 We can now solve for the value function.
 
 ```{julia}
-V, V_bar, iter = compute_V(theta, lambda, beta);
-print("Converged after ", iter, " iterations!")
+# Compute value function
+V_bar = compute_V(θ, λ, β, x);
 ```
 
 ### DGP
@@ -187,20 +202,29 @@ print("Converged after ", iter, " iterations!")
 Now that we know how to compute the equilibrium, we can simulate the data.
 
 ```{julia}
-## Draw shocks
-k = 100000;
-e = rand(Gumbel(0,1), k, 2);
+function generate_data(θ::Vector, λ::Number, β::Number, x::Vector, N::Int)::Tuple
+    """Generate data from primitives"""
+    V_bar = compute_V(θ, λ, β, x)               # Solve model
+    ε = rand(Gumbel(0,1), N, 2)                 # Draw shocks
+    Xt = rand(x.+1, N)                          # Draw states
+    Iv = (((V_bar[Xt,:] + ε) * [-1;1]) .> 0)    # Compute investment decisions
+    δ = (rand(Uniform(0,1), N) .< λ)            # Compute mileage shock
+    Xt1 = min.(Xt .* (Iv.==0) + δ, max(x...))   # Compute next state
+    df = DataFrame(Xt=Xt, Iv=Iv, Xt1=Xt1)
+    CSV.write("../data/rust.csv", df)
+    return Xt, Iv, Xt1
+end;
+```
 
-## Draw states
-x_t = rand(x.+1,k);
+### The Data
 
-## Compute investment decisions
-I = ((V_bar[x_t,:] + e) * [-1;1]) .> 0;
+How many investment decisions do we observe?
 
-## Compute next state
-x_t1 = min.(x_t .* (I.==0) + (rand(Uniform(0,1),k).<lambda), 10);
-
-print("we observe ", sum(I), " investment decisions in ", k, " observations")
+```{julia}
+# Generate data
+N = Int(1e5);
+x_t, Iv, x_t1 = generate_data(θ, λ, β, x, N);
+print("we observe ", sum(Iv), " investment decisions in ", N, " observations")
 ```
 
 ### Estimation - Lambda
@@ -212,15 +236,14 @@ print("we observe ", sum(I), " investment decisions in ", k, " observations")
     $$
 
 ```{julia}
-## Estimate lambda
-delta = x_t1 - x_t;
-lambda_hat = mean(delta[(I.==0) .& (x_t.<10)]);
+# Estimate lambda
+Δ = x_t1 - x_t;
+λ_ = mean(Δ[(Iv.==0) .& (x_t.<10)]);
 
-print("Estimated lambda: ", lambda_hat)
-print("True lambda:      ", lambda)
+print("Estimated lambda: $λ_ (true = $λ)")
 ```
 
-### Estimation - theta
+### Estimation - Theta
 
 -   Take a parameter guess $\theta_0$
 
@@ -239,43 +262,36 @@ print("True lambda:      ", lambda)
 ### Code
 
 ```{julia}
-function logL(theta0::Vector, lambda_hat::Real, beta::Real, x_t::Vector)
-    ## Compute value
-    V, V_bar = compute_V(theta0, lambda_hat, beta)
-    
-    ## Implied choice probabilities
+function logL(θ0::Vector)::Number
+    """Compute log-likelihood function"""
+    # Compute value
+    V_bar = compute_V(θ0, λ_, β, x)
+
+    # Implied choice probabilities
     pr_I = exp.(V_bar[:,2]) ./ (exp.(V_bar[:,1]) + exp.(V_bar[:,2]))
-    
-    ## Likelihood
-    L = sum(log.(pr_I[x_t[I.==1]])) + sum(log.(1 .- pr_I[x_t[I.==0]]))
-    return L
+
+    # Likelihood
+    logL = sum(log.(pr_I[x_t[Iv.==1]])) + sum(log.(1 .- pr_I[x_t[Iv.==0]]))
+    return -logL
 end;
 ```
 
 We can check the likelihood at the true value:
 
 ```{julia}
-print("The likelihood at the true values is ", logL(theta, lambda, beta, x_t))
+# True likelihood value
+print("The likelihood at the true values is ", logL(θ))
 ```
 
 ### Estimating Theta
 
 ```{julia}
-## Select starting values
-theta0 = Float64[0,0,0];
+# Select starting values
+θ0 = Float64[0,0,0];
 
-## Optimize
-opt = optimize((x -> -logL(x, lambda_hat, beta, x_t)), theta0);
-print("Estimated thetas: ", opt.minimizer)
-print("True thetas: ", theta)
-```
-
-### Optimization Info
-
-We can also get info on the optimum
-
-```{julia}
-opt
+# Optimize
+θ_ = optimize(logL, θ0).minimizer;
+print("Estimated thetas: $θ_ (true = $θ)")
 ```
 
 ### Starting Values
@@ -283,13 +299,12 @@ opt
 Starting values are important!
 
 ```{julia}
-## Not all initial values are equally good
-theta0 = Float64[1,1,1];
+# Alternative starting values
+θ0 = Float64[1,1,1];
 
-## Optimize
-opt = optimize((x -> -logL(x, lambda_hat, beta, x_t)), theta0);
-print("Estimated thetas: ", opt.minimizer)
-print("True thetas:      ", theta)
+# Optimize
+θ_ = optimize(logL, θ0).minimizer;
+print("Estimated thetas: $θ_ (true = $θ)")
 ```
 
 ## References

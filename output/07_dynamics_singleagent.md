@@ -17,6 +17,7 @@ output:
     toc: true
     toc_depth: 2
   ioslides_presentation:
+    css: custom.css
     slide_level: 3
     smaller: true
     transition: 0

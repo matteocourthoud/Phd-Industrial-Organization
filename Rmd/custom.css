@@ -1,0 +1,117 @@
+/*
+Custom CSS
+Matteo Courthoud
+*/
+
+/* Import google fonts */
+@import url('https://fonts.googleapis.com/css?family=Lora|Open+Sans&display=swap');
+
+/* Change for of all slides and allow scrolling */
+slides > slide {
+  font-family: 'Source Sans Pro', sans-serif;
+  overflow: scroll;
+}
+
+/* Change slide content */
+slides > slide > article {
+  color: black;
+  font-weight: 300;
+}
+
+/* References */
+.csl-entry p {
+  color: white;
+}
+
+/* Color citations */
+.cite {
+  color: #2b7ddf;
+}
+
+/* Center Images */
+img {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 25px;
+}
+
+/* Unordered list style */
+
+/* First level */
+ul > li:before {
+  content: '';
+}
+ul > li {
+  list-style-type: disc;
+}
+
+/* Second level */
+ul > li > ul > li:before {
+  content: '';
+}
+ul > li > ul > li {
+  list-style-type: circle;
+}
+
+
+/* Code */
+pre {
+  width: auto !important;
+  left: 0px !important;
+  padding: 10px 20px 10px 20px !important;
+  border-radius: 5px !important;
+  border-color: #adb5bd !important;
+  border-width: thin !important;
+  border-style: solid !important;
+}
+
+pre.prettyprint {
+  background-color: #f8f8f8 !important;
+}
+
+
+
+
+/* Table */
+table.rmdtable {
+  width: auto !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  margin-bottom: 25px;
+  border-bottom: none !important;
+  border-spacing: 0px !important;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+}
+
+table.rmdtable th {
+  background: none !important;
+  background-color: #003f5c !important;
+  padding: 10px;
+  text-align: center !important;
+}
+
+table.rmdtable td, table th {
+    padding: 1em 1em !important;
+}
+
+/* Round borders */
+table.rmdtable th:first-child {
+    border-radius: 5px 0 0 0;
+}
+table.rmdtable th:last-child {
+    border-radius: 0 5px 0 0;
+}
+
+table.rmdtable tr:last-child td:first-child {
+    border-radius: 0 0 0 5px;
+}
+table.rmdtable tr:last-child td:last-child {
+    border-radius: 0 0 5px 0;
+}
+
+/* Table Hover */
+table.rmdtable > tbody > tr:hover > td,
+table.rmdtable > tbody > tr:hover > th {
+  background-color: #e5e5e5;
+}

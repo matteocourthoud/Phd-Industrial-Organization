@@ -10,7 +10,7 @@ if (length(args)==1) {
   
   # Add files
   if (args[1]=="y") {
-    code_files = c("12_blp_1995", "17_rust_1987")
+    code_files = c("11_logit_demand", "12_blp_1995", "17_rust_1987")
     files = append(files, code_files)
   }
   

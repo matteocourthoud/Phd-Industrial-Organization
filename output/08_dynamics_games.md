@@ -17,6 +17,7 @@ output:
     toc: true
     toc_depth: 2
   ioslides_presentation:
+    css: custom.css
     slide_level: 3
     smaller: true
     transition: 0
@@ -96,7 +97,7 @@ V (s_{i t}, s_{-i t} ; \theta) = & \pi(s_{i t}, s_{-i t} ; \theta^{\pi}) + \max_
 \Bigg\lbrace
 \begin{array}{c}
 \beta \phi \ ; \newline
-\max _{a_{i t} \geq 0} \Big\lbrace - a_{i t} + \beta \mathbb E \Big[V (s_{i, t+1}, s_{-i, t+1} \ ; ] \theta) \Big| s_{i t}, s_{-i t}, a_{i t} \Big] \Big\rbrace 
+\max _{a_{i t} \geq 0} \Big\lbrace - a_{i t} + \beta \mathbb E \Big[V (s_{i, t+1}, s_{-i, t+1} \ ; \ \theta) \Big| s_{i t}, s_{-i t}, a_{i t} \Big] \Big\rbrace 
 \end{array}
 \Bigg\rbrace
 \end{aligned}
@@ -200,7 +201,7 @@ Numerically!
 -   Su and Judd ([2012](#ref-su2012constrained)) and Egesdal, Lai, and
     Su ([2015](#ref-egesdal2015estimating)): show this point
     numerically, by using their proposed Mathematical Programming with
-    Equilibrium Constraints (MPEC) approach.
+    Equilibrium Constraints (MPEC) approach
 
 ### Curse of Dimensionality
 
@@ -371,12 +372,415 @@ $$
         ([2011](#ref-arcidiacono2011conditional)): how to use an EM
         algorithm for the 1st stage estimation with unobserved types,
         conditional on the number of types
-    -   Berry and Compiani ([2021](#ref-berry2021empirical)):
+    -   S. T. Berry and Compiani ([2021](#ref-berry2021empirical)):
         instrumental variables approach, relying on observed states in
         the distant past
 4.  **Non-stationarity**
     -   If we have a long time period, something fundamentally might
         have changed
+
+## Igami, Uetake (2019)
+
+### Question
+
+**Q**: *how much should an industry be allowed to consolidate?*
+
+-   Normally analyzed statically
+-   Static trade-offs
+    -   Price effects
+    -   Synergies (scale economies?)
+-   However, mergers are not exogenous events
+-   Dynamic trade-offs
+    -   Demsetz ([1973](#ref-demsetz1973industry)): monopoly as a winner
+        of an innovation race
+    -   S. Berry and Pakes ([1993](#ref-berry1993some)): any dynamic
+        benefit could offset static inefficiences
+    -   Gilbert and Greene ([2014](#ref-gilbert2014merging)): FTC and
+        DOJ always *try* to assess “impact on innovation”
+
+### Dynamic Trade-offs
+
+With mergers, entry and exit
+
+-   Statically
+    -   Price effects (-)
+    -   Synergies (+)
+-   Ex-post effects
+    -   Regress mergers on competition (HHI)? 🙅🙅🙅
+    -   Innovation: literature finds almost anything (+/-/invU/plateau)
+-   Dynamic
+    -   The potential for a merger can induce more ex-ante innovation
+        and ex-ante entry
+
+**This Paper**
+
+-   **Model**: mergers, innovation, entry and exit in the HD industry
+-   **Objective**: study optimal merger policy
+
+### Empirical Issues
+
+On the dynamics
+
+-   Mergers are rare events $=$ no experiment $\to$ need a model
+-   Dynamic games $=$ multiple equilibria $\to$ no “full solution”
+-   Innovative industries $=$ global & nonstationary$\to$ no
+    “2-step”estimation
+    -   we have 1 market $\leftrightarrow$ 1 data point
+
+**Solution**
+
+-   Random moves
+-   Like Rust
+
+### Model
+
+**State** $\omega_{it}$: productivity of firm $i$ at time $t$
+
+**Actions**
+
+-   Exit
+    -   Get a scrap value $\kappa^e$
+    -   Exit the industry
+-   Idle
+    -   No cost
+    -   Productivity stays the same
+-   Innovation
+    -   Pay innovation cost $\kappa^i$
+    -   Productivity increases stochastically:
+        $\omega_{i,t+1} = \omega_{i,t+1} + 1$
+-   Merger
+    -   pay a merger cost $\kappa^m$
+    -   Get the maximum productivity of both firms
+        $\omega_{i,t+1} = \max \lbrace \omega_{it}, \omega_{jt} \rbrace$
+
+### Timeline
+
+Timing of moves, within a period
+
+1.  Nature picks a mover $i$ uniformly at random
+2.  Firm $i$ market a take-it-or-leave-it offer
+3.  All active firms get payoffs $\pi_{it} (\omega_t)$
+4.  State transitions realize from $\omega_t$ to $\omega_{t+1}$
+    -   Stochastic Poisson synergy $\Delta{ijt}$
+    -   You might jump up more than 1 level
+
+Finite horizon $T (=2025)$!
+
+**Equilibrium**
+
+-   Unique sequential equilibrium
+-   In practice, it’s a single agent problem
+-   Can be solved by backward induction
+
+### Motivating Evidence (1):
+
+Expansion in the 80s followed by a lot of consolidation.
+
+<img src="../img/8_01.png" style="width:50.0%" />
+
+### Motivating Evidence (2)
+
+Consolidation or exit?
+
+-   In the 80/90s mostly exit
+-   Then mergers
+
+<img src="../img/8_02.png" style="width:90.0%" />
+
+### Steps
+
+-   Estimate **demand** $(\alpha_0, \alpha_1, \alpha_2)$
+    -   Log-linear specification:
+        $\log Q_{t}=\alpha_{0}+\alpha_{1} \log P_{t}+\alpha_{2} \log X_{t}+\varepsilon_{t}$
+    -   IV $Z_t$: input cost, disk price
+-   Compute marginal costs $mc_{it}$
+    -   Cournot competition
+    -   Invert the first-order condition and back out marginal costs:
+        $mc_{it} = p_{it} + \frac{\partial p}{\partial q} q_{it}$
+-   Estimate **sunk costs** $(\kappa^i, \kappa^m, \kappa^e)$
+    -   Keane and Wolpin ([1997](#ref-keane1997career)) kind of routine
+        -   Pick a parameter value
+        -   Solve the game by backward induction
+        -   Compute CCPs
+        -   Compute likelihood
+    -   Estimate parameter by maximum likelihood
+
+### FAQ
+
+-   **State space**?
+    -   Marginal cost of firms
+    -   As if in the first step we are estimating the state space
+    -   Only in the second step we have the dynamics
+-   How to deal with the **sequential moves**?
+    -   Split the time frame into sufficiently granular time spans
+    -   So that there is never 2 actions occurring at the same time
+-   How to deal with **periods where nothing happens**?
+    -   Could be that nobody moves
+    -   Or some mergers are tried and failed
+-   **Bargaining power**?
+    -   Mergers ar erare events: sensitivity analysis
+
+### Results (1): Model Fit
+
+Model fits data reasonably well
+
+<img src="../img/8_03.png" style="width:60.0%" />
+
+### Results (2): Mergers and Innovation
+
+What is the estimated **innovation** curve?
+
+-   Plateau: increasing concave returns from innnovation in the number
+    of (identical) firms
+
+**Merger** incentives?
+
+-   U-shaped: as concentration increases, outside option of merging
+    parties increse
+
+<img src="../img/8_04.png" style="width:90.0%" />
+
+### Policy
+
+What is the optimal number of firms? Definitely not 1.
+
+<img src="../img/8_05.png" style="width:70.0%" />
+
+## Igami, Sugaya (2021)
+
+### Literature
+
+-   Porter ([1983](#ref-porter1983study))
+    -   Railroad cartel before the Sherman Act: legal
+    -   Firms were keeping records of cartel activity
+-   Green and Porter ([1984](#ref-green1984noncooperative))
+    -   Theory: including demand uncertainty
+-   Ellison ([1994](#ref-ellison1994theories))
+    -   Why cartels break down at the top of the business cycle?
+        -   You expect there to be a downturn in the future
+        -   Low future continuation value
+        -   Higher incentives to cheat
+-   Asker ([2010](#ref-asker2010study))
+    -   Bid rigging cartel of stamp dealers
+-   Igami and Sugaya ([2021](#ref-igami2021measuring))
+    -   Dynamic model of cartel survival
+
+### Setting
+
+**Problem** of cartel papers: **variation** in markets
+
+-   Usually 1 cartel in 1 market $\to$ no variation for estimation
+
+Vitamin cartel
+
+-   one of the biggest cartels in history
+-   affected a lot of different vitamins
+-   each vitamin is a separate market
+-   also, different cartels for different vitamins
+    -   broke at different points in time (endogenously, no antitrust
+        action)
+    -   **research question**: why?
+-   a lot of insider information on the cartels
+
+### Research Question
+
+Why did some cartels survive for a decade while others collapsed after
+only a few years?
+
+<img src="../img/8_06.png" style="width:60.0%" />
+
+How do mergers affect the incentive to collude?
+
+### Bernheim Report
+
+-   [Bates White witness report
+    (2002)](https://appliedantitrust.com/04_private_actions/damages/vitamin_c/vitamin_c_edny_bernheim_report11_14_2008.pdf)
+-   On behalf of 4000+ vitamin buyers claiming damages from the cartel
+-   Involved in jury trial and made public in 2003
+-   Contains price and cost information for La Roche
+
+<img src="../img/8_07.png" style="width:50.0%" />
+
+### Vitamins
+
+**Product**: vitamins
+
+-   Geographically is a global market
+-   But each vitamin constitute a separate market
+-   Homogeneous good
+
+**Demand**
+
+-   General health benefits, but no clear scientific evidence (on
+    humans)
+-   Generally 9000+ purchasers of vitamins
+    -   Who? Farmers, cooperatives, …. Coca cola has 2.14% marekt share
+
+**Supply**
+
+-   Market dominated by european big3: Roche, BASF, RP
+
+### The Cartel (1): History
+
+**History**
+
+-   1989: price war
+-   June 7 1989 in Basel, BASF and la Roche start talk
+-   August 1989, Zurich: RP joins the talks
+
+**Design**
+
+-   For vitamins A and B
+-   Foresee demand growth
+-   Split it according to pre-1989 market shares
+-   Quarterly meetings to monitor the cartel performance
+
+**Cartel expansion**
+
+-   1990 and 1991: added new members
+
+### The Cartel (2): Structure
+
+**Monitoring**: almost perfect
+
+-   Self-reported sales data
+-   They were using government trade statistics to verify self-reports
+    -   Published with a time lag
+
+**Punishment**
+
+-   Threat of reversion to competitive prices
+-   EC report (2003)
+    -   Takeda was often not complying with the agreement
+    -   “*the three European producers presented Takeda with an
+        ultimatum unless it agreed to cut back its vitamin C sales, they
+        would withdraw from the agreement*” (p. 44)
+
+Other collusion-relevant info
+
+-   No multi-market contact
+-   No complicated punishment strategies, like carrot-stick
+-   No proce wars as part of the equilibrium (a la Green and Porter
+    ([1984](#ref-green1984noncooperative)))
+
+### The Cartel (3): End
+
+-   6 **natural deaths**
+    -   Entry of foreign suppliers
+-   10 forced terminations
+    -   RP applied for Corporative Leniency Program
+    -   One of the first major cartel cases to make use of this
+        instrument
+    -   Roche and BASF pleaded guilty
+-   **Mergers**
+    -   RP merged with Hoechst $\to$ Aventis (1998)
+    -   BASF acquired Takeda (2001)
+
+### Model
+
+Demand: linear $$
+Q_{t}^{D}=\alpha_{0}+\alpha_{1} P_{t}+\alpha_{2} X_{t}+\varepsilon_{t}
+$$ Fringe supply
+
+-   Preferred specification: constant fraction of total quantity:
+    $Q_{t}^{D}=Q_{c a r, t}+Q_{f r i, t}$
+
+Supply: Cournot. With **FOC** $$
+P_{t}+\frac{d P}{d Q_{t}} \times q_{i, t}=c_{\text {roche }, t}^{\text {obs }}+\gamma_{i}+\eta_{i, t}
+$$ Different **profit functions**
+
+1.  Cartel: all collude
+2.  Deviation: all collude a part for the deviator that best responds
+3.  Competition: all best respond
+
+### Estimation
+
+GMM function with three moment conditions
+
+-   Independence of demand shock and supply cost shifter $$
+    \bar{m}_{1}(\theta)=\sum_{y} \bar{\varepsilon}_{y} \cdot Z_{y}
+    $$
+
+-   Independence of supply shock and demand shifter $$
+    \bar{m}_{2, i}(\theta)=\sum_{y} \bar{\eta}_{i, y} \cdot W_{i, y}
+    $$
+
+-   Independence between controls and demand error term $$
+    \bar{m}_{3}(\theta)=\sum_{t} \bar{\eta}_{t} \cdot X_{t}
+    $$
+
+### Incentive Compatibility (1)
+
+Value of complying $$
+V_{i, \tau \mid t}^{C}=\sum_{s \geq \tau} \beta^{s-\tau} \pi_{i, s \mid t}^{C}
+$$ Value of not complying $$
+V_{i, \tau \mid t}^{D}=\sum_{s=\tau}^{\tau+2} \beta^{s-\tau} \pi_{i, s \mid t}^{D}+\sum_{s \geq \tau+3} \beta^{s-\tau} \pi_{i, s \mid t}^{N}
+$$ ICC $$
+\min _{i \in I, \tau \geq t}\left(V_{i, \tau \mid t}^{C}-V_{i, \tau \mid t}^{D}\right) \geq 0
+$$ How to **compute** it? We need expectation of
+
+-   Future **market size**
+-   Future size of the **supply fringe**
+
+### Incentive Compatibility (2): Computation
+
+**Demand**: market size
+
+-   Assume perfect foresight
+-   Also pretty stable
+
+**Supply**: size of the supply fringe
+
+-   Series of shocks in the 90s
+    -   Bew method invented
+    -   Bosnian war 1992-95
+    -   Deng’s ’92 speech
+-   All unforeseen shocks
+-   Firms project current level of fringe output to the future
+
+### Incentive Compatibility (2): Results
+
+We can plot the firm incentives
+$V_{i, \tau \mid t}^{C}-V_{i, \tau \mid t}^{D}$ for each firm.
+
+<img src="../img/8_08.png" style="width:50.0%" />
+
+As fringe enters the market, incentives drop.
+
+### Counterfactuals (1)
+
+Who killed the vitamin cartel? Explore different combinations of
+
+1.  **Fringe** stopped growing after 1994
+2.  **Demand** did not slow down because of the 1990’s shocks
+
+<img src="../img/8_09.png" style="width:50.0%" />
+
+### Counterfactuals (2)
+
+Could the **BASF-Takeda** merger save the vitamin cartel?
+
+-   What if they had done it before?
+-   BASF gets the minimum marginal cost + some synergy
+-   No capacity constraints
+-   Same cartel quotas
+
+<img src="../img/8_10.png" style="width:80.0%" />
+
+**Remark**: too many synergies make the cartel more asymmetric $\to$
+less sustainable
+
+### Counterfactuals (3)
+
+Which merger would have helped the most?
+
+-   Simulate **Roche mergers** with different combinations of
+    competittors
+
+<img src="../img/8_11.png" style="width:90.0%" />
+
+**Remark**: again, because of asymmetries, incentives do not
+monotonically increase with HHI
 
 ## References
 
@@ -401,6 +805,13 @@ Heterogeneity.” *Econometrica* 79 (6): 1823–67.
 
 </div>
 
+<div id="ref-asker2010study" class="csl-entry" markdown="1">
+
+Asker, John. 2010. “A Study of the Internal Organization of a Bidding
+Cartel.” *American Economic Review* 100 (3): 724–62.
+
+</div>
+
 <div id="ref-bajari2007estimating" class="csl-entry" markdown="1">
 
 Bajari, Patrick, C Lanier Benkard, and Jonathan Levin. 2007. “Estimating
@@ -414,6 +825,14 @@ Dynamic Models of Imperfect Competition.” *Econometrica* 75 (5):
 Berry, Steven T, and Giovanni Compiani. 2021. “Empirical Models of
 Industry Dynamics with Endogenous Market Structure.” *Annual Review of
 Economics* 13.
+
+</div>
+
+<div id="ref-berry1993some" class="csl-entry" markdown="1">
+
+Berry, Steven, and Ariel Pakes. 1993. “Some Applications and Limitations
+of Recent Advances in Empirical Industrial Organization: Merger
+Analysis.” *The American Economic Review* 83 (2): 247–52.
 
 </div>
 
@@ -437,6 +856,13 @@ Method.” *Operations Research* 58 (4-part-2): 1116–32.
 
 Collard-Wexler, Allan. 2013. “Demand Fluctuations in the Ready-Mix
 Concrete Industry.” *Econometrica* 81 (3): 1003–37.
+
+</div>
+
+<div id="ref-demsetz1973industry" class="csl-entry" markdown="1">
+
+Demsetz, Harold. 1973. “Industry Structure, Market Rivalry, and Public
+Policy.” *The Journal of Law and Economics* 16 (1): 1–9.
 
 </div>
 
@@ -471,6 +897,13 @@ Economics* 6 (3): 567–97.
 
 </div>
 
+<div id="ref-ellison1994theories" class="csl-entry" markdown="1">
+
+Ellison, Glenn. 1994. “Theories of Cartel Stability and the Joint
+Executive Committee.” *The Rand Journal of Economics*, 37–57.
+
+</div>
+
 <div id="ref-ericson1995markov" class="csl-entry" markdown="1">
 
 Ericson, Richard, and Ariel Pakes. 1995. “Markov-Perfect Industry
@@ -492,6 +925,22 @@ Models.” *The RAND Journal of Economics* 43 (2): 253–82.
 Fershtman, Chaim, and Ariel Pakes. 2012. “Dynamic Games with Asymmetric
 Information: A Framework for Empirical Work.” *The Quarterly Journal of
 Economics* 127 (4): 1611–61.
+
+</div>
+
+<div id="ref-gilbert2014merging" class="csl-entry" markdown="1">
+
+Gilbert, Richard J, and Hillary Greene. 2014. “Merging Innovation into
+Antitrust Agency Enforcement of the Clayton Act.” *Geo. Wash. L. Rev.*
+83: 1919.
+
+</div>
+
+<div id="ref-green1984noncooperative" class="csl-entry" markdown="1">
+
+Green, Edward J, and Robert H Porter. 1984. “Noncooperative Collusion
+Under Imperfect Price Information.” *Econometrica: Journal of the
+Econometric Society*, 87–100.
 
 </div>
 
@@ -518,6 +967,13 @@ Analysis of Creative Destruction in the Hard Disk Drive Industry,
 
 </div>
 
+<div id="ref-igami2021measuring" class="csl-entry" markdown="1">
+
+Igami, Mitsuru, and Takuo Sugaya. 2021. “Measuring the Incentive to
+Collude: The Vitamin Cartels, 1990-1999.” *Available at SSRN 2889837*.
+
+</div>
+
 <div id="ref-iskhakov2017endogenous" class="csl-entry" markdown="1">
 
 Iskhakov, Fedor, Thomas H Jørgensen, John Rust, and Bertel Schjerning.
@@ -532,6 +988,13 @@ Models with (or Without) Taste Shocks.” *Quantitative Economics* 8 (2):
 Kasahara, Hiroyuki, and Katsumi Shimotsu. 2009. “Nonparametric
 Identification of Finite Mixture Models of Dynamic Discrete Choices.”
 *Econometrica* 77 (1): 135–75.
+
+</div>
+
+<div id="ref-keane1997career" class="csl-entry" markdown="1">
+
+Keane, Michael P, and Kenneth I Wolpin. 1997. “The Career Decisions of
+Young Men.” *Journal of Political Economy* 105 (3): 473–522.
 
 </div>
 
@@ -578,6 +1041,14 @@ Studies* 75 (3): 901–28.
 
 ———. 2010. “Sequential Estimation of Dynamic Discrete Games: A Comment.”
 *Econometrica* 78 (2): 833–42.
+
+</div>
+
+<div id="ref-porter1983study" class="csl-entry" markdown="1">
+
+Porter, Robert H. 1983. “A Study of Cartel Stability: The Joint
+Executive Committee, 1880-1886.” *The Bell Journal of Economics*,
+301–14.
 
 </div>
 

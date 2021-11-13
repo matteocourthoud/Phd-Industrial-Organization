@@ -5,6 +5,7 @@ type: book
 weight: 2
 date: 2021-10-29
 bibliography: references.bib
+link-citations: true
 output: 
   ml_notebook: 
     toc: true
@@ -19,12 +20,13 @@ output:
     smaller: true
     transition: 0
     slide_level: 3
+    css: custom.css
   md_document:
     variant: markdown_mmd
     preserve_yaml: true
 ---
 
-## Supply
+## Introduction
 
 ### Setting
 
@@ -41,13 +43,13 @@ Oligopoly Supply
     -   equilibrium: NE for each product/market
     
 
-Workhorse model: @berry1995automobile
+
 
 ### Cost Function
 
-Variable cost of product $j$: $C_j (Q_j , w_{jt} , \omega_{jt}, \gamma)$
+Variable cost of product $j$: $C_j (Q_j , w_{jt} , \mathbb \omega_{jt}, \gamma)$
 
--   $Q_j$: total quantity of good j sold
+-   $Q_j$: total quantity of good $j$ sold
 
 -   $w_{jt}$ observable cost shifters; may include product characteristics $x_{jt}$ that will affect demand (later)
 
@@ -58,41 +60,51 @@ Variable cost of product $j$: $C_j (Q_j , w_{jt} , \omega_{jt}, \gamma)$
 Notes
 
 -   for multi-product firms, we'll assume variable cost additive across products for simplicity
-
 -   we ignore fixed costs: these affect entry/exit/innovation but not pricing, *conditional on these things*
+
+
 
 ### Notation
 
--   $J_t$: products/goods/choices in market t (for now $J_t = J$)
+Some other variables
 
--   $\boldsymbol p_t = (p_{1t},...,p_{Jt})$: prices of all goods
+-   $J_t$: products/goods/choices in market $t$ (for now $J_t = J$)
+-   $P_t = (p_{1t},...,p_{Jt})$: prices of all goods
+-   $\boldsymbol X_t = ( \boldsymbol x_{1t} , … , \boldsymbol x_{Jt})$ : other characteristics of goods affecting demand (observed and unobserved to us)
 
--   $\boldsymbol \chi_t = ( \chi_{1t} , … , \chi_{Jt})$ : other characteristics of goods affecting demand (observed and unobserved to us)
+In general
+
+- I use **bold** for arrays in dimensions that are not $i$ (consumers), $j$ (firms) or $t$ (markets)
+  - For example product characteristics $\boldsymbol x_{jt} = \lbrace x_{jt}^1,, ..., x_{jt}^K \rbrace$
+- I use CAPS for variables aggregated over $j$ (firms)
+  - For example vector of prices in market $t$: $P_t = (p_{1t},...,p_{Jt})$
+
+
 
 ### Equilibrium Pricing
 
 -   Demand system:
 
     $$
-    q_{jt} = \boldsymbol q_j (\boldsymbol p_t, \boldsymbol \chi_t) \quad \text{for} \quad j = 1,...,J.
+    q_{jt} = Q_j ( P_t, \boldsymbol X_t) \quad \text{for} \quad j = 1,...,J.
     $$
 
 -   Profit function
 
     $$
-    \pi_{jt} = \boldsymbol q_j (\boldsymbol p_t, \boldsymbol \chi_t) [p_{jt} − mc_j (w_{jt}, \omega_{jt}, \gamma)]
+    \pi_{jt} = Q_j (P_t, \boldsymbol X_t) \Big[p_{jt} − mc_j (w_{jt}, \omega_{jt}, \gamma) \Big]
     $$
 
 -   FOC wrt to $p_{jt}$:
 
     $$
-    p_{jt} = mc_{jt} - q_j (\boldsymbol p_t, \boldsymbol \chi_t) \left(\frac{\partial \boldsymbol q_j}{\partial p_{jt}}\right)^{-1}
+    p_{jt} = mc_{jt} - Q_j (P_t, \boldsymbol X_t) \left(\frac{\partial Q_j}{\partial p_{jt}}\right)^{-1}
     $$
 
--   Inverse elasticity pricing (i.e., monopoly pricing) against the "residual demand curve" $q_j (\boldsymbol p_t, \boldsymbol \chi_t)$:
+-   Inverse elasticity pricing (i.e., monopoly pricing) against the "residual demand curve" $Q_j (P_t, \boldsymbol X_t)$:
 
     $$
-    \frac{p_{jt} - mc_{jt}}{p_{jt}} = - \frac{q_j (\boldsymbol p_t, \boldsymbol \chi_t)}{p_{jt}} \left(\frac{\partial \boldsymbol q_j}{\partial p_{jt}}\right)^{-1}
+    \frac{p_{jt} - mc_{jt}}{p_{jt}} = - \frac{Q_j (P_t, \boldsymbol X_t)}{p_{jt}} \left(\frac{\partial Q_j}{\partial p_{jt}}\right)^{-1}
     $$
 
 ### What do we get?
@@ -104,12 +116,14 @@ Notes
     -   Re-arrange FOC
 
         $$
-        mc_{jt} = p_{jt} + q_j (\boldsymbol p_t, \boldsymbol \chi_t) \left(\frac{\partial \boldsymbol q_j}{\partial p_{jt}}\right)^{-1}
+        mc_{jt} = p_{jt} + Q_j (P_t, \boldsymbol X_t)\left(\frac{\partial Q_j}{\partial p_{jt}}\right)^{-1}
         $$
 
-    -   Supply model + estimated demand→estimates of marginal costs!
+    -   Supply model + estimated demand $\to$ estimates of marginal costs!
 
-3.  If we know demand and marginal costs, we can"predict" a lot of stuff---i.e., give the quantitative implications of the model for counterfactual worlds
+3.  If we know demand and marginal costs, we can"predict" a lot of stuff - i.e., give the quantitative implications of the model for counterfactual worlds
+
+
 
 ### Issues
 
@@ -119,27 +133,29 @@ Notes
 
 -   demand shocks are among the things that must be held fixed to measure the relevant demand elasticities etc.
 
--   explicit modeling of these demand shocks central in the applied IO literature following Berry-Levinsohn-Pakes 1995 (often ignored outside this literature).
+-   explicit modeling of these demand shocks central in the applied IO literature following @berry1995automobile (often ignored outside this literature).
+
+
 
 ### Key Challenge
 
-Let's ignore $t$.
-
-The demand of product $j$
+The **demand** of product $j$
 
 $$
-q_j (\boldsymbol x, \boldsymbol p, \boldsymbol \xi)
+q_{jt} (\boldsymbol X_{t}, P_t, \Xi_t)
 $$
 
 depends on:
 
--   $\boldsymbol p$: $J$-vector of *all* goods' prices
+-   $P_t$: $J$-vector of *all* goods' prices in market $t$
 
--   $\boldsymbol x$: $J \times k$ matrix of *all* non-price observables
+-   $\boldsymbol X_t$: $J \times k$ matrix of *all* non-price observables in market $t$
 
--   $\boldsymbol \xi$: J-vector of demand shocks for *all* goods
+-   $\Xi_t$: J-vector of demand shocks for *all* goods in market $t$
 
 **Key insight**: we have an endogeneity problem even if prices were exogenous!
+
+
 
 ### Price Endogeneity Adds to the Challenge
 
@@ -157,67 +173,72 @@ depends on:
 
     -   how do we proceed?
 
-## BLP Model
+
+
+## BLP: Model
 
 ### Goals of BLP
 
 Model of @berry1995automobile
 
-1.  parsimonious specification to generate the distribution $F_U (\cdot| \boldsymbol p, \boldsymbol \xi)$ of random utilities
+1.  parsimonious specification to generate the distribution $F_U (\cdot| P, \Xi)$ of random utilities
 2.  sufficiently rich heterogeneity in preferences to permit reasonable/flexible substitution patterns
 3.  be explicit about unobservables, including the nature of endogeneity "problem(s)"
 4.  use the model to reveal solutions to the identification problem, including appropriate instruments
 5.  computationally feasible (in early 1990s!) algorithm for consistent estimation of the model and standard errors.
+
+
 
 ### Utility Specification
 
 Utility of consumer $i$ for product $j$
 
 $$
-u_{ij} = x_j \beta_i - \alpha p_j + \xi_j + \epsilon_{ij}
+u_{ijt} = \boldsymbol x_{jt} \boldsymbol \beta_{it} - \alpha p_{jt} + \xi_{jt} + \epsilon_{ijt}
 $$
 
 Where
 
--   $x_j$: $K$-vector of characteristics of product $j$
+-   $\boldsymbol x_{jt}$: $K$-vector of characteristics of product $j$ in market $t$
 
--   $\beta_{i} = (\beta_{i}^{1}, \ldots, \beta_{i}^K)$: vector of tastes for characteristics $1,…,K$
+-   $\boldsymbol \beta_{it} = (\beta_{it}^{1}, ..., \beta_{it}^K)$: vector of tastes for characteristics $1,…,K$ in market $t$
 
-    -   $\beta_{i}^k = \beta_0^k + \sigma_k \zeta_{i}^k$
+    -   $\beta_{it}^k = \beta_0^k + \sigma_k \zeta_{it}^k$
 
-        -   $\beta_0^k$: usual taste for characteristic $k$
+        -   $\beta_0^k$: fixed taste for characteristic $k$ (the usual $\beta$)
 
-        -   $\zeta_{i}^k$: random taste, i.i.d. across consumers and markets
+        -   $\zeta_{it}^k$: random taste, i.i.d. across consumers and markets $t$
 
 -   $\alpha$: price elasticity
 
--   $p_{j}$ price of product $j$
+-   $p_{jt}$ price of product $j$ in market $t$
 
--   $\xi_{j}$: unobservable product shock at the level of products $\times$ market
+-   $\xi_{jt}$: unobservable product shock at the level of products $j$ $\times$ market $t$
 
--   $\epsilon_{ij}$: idiosyncratic (and latent) taste
+-   $\epsilon_{ijt}$: idiosyncratic (and latent) taste
+
+
 
 ### Exogenous and Endogenous Product Characteristics
 
 Utility of consumer $i$ for product $j$
 
 $$
-u_{ij} = x_j \beta_i - \alpha p_j + \xi_j + \epsilon_{ij}
+u_{ijt} = \boldsymbol x_{jt} \beta_{it} - \alpha p_{jt} + \xi_{jt} + \epsilon_{ijt}
 $$
 
--   exogenous characteristics: $x_{j} \perp \xi_{j}$
+-   exogenous characteristics: $\boldsymbol x_{jt} \perp \xi_{jt}$
 
--   endogenous characteristics: $p_{j}$ (usually a scalar, price)
+-   endogenous characteristics: $p_{jt}$ (usually a scalar, price)
 
-    -   typically each $p_j$ will depend on whole vector $\boldsymbol \xi = (\xi_1 , . . . , \xi_J )$ (and on own and others' costs)
-
+    -   typically each $p_{jt}$ will depend on whole vector $\Xi_t = (\xi_{1t} , . . . , \xi_{Jt} )$ 
+        -   and on own costs $mc_{jt}$ and others' costs $mc_{-jt}$
     -   we need to distinguish true effects of prices on demand from the
-
-    -   effects of $\boldsymbol \xi$ ; this will require instruments
-
-    -   of course the equation above is not an estimating equation ($u_{ij}$ not observed)
-
+    -   effects of $\Xi_t$ ; this will require **instruments**
+    -   of course the equation above is not an estimating equation ($u_{ijt}$ not observed)
     -   because prices and quantities are all endogenous - indeed determined - simultaneously, you may suspect (correctly) that instruments for prices alone may not suffice.
+
+
 
 ### Utility Specification, Rewritten
 
@@ -225,26 +246,281 @@ Rewrite
 
 $$
 \begin{align}
-u_{ij} &= x_j \beta_i - \alpha p_j + \xi_j + \epsilon_{ij} = \newline
-&= \delta_j + \nu_{ij}
+u_{ijt} &= \boldsymbol x_{jt} \boldsymbol \beta_{it} - \alpha p_{jt} + \xi_{jt} + \epsilon_{ijt} = \newline
+&= \delta_{jt} + \nu_{ijt}
 \end{align}
 $$
 
 where
 
--   $\delta_j = x_j \beta_0 - \alpha p_j + \xi_j + \epsilon_{ij}$: mean utility of good $j$ in market $t$
--   $\nu_{i j}=\sum_{k} x_{j t}^{k} \sigma^{k} \zeta_{i t}^{k}+\epsilon_{i j} \equiv x_{j} \tilde{\beta}_{i} + \epsilon_{i j}$ 
-    -   We split $\beta_i$ into its random ($\tilde{\beta}_{i}$) and non-random ($\beta_0$) part
+-   $\delta_{jt} = \boldsymbol x_{jt} \boldsymbol \beta_0 - \alpha p_{jt} + \xi_{jt}$
+    -   mean utility of good $j$ in market $t$
+-   $\nu_{ijt} = \sum_{k} x_{jt}^{k} \sigma^{k} \zeta_{i t}^{k} + \epsilon_{ijt} \equiv \boldsymbol x_{jt}  \tilde{\boldsymbol \beta}_{it} + \epsilon_{ijt}$ 
+    -   We split $\beta_{it}$ into its **random** ($\tilde{\beta}_{it}$) and **non-random** ($\beta_0$) part
+
+
+
+### From Consumer Utility to Demand
+
+With a **continuum of consumers in each market**: market shares = choice probabilities
+
+- P.S. continuum not needed, enough that sampling error on choice probs negligible compared to that of moments based on variation across products/markets
+
+$$
+s_{jt} (\Delta_t, \boldsymbol X_t, \boldsymbol \sigma) = \Pr (y_{it} = j) = \int_{\mathcal A_j (\Delta_t)} \text d F_{\nu} \Big(\nu_{i0t}, \nu_{i1t}, ... , \nu_{iJt} \ \Big| \ \boldsymbol X_t, \boldsymbol \sigma \Big)
+$$
+
+- where 
+  $$
+  \mathcal A_j(\Delta_t) = \Big\lbrace (\nu_{i0t}, \nu_{i1t}, ... , \nu_{iJt} ) \in \mathbb{R}^{J+1}: \delta_{jt} + \nu_{ijt} \geq \delta_{kt} + \nu_{ikt} \ , \ \forall k \Big\rbrace
+  $$
+  **In words**: market share of firm $j$ is the frequency of consumers buying good $j$
+
+**Demand** is just shares $s_{jt}$ per market size $M_t$
+$$
+q_{jt} = M_t \times s_j (\Delta_t, \boldsymbol X_t, \boldsymbol \sigma)
+$$
+
+
+### Why Random Coefficients?
+
+**Without** random coefficients
+$$
+\begin{aligned}
+u_{ijt} &= \underbrace{\boldsymbol x_{jt} \boldsymbol \beta_0 - \alpha p_{jt} + \xi_{jt}} + \epsilon_{ijt} \newline
+&= \hspace{3.4em} \delta_{jt} \hspace{3.4em} + \epsilon_{ijt}
+\end{aligned}
+$$
+If $\epsilon_{ijt}$ are iid and independent of $(\boldsymbol X_t, P_t)$, e.g. as in the multinomial logit or probit models, 
+
+- products differ only in mean utilities $\delta_{jt}$
+- $\to$ market shares depend only on the mean utilities
+- $\to$ price elasticities (own and cross) depend only on mean utilities too
+
+**Implication**: two products with the same market shares have the same cross elasticities w.r.t. **all** other products
+
+
+
+### Does this matter?
+
+**Yes**!
+
+- *Mercedes class-A* and *Fiat Panda* might both have low market shares
+- But realistically should have very different cross-price elasticities w.r.t. *BMW series-2*
+
+**What is the issue?**
+
+- Models (like MNL) that have only **iid additive taste shocks** impose very **restrictive relationships** between the **levels** of market shares and the matrix of own and cross-price **derivatives** 
+
+  - Impact on **counterfactuals**!
+
+- Restrictions only coming from model assumptions (analytical convenience)
+
+- Models always imporse restrictions 
+
+  - necessary for estimation
+  - but must allow flexibility in the relevant dimensions
+
+  
+
+### How do random coefficients help?
+
+In **reality**:
+
+- goods differ in multiple dimensions
+- consumers have (heterogeneous) preferences over these differences
+
+How do **random coefficients** capture it?
+
+- large $\beta_i^k$ $\leftrightarrow$ strong taste for characteristic $k$
+  - e.g., maximum speed for sport car 
+- Consumer $i$’s first choice likely to have high value of $x^k$
+- $i$’s second choice too!
+  - **Mark**: cross elasticities are always about 1st vs. 2nd choices
+
+Incorporating this allows more sensible substitution patterns
+
+- competition is mostly “local”
+- i.e., between firms offering products appealing to the same consumers.
+
+
+
+### Which random coefficients?
+
+Which characteristics have random coefficients?
+
+- dummies for subsets of products?
+  - @berry1994estimating: covers the nested logit as a special case
+- certain horizontal or vertical characteristics?
+  - parts of $(\boldsymbol X_t, P_t)$?
+
+**In practice**
+
+- Choice depends on the application and data set, including instruments
+- Too many RC’s (w.r.t quantity of data available) $\to$ imprecise estimates of $\boldsymbol \sigma$
+
+
+
+## BLP: Estimation
+
+### Setting
+
+**Observables**
+
+- $\boldsymbol X_t$: product characteristics
+- $P_t$: prices
+- $S_t$: observed market shares
+- $\boldsymbol W_t$: observable cost shifters
+- $\boldsymbol Z_t$: excluded instruments
+
+
+
+**Sketch of procedure**
+
+1. start with demand model alone
+2. suppose $ F_{\nu} (\cdot  \ | \ \boldsymbol X, \boldsymbol \sigma )$ is known (i.e., $\sigma$ known)
+3. for each market $t$, find mean utilities $\Delta_t \in \mathbb R$ such that $s_{jt} (\Delta_t, \boldsymbol X_t, \boldsymbol \sigma) =  s^{obs}_{jt} \ \forall j$
+   - i.e.,“invert” model at observed market shares to find mean utilities $\boldsymbol \delta$
+   - where $s^{obs}_{jt}$ are the observed market shares
+4. using IV ,e.g. $\mathbb E [\boldsymbol z_{jt} | \xi_{jt} ] = 0$, estimate the equation
+
+
+
+### Issues
+
+1. What instruments?
+2. Will the “inversion” step actually work?
+3. What about $\boldsymbol \sigma$??
+4. Formal estimator? 
+5. Computational algorithm(s)?
+6. Supply side
+   - additional restrictions (moment conditions) 
+     - help estimation of demand
+   - additional parameters: marginal cost function
+     - why? may care directly
+     - and needed for counterfactuals that change equilibrium quantities unless $mc$ is constant
+
+
+
+### Instruments
+
+We need intruments for all endogenous variables—**prices and quantities**—**independently**.
+
+1. Excluded cost shifters $\boldsymbol W_t$ (classic)
+
+   - Usually: wages, material costs, shipping cost to market $t$, taxes/tariffs, demand shifters from other markets
+
+2. Or proxies for them
+
+   - Usually: price of same good in another mkt ("*Hausman instruments*")
+
+3. Markup shifters: 
+
+   - Usually: characteristics of “nearby” markets ("*Waldfogel instruments*")
+
+   - Logic: income/age/education in San Francisco might affect prices in Oakland but might be independent fo Oakland preferences
+
+4. Product characteristics of other firms in the same market $\boldsymbol X_{-jt}$
+
+   - "*BLP instruments*"
+   - affect quantities directly; affect prices (markups) via equilibrium only
+
+
+
+### Inversion
+
+How do we get from market shares to prices??
+
+Given x,σ and any positive shares sh, define the following **mapping** $\Phi : \mathbb R^j \to \mathbb R^j$
+$$
+\Phi (\Delta_t) = \Delta_t + \log\Big( \hat S^{obs}_t \Big) - \log \Big( S_t (\Delta_t, \boldsymbol X_t, \boldsymbol \sigma) \Big)
+$$
+@berry1994estimating: for any nonzero shares sh, Φ is a **contraction**
+
+- under mild conditions on the linear random coefficients random utility model
+- extreme value and normal random coeff not necessary
+
+What does it imply?
+
+- It has a unique fixed point: we can compute $\delta_{jt} = \delta (S_t, \boldsymbol X_t, \boldsymbol \sigma)$
+- We can compute the fixed point iterating the contraction from any initial guess $\Delta_{0t}$
+
+
+
+### What about $\sigma$?
+
+What we we got?
+
+- inversion result: for any market shares and any $\boldsymbol \sigma$, we can find a vector of mean utilities $\Delta_t$ that rationalizes the data with the BLP model
+- a non-identification result? there is no information about $\boldsymbol \sigma$ from market shares?
+
+What are we forgetting?
+
+- **Cross-market variation!**
+- We can get the mean utilities $\delta_{jt} = \boldsymbol x_{jt} \boldsymbol \beta_0 - \alpha p_{jt} + \xi_{jt}$
+- As in OLS, use $\boldsymbol z_{jt} \perp \xi_{jt}$ to get identification of $(\alpha, \boldsymbol \beta_0, \boldsymbol \sigma)$
+
+
+
+### Identification of $\sigma$
+
+We are trying to estimate $(\alpha, \boldsymbol \beta_0, \boldsymbol \sigma)$ from
+$$
+\mathbb E \Big[ \xi_{jt} (\alpha, \boldsymbol \beta_0, \boldsymbol \sigma) \cdot \boldsymbol z_{jt} \Big] = \mathbb E \Big[ \big( \delta_{jt}(\boldsymbol \sigma) - \boldsymbol x_{jt} \boldsymbol \beta_0 + \alpha p_{jt} \big) \cdot \boldsymbol z_{jt} \Big]
+$$
+ What kind of **intruments** $\boldsymbol z_{jt}$ do we need?
+
+- $\boldsymbol x_{jt}$ (for $\boldsymbol \beta_0$)
+- intruments for $p_{jt}$ (for $\alpha$)
+- **but also** something for $\boldsymbol \sigma$!
+
+
+
+### BLP Estimation
+
+**Steps**
+
+1. Take guess of parameters $(\alpha, \boldsymbol \beta_0, \boldsymbol \sigma)$ 
+2. From observed market shared $S^{obs}_{t}$ and $\boldsymbol \sigma$ get mean utilities $\delta_{jt} (\boldsymbol \sigma)$
+3. Use also $(\alpha, \boldsymbol \beta_0)$ to get $\xi_{jt} (\alpha, \boldsymbol \beta_0, \boldsymbol \sigma)$ 
+4. Compute empirical moments $\frac{1}{JT} \xi_{jt} (\alpha, \boldsymbol \beta_0, \boldsymbol \sigma) \cdot \boldsymbol z_{jt}$
+
+The GMM estimator is $(\hat \alpha, \boldsymbol{\hat{\beta}_0}, \boldsymbol{\hat{\sigma}})$ that get the empirical moments as close to $0$ as possible.
+
+**Issues**
+
+1. Computing $S_t (\Delta_t, \boldsymbol X_t, \boldsymbol \sigma)$ involves a **high dimensional integral**
+   - Use simulation to approximate distribution of random tastes $\zeta_{it}^k$
+   - P.S. recall that we have decomposed random coefficients $\beta_{it}^k$ as $\beta_{it}^k = \beta_0^k + \sigma_k \zeta_{it}^k$
+2. $\xi_{jt} (\alpha, \boldsymbol \beta_0, \boldsymbol \sigma)$ has **no closed form solution**
+   - Compute it via contraction
+   - MPEC? 
 
 
 
 
 
+## Computation
+
+### Nested fixed point algorithm
+
+**Sketch of the algorithm**
+
+- Draw a vector of consumer tastes
+- Until you have found a minimum for $\mathbb E \Big[ \xi_{jt} (\alpha, \boldsymbol \beta_0, \boldsymbol \sigma) \cdot \boldsymbol z_{jt} \Big]$ do
+  - Pick a vector of parameter values $(\alpha, \boldsymbol \beta_0, \boldsymbol \sigma)$
+  - Initialize mean utilities $\delta_{jt}^0$
+  - Until $\big|\big| \Delta_{t}^{n+1} - \Delta_{t}^{n} \big|\big| < tolerance$ do
+    - Compute implied shares: $s_{jt} (\Delta_{t}^{n}, \boldsymbol X_t, \boldsymbol \sigma) = \int \frac{\exp \left[ \boldsymbol x_{j t} \boldsymbol{\tilde{\beta}}_{it}+\delta_{j t}\right]}{1+\sum_{j^{\prime}} \exp \left[\boldsymbol x_{j^{\prime} t} \boldsymbol{\tilde{\beta}}_{it}+\delta_{j' t}\right]} f\left( \boldsymbol{\tilde{\beta}}_{it} \mid \theta\right) d \tilde{\beta}_{i t}$
+    - Update mean utilities: $\Delta_{t}^{n+1} = \Delta_{t}^{n} + \log\Big( \hat S^{obs}_t \Big) - \log \Big( S_t (\Delta_{t}^{n}, \boldsymbol X_t, \boldsymbol \sigma) \Big)$
+  - Compute $\xi_{jt} = \delta_{jt} - \boldsymbol x_{jt} \boldsymbol \beta_0 + \alpha p_{jt}$
+  - Compute $\mathbb E \Big[ \xi_{jt} (\alpha, \boldsymbol \beta_0, \boldsymbol \sigma) \cdot \boldsymbol z_{jt} \Big]$ 
 
 
 
+### Notes
 
-
+- Important to draw shocks outside the optimization routine!
 
 
 

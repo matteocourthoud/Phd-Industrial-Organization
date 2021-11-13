@@ -24,6 +24,7 @@ output:
     smaller: true
     transition: 0
     slide_level: 3
+    css: custom.css
 editor_options: 
   markdown: 
     wrap: 72
@@ -708,7 +709,6 @@ Now we have all the pieces to estimate $\theta$!
     \end{array}\right)
     \end{align}
     $$
-    
     
 -   Depends on a simple inequality comparing
 

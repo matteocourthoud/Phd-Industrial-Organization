@@ -5,6 +5,7 @@ type: book
 weight: 12
 date: 2021-10-29
 bibliography: references.bib
+link-citations: true
 output: 
   html_notebook: 
     toc: true
@@ -14,10 +15,20 @@ output:
     smaller: true
     transition: 0
     slide_level: 3
+    css: custom.css
   md_document:
     variant: markdown_mmd
     preserve_yaml: true
 ---
+
+```{r, include=FALSE, echo=FALSE}
+# Import packages
+library(tidyverse)    # Fur alles
+library(data.table)   # For freadr
+library(knitr)        # For kable
+library(broom)        # For tidy
+library(AER)          # For ivreg
+```
 
 ```{r load julia if not already loaded, include=FALSE, echo=FALSE}
 if (!("JuliaCall" %in% (.packages()))) {
@@ -31,133 +42,60 @@ if (!("JuliaCall" %in% (.packages()))) {
 #Pkg.add("Optim")
 #Pkg.add("Statistics")
 #Pkg.add("Distributions")
+#Pkg.add("Random")
+#Pkg.add("DataFrames")
+#Pkg.add("CSV")
 
 using Optim
 using Distributions
 using Statistics
+using Random
+using DataFrames
+using CSV
 ```
 
-### Setting
+### Intro
 
-From @berry1995automobile
+In this session, I am going to cover demand estimation.
 
--   
+- Compute equilibrium outcomes with RCL demand
+- Simulate market-level data
+  - Extremely similar to the logit demand simulation
+- Build the BLP estimator from @berry1995automobile
 
 
-### Code Demand
+
+### Model
+
+In this first part, we are going to assume that consumer $i \in \lbrace1,...,I\rbrace$ utility from good $j \in \lbrace1,...,J\rbrace$ in market $t \in \lbrace1,...,T\rbrace$ takes the form
+
+$$
+u_{ijt} = \boldsymbol x_{jt} \boldsymbol \beta_{it} - \alpha p_{jt} + \xi_{jt} + \epsilon_{ijt}
+$$
+
+where
+
+- $\xi_{jt}$ is type-1 extreme value distributed
+- $\boldsymbol \beta_{it}$: has dimension $K$
+  $$\beta_{it}^k = \beta_0^k + \sigma_k \zeta_{it}^k$$
+  - $\beta_0^k$: fixed taste for characteristic $k$ (the usual $\beta$)
+  - $\zeta_{it}^k$: random taste, i.i.d. across consumers and markets $t$
+
+### Setup
+
+We have $J$ firms and each product has $K$ characteristics. 
 
 ```{julia}
-function demand(p::Vector, mu::Real)::Vector
-    """Compute demand"""
-    u = [- p; 0] ./ mu            # Utility
-    u = u .- max(u...)            # Normalize for simplicity
-    e = exp.(u)                   # Take exponential
-    d = e ./ sum(e)               # Compute demand
-    return d[1:end-1]
-end;
-```
-
-We can try with an example.
-
-```{julia}
-p = [1.5, 2, 3];
-mu = 1.0;
-demand(p, mu)
-```
-
-### Code Supply
-
-```{julia}
-function profits(p::Vector, mu::Real, c::Vector)::Vector
-    """Compute profits"""
-    d = demand(p, mu)           # Compute demand
-    pr = (p - c) .* d           # Compute profits
-    return pr
-end;
-```
-
-We can try with an example.
-
-```{julia}
-c = [1, 1, 1.5];
-profits(p, mu, c)
+J = 3;                  # 3 firms == products
+K = 2;                  # 2 product characteristics
+c = rand(J);            # Random uniform marginal costs
+xi = randn(J+1);        # Random normal individual shocks
+X = randexp(J, K);      # Random exponential product characteristics
+b = [ones(K); -1]       # Unitary preferences (also for prices)
 ```
 
 
 
-### Code Best Reply
-
-We first code the best reply of firm $j$
-
-```{julia}
-function profits_j(pj::Real, j::Int, p::Vector, mu::Real, c::Vector)::Real
-    """Compute profits of firm j"""
-    p[j] = pj                 # Insert price of firm j
-    pr = profits(p, mu, c)    # Compute profits
-    return pr[j]
-end;
-```
-
-Let's test it.
-
-```{julia}
-j = 1;
-obj_fun(pj) = - profits_j(pj[1], j, copy(p), mu, c);
-pj = optimize(x -> obj_fun(x), [1.0], LBFGS()).minimizer[1]
-```
-
-What are the implied profits now?
-
-```{julia}
-print("Profits old: ",  round.(profits(p, mu, c), digits=4))
-p_new = [pj, p[2], p[3]];
-print("Profits new: ",  round.(profits(p_new, mu, c), digits=4))
-```
-
-Indeed firm 1 has increased its profits.
-
-### Code Equilibrium
-
-We can now compute equilibrium prices
-
-```{julia}
-function equilibrium(p::Vector, mu::Real, c::Vector)::Vector
-    """Compute equilibrium prices and profits"""
-    
-    # Until convergence
-    dist = 1;
-    iter = 0;
-    while (dist > 1e-8) && (iter<1000)
-    
-        # Compute best reply for each firm
-        p_old = copy(p);
-        for j=1:length(p)
-            obj_fun(pj) = - profits_j(pj[1], j, p, mu, c);
-            optimize(x -> obj_fun(x), [1.0], LBFGS()).minimizer[1];
-        end
-        
-        # Update distance
-        dist = max(abs.(p - p_old)...);
-        iter += 1;
-    end
-    return p
-end;
-```
-
-### Code Equilibrium
-
-Let's test it
-```{julia}
-# Compute equilibrium prices
-p_eq = equilibrium(p, mu, c);
-print("Equilibrium prices: ",  round.(p_eq, digits=4))
-
-# And profits
-pi_eq = profits(p_eq, mu, c);
-print("Equilibrium profits: ",  round.(pi_eq, digits=4))
-```
-
-As expected the prices of the first 2 firms are lower and their profits are higher.
 
 
 ## References

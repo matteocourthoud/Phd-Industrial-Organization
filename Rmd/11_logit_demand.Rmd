@@ -1,0 +1,365 @@
+---
+title: "Coding: Logit Demand"
+author: "Matteo Courthoud"
+type: book
+weight: 11
+date: 2021-11-10
+bibliography: references.bib
+link-citations: true
+output: 
+  html_notebook: 
+    toc: true
+    toc_depth: 2
+  ioslides_presentation:
+    widescreen: true
+    smaller: true
+    transition: 0
+    slide_level: 3
+    css: custom.css
+  md_document:
+    variant: markdown_mmd
+    preserve_yaml: true
+---
+
+```{r, include=FALSE, echo=FALSE}
+# Import packages
+library(tidyverse)    # Fur alles
+library(data.table)   # For freadr
+library(knitr)        # For kable
+library(broom)        # For tidy
+library(AER)          # For ivreg
+```
+
+```{r load julia if not already loaded, include=FALSE, echo=FALSE}
+if (!("JuliaCall" %in% (.packages()))) {
+  library(JuliaCall)
+  julia <- julia_setup("/Users/mcourt/Documents/Julia-1.5.app/Contents/Resources/julia/bin")
+}
+```
+
+```{julia, include=FALSE, echo=FALSE}
+#import Pkg
+#Pkg.add("Optim")
+#Pkg.add("Statistics")
+#Pkg.add("Distributions")
+#Pkg.add("Random")
+#Pkg.add("DataFrames")
+#Pkg.add("CSV")
+
+using Optim
+using Distributions
+using Statistics
+using Random
+using DataFrames
+using CSV
+```
+
+### Intro
+
+In this session, I am going to cover demand estimation.
+
+- Compute equilibrium outcomes with Logit demand
+- Simulate a dataset 
+- Estimate Logit demand
+- Compare different instruments
+- Include supply
+
+
+
+### Model
+
+In this first part, we are going to assume that consumer $i \in \lbrace1,...,I\rbrace$ utility from good $j \in \lbrace1,...,J\rbrace$ in market $t \in \lbrace1,...,T\rbrace$ takes the form
+
+$$
+u_{ijt} = \boldsymbol x_{jt} \boldsymbol \beta_{it} - \alpha p_{jt} + \xi_{jt} + \epsilon_{ijt}
+$$
+
+where
+
+- $\xi_{jt}$ is type-1 extreme value distributed
+- $\boldsymbol \beta$ has dimension $K$
+  - i.e. goods have $K$ characteristics
+
+### Setup
+
+We have $J$ firms and each product has $K$ characteristics
+
+```{julia, results="hide"}
+J = 3;                  # 3 firms == products
+K = 2;                  # 2 product characteristics
+c = rand(J);            # Random uniform marginal costs
+ξ = randn(J+1);         # Random normal individual shocks
+X = randexp(J, K);      # Random exponential product characteristics
+β = [.5, 2, -1];        # Preferences (last one is for prices, i.e. alpha)
+```
+
+
+### Code Demand
+
+```{julia}
+function demand(p::Vector, X::Matrix, β::Vector, ξ::Vector)::Tuple{Vector, Number}
+    """Compute demand"""
+    δ = 1 .+ [X p] * β              # Mean value
+    u = [δ; 0] + ξ                  # Utility
+    e = exp.(u)                     # Take exponential
+    q = e ./ sum(e)                 # Compute demand
+    return q[1:end-1], q[end]
+end;
+```
+
+We can try with an example.
+
+```{julia}
+p = 2 .* c;
+demand(p, X, β, ξ)
+```
+
+### Code Supply
+
+```{julia}
+function profits(p::Vector, c::Vector, X::Matrix, β::Vector, ξ::Vector)::Vector
+    """Compute profits"""
+    q, _ = demand(p, X, β, ξ)       # Compute demand
+    pr = (p - c) .* q               # Compute profits
+    return pr
+end;
+```
+
+We can try with an example.
+
+```{julia}
+profits(p, c, X, β, ξ)
+```
+
+
+
+### Code Best Reply
+
+We first code the best reply of firm $j$
+
+```{julia}
+function profits_j(pj::Number, j::Int, p::Vector, c::Vector, X::Matrix, β::Vector, ξ::Vector)::Number
+    """Compute profits of firm j"""
+    p[j] = pj                       # Insert price of firm j
+    pr = profits(p, c, X, β, ξ)     # Compute profits
+    return pr[j]
+end;
+```
+
+Let's test it.
+
+```{julia}
+j = 1;
+obj_fun(pj) = - profits_j(pj[1], j, copy(p), c, X, β, ξ);
+pj = optimize(x -> obj_fun(x), [1.0], LBFGS()).minimizer[1]
+```
+
+What are the implied profits now?
+
+```{julia}
+print("Profits old: ",  round.(profits(p, c, X, β, ξ), digits=4))
+p_new = copy(p);
+p_new[j] = pj;
+print("Profits new: ",  round.(profits(p_new, c, X, β, ξ), digits=4))
+```
+
+Indeed firm 1 has increased its profits.
+
+### Code Equilibrium
+
+We can now compute equilibrium prices
+
+```{julia}
+function equilibrium(c::Vector, X::Matrix, β::Vector, ξ::Vector)::Vector
+    """Compute equilibrium prices and profits"""
+    p = 2 .* c;
+    dist = 1;
+    iter = 0;
+
+    # Until convergence
+    while (dist > 1e-8) && (iter<1000)
+
+        # Compute best reply for each firm
+        p1 = copy(p);
+        for j=1:length(p)
+            obj_fun(pj) = - profits_j(pj[1], j, p, c, X, β, ξ);
+            optimize(x -> obj_fun(x), [1.0], LBFGS()).minimizer[1];
+        end
+
+        # Update distance
+        dist = max(abs.(p - p1)...);
+        iter += 1;
+    end
+    return p
+end;
+```
+
+### Code Equilibrium
+
+Let's test it
+```{julia}
+# Compute equilibrium prices
+p_eq = equilibrium(c, X, β, ξ);
+print("Equilibrium prices: ",  round.(p_eq, digits=4))
+
+# And profits
+pi_eq = profits(p_eq, c, X, β, ξ);
+print("Equilibrium profits: ",  round.(pi_eq, digits=4))
+```
+
+As expected the prices of the first 2 firms are lower and their profits are higher.
+
+### DGP
+
+Let's generate our Data Generating Process (DGP).
+
+- $\boldsymbol x \sim exp(V_{x})$
+- $\xi \sim N(0, V_{\xi})$
+- $w \sim N(0, 1)$
+- $\omega \sim N(0, 1)$
+
+```{julia}
+function draw_data(J::Int, K::Int, rangeJ::Vector, varX::Number, varξ::Number)::Tuple
+    """Draw data for one market"""
+    J_ = rand(rangeJ[1]:rangeJ[2])
+    X_ = randexp(J_, K) * varX
+    ξ_ = randn(J_+1) * varξ
+    w_ = rand(J_)
+    ω_ = rand(J_)
+    c_ = w_ + ω_
+    j_ = sort(sample(1:J, J_, replace=false))
+    return X_, ξ_, w_, c_, j_
+end;
+
+```
+
+
+### Equilibrium
+
+We first compute the equilibrium in one market.
+
+```{julia}
+function compute_mkt_eq(J::Int, b::Vector, rangeJ::Vector, varX::Number, varξ::Number)::DataFrame
+    """Compute equilibrium one market"""
+
+    # Initialize variables
+    K = size(β, 1) - 1
+    X_, ξ_, w_, c_, j_ = draw_data(J, K, rangeJ, varX, varξ)
+
+    # Compute equilibrium
+    p_ = equilibrium(c_, X_, β, ξ_)      # Equilibrium prices
+    q_, q0 = demand(p_, X_, β, ξ_)       # Demand with shocks
+    pr_ = (p_ - c_) .* q_               # Profits
+
+    # Save to data
+    q0_ = ones(length(j_)) .* q0
+    df = DataFrame(j=j_, w=w_, p=p_, q=q_, q0=q0_, pr=pr_)
+    for k=1:K
+      df[!,"x$k"] = X_[:,k]
+      df[!,"z$k"] = sum(X_[:,k]) .- X_[:,k]
+    end
+    return df
+end;
+```
+
+### Simulate Dataset
+
+We can now write the code to simulate the whole dataset.
+
+```{julia}
+function simulate_data(J::Int, b::Vector, T::Int, rangeJ::Vector, varX::Number, varξ::Number)
+    """Simulate full dataset"""
+    df = compute_mkt_eq(J, β, rangeJ, varX, varξ)
+    df[!, "t"] = ones(nrow(df)) * 1
+    for t=2:T
+        df_temp = compute_mkt_eq(J, β, rangeJ, varX, varξ)
+        df_temp[!, "t"] = ones(nrow(df_temp)) * t
+        append!(df, df_temp)
+    end
+    CSV.write("../data/logit.csv", df)
+end;
+```
+
+### Simulate Dataset (2)
+
+We generate the dataset by simulating many markets that differ by
+
+- number of firms (and their identity)
+- their marginal costs
+- their product characteristics
+
+```{julia, results="hide"}
+# Set parameters
+J = 10;                 # Number of firms
+K = 2;                  # Product caracteristics
+T = 500;                # Markets
+β = [.5, 2, -1];        # Preferences
+rangeJ = [2, 6];        # Min and max firms per market
+varX = 1;               # Variance of X
+varξ = 2;               # Variance of xi
+
+# Simulate
+df = simulate_data(J, β, T, rangeJ, varX, varξ);
+```
+
+
+### The Data
+
+What does the data look like? Let's switch to R!
+
+```{r}
+# Read data
+df = fread("../data/logit.csv")
+kable(df[1:5,1:7], digits=4)
+```
+
+
+
+### Estimation
+
+First we need to compute the dependent variable
+
+```{r}
+df$y = log(df$q) - log(df$q0)
+```
+
+Now we can estimate the logit model. The true values are $alpha=1$.
+
+```{r}
+ols <- lm(y ~ x1 + x2 + p, data=df)
+kable(tidy(ols), digits=4)
+```
+
+The estimate of $\alpha = 1$ is biased (positive and significant) since $p$ is endogenous. We need instruments.
+
+
+
+### IV 1: Cost Shifters
+
+First set of instruments: **cost shifters**.
+
+```{r, warning=FALSE}
+fm_costiv <- ivreg(y ~ x1 + x2 + p | x1 + x2 + w, data=df)
+kable(tidy(fm_costiv), digits=4)
+```
+
+Now the estimate of $\alpha$ is negative and significant.
+
+
+
+### IV 2: BLP Instruments
+
+Second set of instruments: **product characteristics of other firms in the same market**.
+
+```{r, warning=FALSE}
+fm_blpiv <- ivreg(y ~ x1 + x2 + p | x1 + x2 + z1 + z2, data=df)
+kable(tidy(fm_blpiv), digits=4)
+```
+
+Also the BLP instruments deliver an estimate of $\alpha$ is negative and significant.
+
+
+
+## References
+
+------------------------------------------------------------------------

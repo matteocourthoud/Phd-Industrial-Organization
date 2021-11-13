@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Coding: Rust (1987)</title>
+  <title>Coding: Logit Demand</title>
 
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="chrome=1">
@@ -9,7 +9,7 @@
 
 
 
-  <meta name="date" content="2021-10-29" />
+  <meta name="date" content="2021-11-10" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -20,7 +20,7 @@
     var SLIDE_CONFIG = {
       // Slide settings
       settings: {
-                title: 'Coding: Rust (1987)',
+                title: 'Coding: Logit Demand',
                         useBuilds: true,
         usePrettify: true,
         enableSlideAreas: true,
@@ -3312,266 +3312,467 @@ background-color: #e5e5e5;
       <h1 data-config-title><!-- populated from slide_config.json --></h1>
       
       <p data-config-presenter><!-- populated from slide_config.json --></p>
-            <p style="margin-top: 6px; margin-left: -2px;">2021-10-29</p>
+            <p style="margin-top: 6px; margin-left: -2px;">2021-11-10</p>
           </hgroup>
   </slide>
 
-<slide class=""><hgroup><h2>Setting</h2></hgroup><article  id="setting" class="smaller ">
+<slide class=""><hgroup><h2>Intro</h2></hgroup><article  class="smaller " id="intro">
 
-<p>From <span class="cite">Rust (<a href='#ref-rust1988maximum' title=''>1988</a>)</span></p>
-
-<ul>
-<li><p>An agent owns a fleet to buses</p></li>
-<li><p>Buses get old over time</p></li>
-<li><p>The older the bus is, the most costly it is to maintain</p></li>
-<li><p>The agent can decide to replace the bus engine with a new one, at a cost</p></li>
-<li><p><strong>Dynamic trade-off</strong></p>
+<p>In this session, I am going to cover demand estimation.</p>
 
 <ul>
-<li><p>What is the best moment to replace the engine?</p></li>
-<li><p>You don’t want to replace an engine too early</p>
-
-<ul>
-<li>doesn’t change much</li>
-</ul></li>
-<li><p>You don’t want to replace an engine too late</p>
-
-<ul>
-<li>avoid unnecessary maintenance costs</li>
-</ul></li>
-</ul></li>
+<li>Compute equilibrium outcomes with Logit demand</li>
+<li>Simulate a dataset</li>
+<li>Estimate Logit demand</li>
+<li>Compare different instruments</li>
+<li>Include supply</li>
 </ul>
 
-</article></slide><slide class=""><hgroup><h2>State</h2></hgroup><article  id="state" class="smaller ">
+</article></slide><slide class=""><hgroup><h2>Model</h2></hgroup><article  class="smaller " id="model">
 
-<ul>
-<li><p><strong>State</strong>: mileage of the bus</p>
-
-<p>\[x_t \in \lbrace 1, ..., 10 \rbrace \]</p></li>
-<li><p><strong>State transitions</strong>: with probability \(\lambda\) the mileage of the bus increases</p>
+<p>In this first part, we are going to assume that consumer \(i \in \lbrace1,...,I\rbrace\) utility from good \(j \in \lbrace1,...,J\rbrace\) in market \(t \in \lbrace1,...,T\rbrace\) takes the form</p>
 
 <p>\[
-  x_{t+1} = \begin{cases}
-  \min \lbrace x_t + 1,10 \rbrace  &amp; \text { with probability } \lambda \newline 
-  x_t &amp; \text { with probability } 1 - \lambda
-  \end{cases}
+u_{ijt} = \boldsymbol x_{jt} \boldsymbol \beta_{it} - \alpha p_{jt} + \xi_{jt} + \epsilon_{ijt}
 \]</p>
 
-<p>Note that \(\lambda\) does not depend on the value of the state</p></li>
-</ul>
-
-</article></slide><slide class=""><hgroup><h2>Actions</h2></hgroup><article  id="actions" class="smaller ">
+<p>where</p>
 
 <ul>
-<li><p><strong>Action</strong>: replacement decision \[
-  i_t \in \lbrace 0, 1 \rbrace
-  \]</p></li>
-<li><p><strong>Payoffs</strong></p>
+<li>\(\xi_{jt}\) is type-1 extreme value distributed</li>
+<li>\(\boldsymbol \beta\) has dimension \(K\)
 
 <ul>
-<li><p>Per-period maintenance cost</p></li>
-<li><p>Cost of replacement \[
- u\left(x_{t}, i_{t}, \epsilon_{1 t}, \epsilon_{2 t} ; \theta\right)= 
- \begin{cases}
- -\theta_{1} x_{t}-\theta_{2} x_{t}^{2}+\epsilon_{0 t}, &amp; \text { if } i_{t}=0 \newline 
- -\theta_{3}+\epsilon_{1 t}, &amp; \text { if } i_{t}=1
- \end{cases}
- \]</p></li>
+<li>i.e. goods have \(K\) characteristics</li>
 </ul></li>
 </ul>
 
-</article></slide><slide class=""><hgroup><h2>Simulation</h2></hgroup><article  id="simulation" class="smaller ">
+</article></slide><slide class=""><hgroup><h2>Setup</h2></hgroup><article  class="smaller " id="setup">
 
-<ul>
-<li><p>Start with an initial value function \(V(x_t)=0\)</p></li>
-<li><p>Compute expected value w.r.t. \(\lambda\)</p>
+<p>We have \(J\) firms and each product has \(K\) characteristics</p>
 
-<p>\[
-W(x_t) = \begin{cases}
--\theta_1 x_t - \theta_2 x_t^2 + \beta \Big[(1-\lambda) V(x_t) + \lambda V(\min \lbrace x_t+1,10 \rbrace ) \Big] , &amp; \text { if } i_t=0 \newline
--\theta_3 + \beta \Big[(1-\lambda) V(0) + \lambda V(1) \Big] , &amp; \text { if } i_t=1
-\end{cases}
-\]</p></li>
-<li><p>Compute the new value of V \[
-V&#39;(x_t) = \log \Big( e^{W(x_t|i_t=0)} + e^{W(x_t|i_t=1)} \Big)
-\]</p></li>
-<li><p>Repeat until convergence</p></li>
-</ul>
+<pre class = 'prettyprint lang-julia'>J = 3;                  # 3 firms == products
+K = 2;                  # 2 product characteristics
+c = rand(J);            # Random uniform marginal costs
+ξ = randn(J+1);         # Random normal individual shocks
+X = randexp(J, K);      # Random exponential product characteristics
+β = [.5, 2, -1];        # Preferences (last one is for prices, i.e. alpha)</pre>
 
-</article></slide><slide class=""><hgroup><h2>Code</h2></hgroup><article  id="code" class="smaller ">
+</article></slide><slide class=""><hgroup><h2>Code Demand</h2></hgroup><article  class="smaller " id="code-demand">
 
-<p>First we set the parameter values.</p>
-
-<pre class = 'prettyprint lang-julia'># Set parameters
-θ = [0.13; -0.004; 3.1];
-λ = 0.82;
-β = 0.95;</pre>
-
-<p>Then we set the state space.</p>
-
-<pre class = 'prettyprint lang-julia'># State space
-x = Vector(0:10);</pre>
-
-</article></slide><slide class=""><hgroup><h2>Static utility</h2></hgroup><article  id="static-utility" class="smaller ">
-
-<p>First, we can compute static utility.</p>
-
-<pre class = 'prettyprint lang-julia'>function compute_U(θ::Vector, x::Vector)::Matrix
-    &quot;&quot;&quot;Compute static utility&quot;&quot;&quot;
-    u1 = - θ[1]*x - θ[2]*x.^2       # Utility of not investing
-    u2 = - θ[3]*ones(size(x))       # Utility of investing
-    U = [u1 u2]                     # Combine in a matrix
-    return U
+<pre class = 'prettyprint lang-julia'>function demand(p::Vector, X::Matrix, β::Vector, ξ::Vector)::Tuple{Vector, Number}
+    &quot;&quot;&quot;Compute demand&quot;&quot;&quot;
+    δ = 1 .+ [X p] * β              # Mean value
+    u = [δ; 0] + ξ                  # Utility
+    e = exp.(u)                     # Take exponential
+    q = e ./ sum(e)                 # Compute demand
+    return q[1:end-1], q[end]
 end;</pre>
 
-</article></slide><slide class=""><hgroup><h2>Value Function</h2></hgroup><article  id="value-function" class="smaller ">
+<p>We can try with an example.</p>
 
-<p>We can now set up the value function iteration</p>
+<pre class = 'prettyprint lang-julia'>p = 2 .* c;
+demand(p, X, β, ξ)</pre>
 
-<pre class = 'prettyprint lang-julia'>function compute_V(θ::Vector, λ::Number, β::Number, x::Vector)::Matrix
-    &quot;&quot;&quot;Compute value function by Bellman iteration&quot;&quot;&quot;
-    K = length(x)                                 # Dimension of the state space
-    U = compute_U(θ, x)                           # Static utility
-    index_λ = Int[1:K [2:K; K]];                  # Mileage index
-    index_I = Int[1:K ones(K,1)];                 # Investment index
+<pre >## ([0.9643193749862645, 0.030182666460296798, 0.003283771830822899], 0.0022141867226158412)</pre>
 
-    # Iterate the Bellman equation until convergence
-    V_bar = zeros(K, 2);
-    V_bar1 = V_bar;
+</article></slide><slide class=""><hgroup><h2>Code Supply</h2></hgroup><article  class="smaller " id="code-supply">
+
+<pre class = 'prettyprint lang-julia'>function profits(p::Vector, c::Vector, X::Matrix, β::Vector, ξ::Vector)::Vector
+    &quot;&quot;&quot;Compute profits&quot;&quot;&quot;
+    q, _ = demand(p, X, β, ξ)       # Compute demand
+    pr = (p - c) .* q               # Compute profits
+    return pr
+end;</pre>
+
+<p>We can try with an example.</p>
+
+<pre class = 'prettyprint lang-julia'>profits(p, c, X, β, ξ)</pre>
+
+<pre >## 3-element Array{Float64,1}:
+##  0.8705925517446934
+##  0.016549014131677434
+##  0.001990341587682162</pre>
+
+</article></slide><slide class=""><hgroup><h2>Code Best Reply</h2></hgroup><article  class="smaller " id="code-best-reply">
+
+<p>We first code the best reply of firm \(j\)</p>
+
+<pre class = 'prettyprint lang-julia'>function profits_j(pj::Number, j::Int, p::Vector, c::Vector, X::Matrix, β::Vector, ξ::Vector)::Number
+    &quot;&quot;&quot;Compute profits of firm j&quot;&quot;&quot;
+    p[j] = pj                       # Insert price of firm j
+    pr = profits(p, c, X, β, ξ)     # Compute profits
+    return pr[j]
+end;</pre>
+
+<p>Let’s test it.</p>
+
+<pre class = 'prettyprint lang-julia'>j = 1;
+obj_fun(pj) = - profits_j(pj[1], j, copy(p), c, X, β, ξ);
+pj = optimize(x -&gt; obj_fun(x), [1.0], LBFGS()).minimizer[1]</pre>
+
+<pre >## 4.249441983238607</pre>
+
+<p>What are the implied profits now?</p>
+
+<pre class = 'prettyprint lang-julia'>print(&quot;Profits old: &quot;,  round.(profits(p, c, X, β, ξ), digits=4))</pre>
+
+<pre >## Profits old: [0.8706, 0.0165, 0.002]</pre>
+
+<pre class = 'prettyprint lang-julia'>p_new = copy(p);
+p_new[j] = pj;
+print(&quot;Profits new: &quot;,  round.(profits(p_new, c, X, β, ξ), digits=4))</pre>
+
+<pre >## Profits new: [2.3466, 0.1386, 0.0167]</pre>
+
+<p>Indeed firm 1 has increased its profits.</p>
+
+</article></slide><slide class=""><hgroup><h2>Code Equilibrium</h2></hgroup><article  class="smaller " id="code-equilibrium">
+
+<p>We can now compute equilibrium prices</p>
+
+<pre class = 'prettyprint lang-julia'>function equilibrium(c::Vector, X::Matrix, β::Vector, ξ::Vector)::Vector
+    &quot;&quot;&quot;Compute equilibrium prices and profits&quot;&quot;&quot;
+    p = 2 .* c;
     dist = 1;
     iter = 0;
-    while dist&gt;1e-8
-        V = log.(sum(exp.(V_bar), dims=2))          # Compute value
-        Exp_V = V[index_λ] * [1-λ; λ]               # Compute exponential value
-        V_bar1 = β * (U + Exp_V[index_I])           # Compute v-specific
-        dist = max(abs.(V_bar1 - V_bar)...);        # Check distance
+
+    # Until convergence
+    while (dist &gt; 1e-8) &amp;&amp; (iter&lt;1000)
+
+        # Compute best reply for each firm
+        p1 = copy(p);
+        for j=1:length(p)
+            obj_fun(pj) = - profits_j(pj[1], j, p, c, X, β, ξ);
+            optimize(x -&gt; obj_fun(x), [1.0], LBFGS()).minimizer[1];
+        end
+
+        # Update distance
+        dist = max(abs.(p - p1)...);
         iter += 1;
-        V_bar = V_bar1                              # Update value function
     end
-    return V_bar
+    return p
 end;</pre>
 
-</article></slide><slide class=""><hgroup><h2>Solving the Model</h2></hgroup><article  id="solving-the-model" class="smaller ">
+</article></slide><slide class=""><hgroup><h2>Code Equilibrium</h2></hgroup><article  class="smaller " id="code-equilibrium-1">
 
-<p>We can now solve for the value function.</p>
+<p>Let’s test it</p>
 
-<pre class = 'prettyprint lang-julia'># Compute value function
-V_bar = compute_V(θ, λ, β, x);</pre>
+<pre class = 'prettyprint lang-julia'># Compute equilibrium prices
+p_eq = equilibrium(c, X, β, ξ);
+print(&quot;Equilibrium prices: &quot;,  round.(p_eq, digits=4))</pre>
 
-</article></slide><slide class=""><hgroup><h2>DGP</h2></hgroup><article  id="dgp" class="smaller ">
+<pre >## Equilibrium prices: [4.6939, 1.8045, 1.6365]</pre>
 
-<p>Now that we know how to compute the equilibrium, we can simulate the data.</p>
+<pre class = 'prettyprint lang-julia'>
+# And profits
+pi_eq = profits(p_eq, c, X, β, ξ);
+print(&quot;Equilibrium profits: &quot;,  round.(pi_eq, digits=4))</pre>
 
-<pre class = 'prettyprint lang-julia'>function generate_data(θ::Vector, λ::Number, β::Number, x::Vector, N::Int)::Tuple
-    &quot;&quot;&quot;Generate data from primitives&quot;&quot;&quot;
-    V_bar = compute_V(θ, λ, β, x)               # Solve model
-    ε = rand(Gumbel(0,1), N, 2)                 # Draw shocks
-    Xt = rand(x.+1, N)                          # Draw states
-    Iv = (((V_bar[Xt,:] + ε) * [-1;1]) .&gt; 0)    # Compute investment decisions
-    δ = (rand(Uniform(0,1), N) .&lt; λ)            # Compute mileage shock
-    Xt1 = min.(Xt .* (Iv.==0) + δ, max(x...))   # Compute next state
-    df = DataFrame(Xt=Xt, Iv=Iv, Xt1=Xt1)
-    CSV.write(&quot;../data/rust.csv&quot;, df)
-    return Xt, Iv, Xt1
-end;</pre>
+<pre >## Equilibrium profits: [2.7911, 0.2562, 0.0304]</pre>
 
-</article></slide><slide class=""><hgroup><h2>The Data</h2></hgroup><article  id="the-data" class="smaller ">
+<p>As expected the prices of the first 2 firms are lower and their profits are higher.</p>
 
-<p>How many investment decisions do we observe?</p>
+</article></slide><slide class=""><hgroup><h2>DGP</h2></hgroup><article  class="smaller " id="dgp">
 
-<pre class = 'prettyprint lang-julia'># Generate data
-N = Int(1e5);
-x_t, Iv, x_t1 = generate_data(θ, λ, β, x, N);
-print(&quot;we observe &quot;, sum(Iv), &quot; investment decisions in &quot;, N, &quot; observations&quot;)</pre>
-
-<pre >## we observe 22203 investment decisions in 100000 observations</pre>
-
-</article></slide><slide class=""><hgroup><h2>Estimation - Lambda</h2></hgroup><article  id="estimation---lambda" class="smaller ">
+<p>Let’s generate our Data Generating Process (DGP).</p>
 
 <ul>
-<li><p>First we can estimate the value of lambda as the mean</p>
-
-<p>\[
-\hat \lambda = \mathbb E_n \Big[ (x_{t+1}-x_t) \mid i_{t}=0 \wedge x_{t}&lt;10 \Big]
-\]</p></li>
+<li>\(\boldsymbol x \sim exp(V_{x})\)</li>
+<li>\(\xi \sim N(0, V_{\xi})\)</li>
+<li>\(w \sim N(0, 1)\)</li>
+<li>\(\omega \sim N(0, 1)\)</li>
 </ul>
 
-<pre class = 'prettyprint lang-julia'># Estimate lambda
-Δ = x_t1 - x_t;
-λ_ = mean(Δ[(Iv.==0) .&amp; (x_t.&lt;10)]);
-
-print(&quot;Estimated lambda: $λ_ (true = $λ)&quot;)</pre>
-
-<pre >## Estimated lambda: 0.8175288662605692 (true = 0.82)</pre>
-
-</article></slide><slide class=""><hgroup><h2>Estimation - theta</h2></hgroup><article  id="estimation---theta" class="smaller ">
-
-<ul>
-<li><p>Take a parameter guess \(\theta_0\)</p></li>
-<li><p>Compute the corresponding value function \(V(x_t | \hat \lambda, \theta_0)\)</p></li>
-<li><p>Compute the implied choice probabilities</p></li>
-<li><p>Compute the likelihood</p>
-
-<p>\[
-\mathcal{L}(\theta)=\prod_{t=1}^{T}\left(\hat{\operatorname{Pr}}\left(i=1 \mid x_{t}, \theta\right) \mathbb{1}\left(i_{t}=1\right)+\left(1-\hat{\operatorname{Pr}}\left(i=0 \mid x_{t}, \theta\right)\right) \mathbb{1}\left(i_{t}=0\right)\right)
-\]</p></li>
-<li><p>Repeat the above to find a minimum of the likelihood function</p></li>
-</ul>
-
-</article></slide><slide class=""><hgroup><h2>Code</h2></hgroup><article  id="code-1" class="smaller ">
-
-<pre class = 'prettyprint lang-julia'>function logL(θ0::Vector)::Number
-    &quot;&quot;&quot;Compute log-likelihood function&quot;&quot;&quot;
-    # Compute value
-    V_bar = compute_V(θ0, λ_, β, x)
-
-    # Implied choice probabilities
-    pr_I = exp.(V_bar[:,2]) ./ (exp.(V_bar[:,1]) + exp.(V_bar[:,2]))
-
-    # Likelihood
-    logL = sum(log.(pr_I[x_t[Iv.==1]])) + sum(log.(1 .- pr_I[x_t[Iv.==0]]))
-    return -logL
+<pre class = 'prettyprint lang-julia'>function draw_data(J::Int, K::Int, rangeJ::Vector, varX::Number, varξ::Number)::Tuple
+    &quot;&quot;&quot;Draw data for one market&quot;&quot;&quot;
+    J_ = rand(rangeJ[1]:rangeJ[2])
+    X_ = randexp(J_, K) * varX
+    ξ_ = randn(J_+1) * varξ
+    w_ = rand(J_)
+    ω_ = rand(J_)
+    c_ = w_ + ω_
+    j_ = sort(sample(1:J, J_, replace=false))
+    return X_, ξ_, w_, c_, j_
 end;</pre>
 
-<p>We can check the likelihood at the true value:</p>
+</article></slide><slide class=""><hgroup><h2>Equilibrium</h2></hgroup><article  class="smaller " id="equilibrium">
 
-<pre class = 'prettyprint lang-julia'># True likelihood value
-print(&quot;The likelihood at the true values is &quot;, logL(θ))</pre>
+<p>We first compute the equilibrium in one market.</p>
 
-<pre >## The likelihood at the true values is 49478.25922612958</pre>
+<pre class = 'prettyprint lang-julia'>function compute_mkt_eq(J::Int, b::Vector, rangeJ::Vector, varX::Number, varξ::Number)::DataFrame
+    &quot;&quot;&quot;Compute equilibrium one market&quot;&quot;&quot;
 
-</article></slide><slide class=""><hgroup><h2>Estimating Theta</h2></hgroup><article  id="estimating-theta" class="smaller ">
+    # Initialize variables
+    K = size(β, 1) - 1
+    X_, ξ_, w_, c_, j_ = draw_data(J, K, rangeJ, varX, varξ)
 
-<pre class = 'prettyprint lang-julia'># Select starting values
-θ0 = Float64[0,0,0];
+    # Compute equilibrium
+    p_ = equilibrium(c_, X_, β, ξ_)      # Equilibrium prices
+    q_, q0 = demand(p_, X_, β, ξ_)       # Demand with shocks
+    pr_ = (p_ - c_) .* q_               # Profits
 
-# Optimize
-θ_ = optimize(logL, θ0).minimizer;
-print(&quot;Estimated thetas: $θ_ (true = $θ)&quot;)</pre>
+    # Save to data
+    q0_ = ones(length(j_)) .* q0
+    df = DataFrame(j=j_, w=w_, p=p_, q=q_, q0=q0_, pr=pr_)
+    for k=1:K
+      df[!,&quot;x$k&quot;] = X_[:,k]
+      df[!,&quot;z$k&quot;] = sum(X_[:,k]) .- X_[:,k]
+    end
+    return df
+end;</pre>
 
-<pre >## Estimated thetas: [0.13292441632663515, -0.004487709378214971, 3.053550396126962] (true = [0.13, -0.004, 3.1])</pre>
+</article></slide><slide class=""><hgroup><h2>Simulate Dataset</h2></hgroup><article  class="smaller " id="simulate-dataset">
 
-</article></slide><slide class=""><hgroup><h2>Starting Values</h2></hgroup><article  id="starting-values" class="smaller ">
+<p>We can now write the code to simulate the whole dataset.</p>
 
-<p>Starting values are important!</p>
+<pre class = 'prettyprint lang-julia'>function simulate_data(J::Int, b::Vector, T::Int, rangeJ::Vector, varX::Number, varξ::Number)
+    &quot;&quot;&quot;Simulate full dataset&quot;&quot;&quot;
+    df = compute_mkt_eq(J, β, rangeJ, varX, varξ)
+    df[!, &quot;t&quot;] = ones(nrow(df)) * 1
+    for t=2:T
+        df_temp = compute_mkt_eq(J, β, rangeJ, varX, varξ)
+        df_temp[!, &quot;t&quot;] = ones(nrow(df_temp)) * t
+        append!(df, df_temp)
+    end
+    CSV.write(&quot;../data/logit.csv&quot;, df)
+end;</pre>
 
-<pre class = 'prettyprint lang-julia'># Alternative starting values
-θ0 = Float64[1,1,1];
+</article></slide><slide class=""><hgroup><h2>Simulate Dataset (2)</h2></hgroup><article  class="smaller " id="simulate-dataset-2">
 
-# Optimize
-θ_ = optimize(logL, θ0).minimizer;
-print(&quot;Estimated thetas: $θ_ (true = $θ)&quot;)</pre>
+<p>We generate the dataset by simulating many markets that differ by</p>
 
-<pre >## Estimated thetas: [1.0, 1.0, 1.0] (true = [0.13, -0.004, 3.1])</pre>
+<ul>
+<li>number of firms (and their identity)</li>
+<li>their marginal costs</li>
+<li>their product characteristics</li>
+</ul>
 
-</article></slide><slide class="segue dark nobackground level2"><hgroup class = 'auto-fadein'><h2>References</h2></hgroup><article  id="references" class="smaller ">
+<pre class = 'prettyprint lang-julia'># Set parameters
+J = 10;                 # Number of firms
+K = 2;                  # Product caracteristics
+T = 500;                # Markets
+β = [.5, 2, -1];        # Preferences
+rangeJ = [2, 6];        # Min and max firms per market
+varX = 1;               # Variance of X
+varξ = 2;               # Variance of xi
 
-</article></slide><slide class="segue dark nobackground level2"><hgroup class = 'auto-fadein'><h2></h2></hgroup><article  class="smaller">
+# Simulate
+df = simulate_data(J, β, T, rangeJ, varX, varξ);</pre>
 
-<div id="refs" class="references csl-bib-body hanging-indent">
-<div id="ref-rust1988maximum" class="csl-entry">
-<p>Rust, John. 1988. <span>
-“Maximum Likelihood Estimation of Discrete Control Processes.”</span> <em>SIAM Journal on Control and Optimization</em> 26 (5): 1006–24.</p></div></div></article></slide>
+</article></slide><slide class=""><hgroup><h2>The Data</h2></hgroup><article  class="smaller " id="the-data">
+
+<p>What does the data look like? Let’s switch to R!</p>
+
+<pre class = 'prettyprint lang-r'># Read data
+df = fread(&quot;../data/logit.csv&quot;)
+kable(df[1:5,1:7], digits=4)</pre>
+
+<table class = 'rmdtable'>
+<tr class="header">
+<th align="right">j</th>
+<th align="right">w</th>
+<th align="right">p</th>
+<th align="right">q</th>
+<th align="right">q0</th>
+<th align="right">pr</th>
+<th align="right">x1</th>
+</tr>
+<tr class="odd">
+<td align="right">3</td>
+<td align="right">0.7014</td>
+<td align="right">3.5613</td>
+<td align="right">0.4812</td>
+<td align="right">0.0001</td>
+<td align="right">0.9274</td>
+<td align="right">1.2585</td>
+</tr>
+<tr class="even">
+<td align="right">4</td>
+<td align="right">0.8131</td>
+<td align="right">2.9380</td>
+<td align="right">0.5187</td>
+<td align="right">0.0001</td>
+<td align="right">1.0777</td>
+<td align="right">0.9376</td>
+</tr>
+<tr class="odd">
+<td align="right">4</td>
+<td align="right">0.2460</td>
+<td align="right">3.3459</td>
+<td align="right">0.5987</td>
+<td align="right">0.1224</td>
+<td align="right">1.4916</td>
+<td align="right">1.3545</td>
+</tr>
+<tr class="even">
+<td align="right">5</td>
+<td align="right">0.5366</td>
+<td align="right">2.2527</td>
+<td align="right">0.0054</td>
+<td align="right">0.1224</td>
+<td align="right">0.0054</td>
+<td align="right">0.3742</td>
+</tr>
+<tr class="odd">
+<td align="right">9</td>
+<td align="right">0.8384</td>
+<td align="right">2.6358</td>
+<td align="right">0.2736</td>
+<td align="right">0.1224</td>
+<td align="right">0.3766</td>
+<td align="right">0.1019</td>
+</tr>
+</table>
+
+</article></slide><slide class=""><hgroup><h2>Estimation</h2></hgroup><article  class="smaller " id="estimation">
+
+<p>First we need to compute the dependent variable</p>
+
+<pre class = 'prettyprint lang-r'>df$y = log(df$q) - log(df$q0)</pre>
+
+<p>Now we can estimate the logit model. The true values are \(alpha=1\).</p>
+
+<pre class = 'prettyprint lang-r'>ols &lt;- lm(y ~ x1 + x2 + p, data=df)
+kable(tidy(ols), digits=4)</pre>
+
+<table class = 'rmdtable'>
+<tr class="header">
+<th align="left">term</th>
+<th align="right">estimate</th>
+<th align="right">std.error</th>
+<th align="right">statistic</th>
+<th align="right">p.value</th>
+</tr>
+<tr class="odd">
+<td align="left">(Intercept)</td>
+<td align="right">-1.0667</td>
+<td align="right">0.1568</td>
+<td align="right">-6.8022</td>
+<td align="right">0.000</td>
+</tr>
+<tr class="even">
+<td align="left">x1</td>
+<td align="right">0.3313</td>
+<td align="right">0.0582</td>
+<td align="right">5.6951</td>
+<td align="right">0.000</td>
+</tr>
+<tr class="odd">
+<td align="left">x2</td>
+<td align="right">1.2450</td>
+<td align="right">0.0704</td>
+<td align="right">17.6777</td>
+<td align="right">0.000</td>
+</tr>
+<tr class="even">
+<td align="left">p</td>
+<td align="right">0.2185</td>
+<td align="right">0.0665</td>
+<td align="right">3.2831</td>
+<td align="right">0.001</td>
+</tr>
+</table>
+
+<p>The estimate of \(\alpha = 1\) is biased (positive and significant) since \(p\) is endogenous. We need instruments.</p>
+
+</article></slide><slide class=""><hgroup><h2>IV 1: Cost Shifters</h2></hgroup><article  class="smaller " id="iv-1-cost-shifters">
+
+<p>First set of instruments: <strong>cost shifters</strong>.</p>
+
+<pre class = 'prettyprint lang-r'>fm_costiv &lt;- ivreg(y ~ x1 + x2 + p | x1 + x2 + w, data=df)
+kable(tidy(fm_costiv), digits=4)</pre>
+
+<table class = 'rmdtable'>
+<tr class="header">
+<th align="left">term</th>
+<th align="right">estimate</th>
+<th align="right">std.error</th>
+<th align="right">statistic</th>
+<th align="right">p.value</th>
+</tr>
+<tr class="odd">
+<td align="left">(Intercept)</td>
+<td align="right">0.9338</td>
+<td align="right">0.4446</td>
+<td align="right">2.1004</td>
+<td align="right">0.0358</td>
+</tr>
+<tr class="even">
+<td align="left">x1</td>
+<td align="right">0.4298</td>
+<td align="right">0.0652</td>
+<td align="right">6.5882</td>
+<td align="right">0.0000</td>
+</tr>
+<tr class="odd">
+<td align="left">x2</td>
+<td align="right">1.9221</td>
+<td align="right">0.1584</td>
+<td align="right">12.1378</td>
+<td align="right">0.0000</td>
+</tr>
+<tr class="even">
+<td align="left">p</td>
+<td align="right">-0.8792</td>
+<td align="right">0.2369</td>
+<td align="right">-3.7111</td>
+<td align="right">0.0002</td>
+</tr>
+</table>
+
+<p>Now the estimate of \(\alpha\) is negative and significant.</p>
+
+</article></slide><slide class=""><hgroup><h2>IV 2: BLP Instruments</h2></hgroup><article  class="smaller " id="iv-2-blp-instruments">
+
+<p>Second set of instruments: <strong>product characteristics of other firms in the same market</strong>.</p>
+
+<pre class = 'prettyprint lang-r'>fm_blpiv &lt;- ivreg(y ~ x1 + x2 + p | x1 + x2 + z1 + z2, data=df)
+kable(tidy(fm_blpiv), digits=4)</pre>
+
+<table class = 'rmdtable'>
+<tr class="header">
+<th align="left">term</th>
+<th align="right">estimate</th>
+<th align="right">std.error</th>
+<th align="right">statistic</th>
+<th align="right">p.value</th>
+</tr>
+<tr class="odd">
+<td align="left">(Intercept)</td>
+<td align="right">1.3240</td>
+<td align="right">0.4116</td>
+<td align="right">3.2171</td>
+<td align="right">0.0013</td>
+</tr>
+<tr class="even">
+<td align="left">x1</td>
+<td align="right">0.4491</td>
+<td align="right">0.0662</td>
+<td align="right">6.7837</td>
+<td align="right">0.0000</td>
+</tr>
+<tr class="odd">
+<td align="left">x2</td>
+<td align="right">2.0542</td>
+<td align="right">0.1482</td>
+<td align="right">13.8606</td>
+<td align="right">0.0000</td>
+</tr>
+<tr class="even">
+<td align="left">p</td>
+<td align="right">-1.0933</td>
+<td align="right">0.2178</td>
+<td align="right">-5.0196</td>
+<td align="right">0.0000</td>
+</tr>
+</table>
+
+<p>Also the BLP instruments deliver an estimate of \(\alpha\) is negative and significant.</p>
+
+</article></slide><slide class="segue dark nobackground level2"><hgroup class = 'auto-fadein'><h2>References</h2></hgroup><article  class="smaller " id="references">
+
+</article></slide><slide class="segue dark nobackground level2"><hgroup class = 'auto-fadein'><h2></h2></hgroup><article  class="smaller"></article></slide>
 
 
   <slide class="backdrop"></slide>
