@@ -6,16 +6,12 @@
 using Optim
 using Distributions
 using Statistics
-using Random
 using DataFrames
-using StatsBase
-using Econometrics
 using CSV
-using BenchmarkTools
 
 function demand(p::Vector, X::Matrix, β::Vector, ξ::Matrix, ζ::Matrix)::Tuple{Vector, Number}
     """Compute demand"""
-    δ = 1 .+ [X p] * (β .+ ζ)               # Mean value
+    δ = [X p] * (β .+ ζ)                    # Mean value
     δ0 = zeros(1, size(ζ, 2))               # Mean value of the outside option
     u = [δ; δ0] + ξ                         # Utility
     e = exp.(u)                             # Take exponential
@@ -50,7 +46,7 @@ function equilibrium(c::Vector, X::Matrix, β::Vector, ξ::Matrix, ζ::Matrix)::
         p_old = copy(p);
         for j=1:length(p)
             obj_fun(pj) = - profits_j(pj[1], j, p, c, X, β, ξ, ζ);
-            optimize(x -> obj_fun(x), [1.0], LBFGS()).minimizer[1];
+            optimize(x -> obj_fun(x), [1.0], LBFGS());
         end
 
         # Update distance
@@ -62,14 +58,15 @@ end;
 
 function draw_data(I::Int, J::Int, K::Int, rangeJ::Vector, varζ::Number, varX::Number, varξ::Number)::Tuple
     """Draw data for one market"""
-    J_ = rand(rangeJ[1]:rangeJ[2])
-    X_ = randexp(J_, K) * varX
-    ξ_ = randn(J_+1, I) * varξ
-    ζ_ = [randexp(1,I) * varζ; zeros(K,I)]
-    w_ = rand(J_)
-    ω_ = rand(J_)
-    c_ = w_ + ω_
-    j_ = sort(sample(1:J, J_, replace=false))
+    J_ = rand(rangeJ[1]:rangeJ[2])              # Number of firms (products)
+    X_ = rand(Exponential(varX), J_, K)         # Product characteristics
+    ξ_ = rand(Normal(0, varξ), J_+1, I)         # Product-level utility shocks
+    # Consumer-product-level preference shocks
+    ζ_ = [rand(Normal(0,1), 1, I) * varζ; zeros(K,I)]
+    w_ = rand(Uniform(0, 1), J_)                # Cost shifters
+    ω_ = rand(Uniform(0, 1), J_)                # Cost shocks
+    c_ = w_ + ω_                                # Cost
+    j_ = sort(sample(1:J, J_, replace=false))   # Subset of firms
     return X_, ξ_, ζ_, w_, c_, j_
 end;
 
@@ -108,68 +105,69 @@ function simulate_data(I::Int, J::Int, β::Vector, T::Int, rangeJ::Vector, varζ
     return df
 end;
 
-function implied_shares(Xt_::Matrix, ζt_::Matrix, δ::Vector)::Vector
+function implied_shares(Xt_::Matrix, ζt_::Matrix, δt_::Vector, δ0::Matrix)::Vector
     """Compute shares implied by deltas and shocks"""
-    δ0 = zeros(1, size(ζt_, 2))                # Mean value of the outside option
-    u = [δ .+ (Xt_ * ζt_); δ0]             # Utility
+    u = [δt_ .+ (Xt_ * ζt_); δ0]                  # Utility
     e = exp.(u)                                 # Take exponential
     q = mean(e ./ sum(e, dims=1), dims=2)       # Compute demand
     return q[1:end-1]
-end
+end;
 
 function inner_loop(qt_::Vector, Xt_::Matrix, ζt_::Matrix)::Vector
     """Solve the inner loop: compute delta, given the shares"""
-    δ = ones(size(qt_))
+    δt_ = ones(size(qt_))
+    δ0 = zeros(1, size(ζt_, 2))
     dist = 1
-    iter = 0
 
     # Iterate until convergence
-    while (dist > 1e-8) && (iter<1000)
-        q = implied_shares(Xt_, ζt_, δ)
-        δ1 = δ + log.(qt_) - log.(q)
-        dist = max(abs.(δ1 - δ)...)
-        iter += 1
-        δ = δ1
+    while (dist > 1e-8)
+        q = implied_shares(Xt_, ζt_, δt_, δ0)
+        δt2_ = δt_ + log.(qt_) - log.(q)
+        dist = max(abs.(δt2_ - δt_)...)
+        δt_ = δt2_
     end
-    return δ
-end
+    return δt_
+end;
 
-function compute_xi(β::Vector, q_::Vector, X_::Matrix, ζ_::Array, T::Vector)::Vector
+function compute_delta(q_::Vector, X_::Matrix, ζ_::Matrix, T::Vector)::Vector
     """Compute residuals"""
-    ξ_ = zeros(size(T))
+    δ_ = zeros(size(T))
 
     # Loop over each market
     for t in unique(T)
         qt_ = q_[T.==t]                             # Quantity in market t
         Xt_ = X_[T.==t,:]                           # Characteristics in mkt t
-        ζt_ = ζ_[:, :, t]                           # Preference shocks in mkt t
-        δ = inner_loop(qt_, Xt_, ζt_)               # Solve inner loop
-        ξ_[T.==t] = δ - Xt_ * β                     # Compute residuals
+        δ_[T.==t] = inner_loop(qt_, Xt_, ζ_)        # Solve inner loop
     end
-    return ξ_
-end
+    return δ_
+end;
 
-function GMM(param::Vector, q_::Vector, X_::Matrix, ζ_::Array, Z_::Matrix, T::Vector)::Number
+function compute_xi(X_::Matrix, IV_::Matrix, δ_::Vector)::Tuple
+    """Compute residual, given delta (IV)"""
+    β_ = inv(IV_' * X_) * (IV_' * δ_)           # Compute coefficients (IV)
+    ξ_ = δ_ - X_ * β_                           # Compute errors
+    return ξ_, β_
+end;
+
+function GMM(varζ_::Number)::Tuple
     """Compute GMM objective function"""
-    β = param[1:3]
-    varζ = param[4]
-    ζ_ *= varζ
-    ξ_ = compute_xi(β, q_, X_, ζ_, T)      # Compute errors
-    gmm = ξ_' * Z_ * Z_' * ξ_ / length(ξ_)^2 # Compute ortogonality condition
-    return gmm
-end
+    δ_ = compute_delta(q_, X_, ζ_ * varζ_, T)   # Compute deltas
+    ξ_, β_ = compute_xi(X_, IV_, δ_)            # Compute residuals
+    gmm = ξ_' * Z_ * Z_' * ξ_ / length(ξ_)^2    # Compute ortogonality condition
+    return gmm, β_
+end;
 
 
 
 
 ## Main
 
-I = 1000;               # Number of consumers
+I = 100;                # Number of consumers
 J = 10;                 # Number of firms
-K = 2;                  # Product caracteristics
+K = 2;                  # Product characteristics
 T = 100;                # Number of markets
 β = [.5, 2, -1];        # Preferences
-varζ = 2;               # Variance of the random taste
+varζ = 5;               # Variance of the random taste
 rangeJ = [2, 6];        # Min and max firms per market
 varX = 1;               # Variance of X
 varξ = 2;               # Variance of xi
@@ -181,19 +179,19 @@ df = simulate_data(I, J, β, T, rangeJ, varζ, varX, varξ)
 T = Int.(df.t)
 X_ = [df.x1 df.x2 df.p]
 q_ = df.q
-Z_ = [df.z1 df.z2]
+q0_ = df.q0
+IV_ = [df.x1 df.x2 df.w]
+Z_ = [df.x1 df.x2 df.z1 df.z2]
 
-# Draw shocks
-ζ_ = zeros(K+1, I, max(T...))
-for t in unique(T)
-    ζ_[:, :, t] = [randexp(1,I); zeros(K,I)]
-end
+# Compute logit estimate
+y = log.(df.q) - log.(df.q0)
+β_logit = inv(IV_' * X_) * (IV_' * y)
+print("Estimated logit coefficients: $β_logit")
 
-# Test at true values
-param0 = [β; varζ]
-@time gmm = GMM(param0, q_, X_, ζ_, Z_, T)
-
+# Draw shocks (less)
+ζ_ = [rand(Normal(0,1), 1, I); zeros(K, I)]
 
 # Minimize GMM objective function
-#obj_fun(param) = - GMM(param, q_, X_, ζ_, Z_, T);
-#opt = optimize(x -> obj_fun(x), param0, LBFGS())
+varζ_ = optimize(x -> GMM(x[1])[1], [2.0], LBFGS()).minimizer[1]
+β_blp = GMM(varζ_)[2]
+print("Estimated BLP coefficients: $β_blp")

@@ -93,7 +93,7 @@ print("we observe ", sum(Iv), " investment decisions in ", N, " observations")
 print("Estimated lambda: $λ_ (true = $λ)")
 
 # True likelihood value
-print("The likelihood at the true values is ", logL(θ))
+print("The likelihood at the true parameter is ", logL(θ))
 
 # Select starting values
 θ0 = Float64[0,0,0];

@@ -40,16 +40,12 @@ if (!("JuliaCall" %in% (.packages()))) {
 ```{julia, include=FALSE, echo=FALSE}
 #import Pkg
 #Pkg.add("Optim")
-#Pkg.add("Statistics")
 #Pkg.add("Distributions")
-#Pkg.add("Random")
 #Pkg.add("DataFrames")
 #Pkg.add("CSV")
 
 using Optim
 using Distributions
-using Statistics
-using Random
 using DataFrames
 using CSV
 ```
@@ -85,12 +81,12 @@ where
 We have $J$ firms and each product has $K$ characteristics
 
 ```{julia, results="hide"}
-J = 3;                  # 3 firms == products
-K = 2;                  # 2 product characteristics
-c = rand(J);            # Random uniform marginal costs
-ξ = randn(J+1);         # Random normal individual shocks
-X = randexp(J, K);      # Random exponential product characteristics
-β = [.5, 2, -1];        # Preferences (last one is for prices, i.e. alpha)
+J = 3;                            # 3 firms == products
+K = 2;                            # 2 product characteristics
+c = rand(Uniform(0, 1), J);       # Random uniform marginal costs
+ξ = rand(Normal(0, 1), J+1);      # Random normal individual shocks
+X = rand(Exponential(1), J, K);   # Random exponential product characteristics
+β = [.5, 2, -1];                  # Preferences (last one is for prices, i.e. alpha)
 ```
 
 
@@ -221,16 +217,15 @@ Let's generate our Data Generating Process (DGP).
 ```{julia}
 function draw_data(J::Int, K::Int, rangeJ::Vector, varX::Number, varξ::Number)::Tuple
     """Draw data for one market"""
-    J_ = rand(rangeJ[1]:rangeJ[2])
-    X_ = randexp(J_, K) * varX
-    ξ_ = randn(J_+1) * varξ
-    w_ = rand(J_)
-    ω_ = rand(J_)
-    c_ = w_ + ω_
-    j_ = sort(sample(1:J, J_, replace=false))
+    J_ = rand(rangeJ[1]:rangeJ[2])              # Number of firms (products)
+    X_ = rand(Exponential(varX), J_, K)         # Product characteristics
+    ξ_ = rand(Normal(0, varξ), J_+1)            # Product-level utility shocks
+    w_ = rand(Uniform(0, 1), J_)                # Cost shifters
+    ω_ = rand(Uniform(0, 1), J_)                # Cost shocks
+    c_ = w_ + ω_                                # Cost
+    j_ = sort(sample(1:J, J_, replace=false))   # Subset of firms
     return X_, ξ_, w_, c_, j_
 end;
-
 ```
 
 
@@ -310,7 +305,7 @@ What does the data look like? Let's switch to R!
 ```{r}
 # Read data
 df = fread("../data/logit.csv")
-kable(df[1:5,1:7], digits=4)
+kable(df[1:5,], digits=4)
 ```
 
 

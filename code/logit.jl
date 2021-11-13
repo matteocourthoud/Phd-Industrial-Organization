@@ -4,16 +4,12 @@
 # Import packages
 using Optim
 using Distributions
-using Statistics
-using Random
 using DataFrames
-using StatsBase
-using Econometrics
 using CSV
 
 function demand(p::Vector, X::Matrix, β::Vector, ξ::Vector)::Tuple{Vector, Number}
     """Compute demand"""
-    δ = 1 .+ [X p] * β              # Mean value
+    δ = [X p] * β                   # Mean value
     u = [δ; 0] + ξ                  # Utility
     e = exp.(u)                     # Take exponential
     q = e ./ sum(e)                 # Compute demand
@@ -59,13 +55,13 @@ end;
 
 function draw_data(J::Int, K::Int, rangeJ::Vector, varX::Number, varξ::Number)::Tuple
     """Draw data for one market"""
-    J_ = rand(rangeJ[1]:rangeJ[2])
-    X_ = randexp(J_, K) * varX
-    ξ_ = randn(J_+1) * varξ
-    w_ = rand(J_)
-    ω_ = rand(J_)
-    c_ = w_ + ω_
-    j_ = sort(sample(1:J, J_, replace=false))
+    J_ = rand(rangeJ[1]:rangeJ[2])              # Number of firms (products)
+    X_ = rand(Exponential(varX), J_, K)         # Product characteristics
+    ξ_ = rand(Normal(0, varξ), J_+1)            # Product-level utility shocks
+    w_ = rand(Uniform(0, 1), J_)                # Cost shifters
+    ω_ = rand(Uniform(0, 1), J_)                # Cost shocks
+    c_ = w_ + ω_                                # Cost
+    j_ = sort(sample(1:J, J_, replace=false))   # Subset of firms
     return X_, ξ_, w_, c_, j_
 end;
 

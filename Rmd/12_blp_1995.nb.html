@@ -285,14 +285,337 @@ u_{ijt} = \boldsymbol x_{jt} \boldsymbol \beta_{it} - \alpha p_{jt} + \xi_{jt} +
 <p>We have <span class="math inline">\(J\)</span> firms and each product has <span class="math inline">\(K\)</span> characteristics.</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBganVsaWFcbkogPSAzOyAgICAgICAgICAgICAgICAgICMgMyBmaXJtcyA9PSBwcm9kdWN0c1xuSyA9IDI7ICAgICAgICAgICAgICAgICAgIyAyIHByb2R1Y3QgY2hhcmFjdGVyaXN0aWNzXG5jID0gcmFuZChKKTsgICAgICAgICAgICAjIFJhbmRvbSB1bmlmb3JtIG1hcmdpbmFsIGNvc3RzXG54aSA9IHJhbmRuKEorMSk7ICAgICAgICAjIFJhbmRvbSBub3JtYWwgaW5kaXZpZHVhbCBzaG9ja3NcblggPSByYW5kZXhwKEosIEspOyAgICAgICMgUmFuZG9tIGV4cG9uZW50aWFsIHByb2R1Y3QgY2hhcmFjdGVyaXN0aWNzXG5iID0gW29uZXMoSyk7IC0xXSAgICAgICAjIFVuaXRhcnkgcHJlZmVyZW5jZXMgKGFsc28gZm9yIHByaWNlcylcbmBgYCJ9 -->
-<pre class="julia"><code>J = 3;                  # 3 firms == products
-K = 2;                  # 2 product characteristics
-c = rand(J);            # Random uniform marginal costs
-xi = randn(J+1);        # Random normal individual shocks
-X = randexp(J, K);      # Random exponential product characteristics
-b = [ones(K); -1]       # Unitary preferences (also for prices)</code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBganVsaWFcbmkgPSAxMDA7ICAgICAgICAgICAgICAgICMgTnVtYmVyIG9mIGNvbnN1bWVyc1xuSiA9IDEwOyAgICAgICAgICAgICAgICAgIyBOdW1iZXIgb2YgZmlybXNcbksgPSAyOyAgICAgICAgICAgICAgICAgICMgUHJvZHVjdCBjaGFyYWN0ZXJpc3RpY3NcblQgPSAxMDA7ICAgICAgICAgICAgICAgICMgTnVtYmVyIG9mIG1hcmtldHNcbs6yID0gWy41LCAyLCAtMV07ICAgICAgICAjIFByZWZlcmVuY2VzXG52YXLOtiA9IDU7ICAgICAgICAgICAgICAgIyBWYXJpYW5jZSBvZiB0aGUgcmFuZG9tIHRhc3RlXG5yYW5nZUogPSBbMiwgNl07ICAgICAgICAjIE1pbiBhbmQgbWF4IGZpcm1zIHBlciBtYXJrZXRcbnZhclggPSAxOyAgICAgICAgICAgICAgICMgVmFyaWFuY2Ugb2YgWFxudmFyzr4gPSAyOyAgICAgICAgICAgICAgICMgVmFyaWFuY2Ugb2YgeGlcbmBgYCJ9 -->
+<pre class="julia"><code>i = 100;                # Number of consumers
+J = 10;                 # Number of firms
+K = 2;                  # Product characteristics
+T = 100;                # Number of markets
+β = [.5, 2, -1];        # Preferences
+varζ = 5;               # Variance of the random taste
+rangeJ = [2, 6];        # Min and max firms per market
+varX = 1;               # Variance of X
+varξ = 2;               # Variance of xi</code></pre>
 <!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
+<div id="demand" class="section level3">
+<h3>Demand</h3>
+<p>Demand is the main difference w.r.t. the logit model. Now we have individual shocks <span class="math inline">\(\zeta\)</span> we have to integrate over.</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBganVsaWFcbmZ1bmN0aW9uIGRlbWFuZChwOjpWZWN0b3IsIFg6Ok1hdHJpeCwgzrI6OlZlY3Rvciwgzr46Ok1hdHJpeCwgzrY6Ok1hdHJpeCk6OlR1cGxle1ZlY3RvciwgTnVtYmVyfVxuICAgIFwiXCJcIkNvbXB1dGUgZGVtYW5kXCJcIlwiXG4gICAgzrQgPSBbWCBwXSAqICjOsiAuKyDOtikgICAgICAgICAgICAgICAgICAgICMgTWVhbiB2YWx1ZVxuICAgIM60MCA9IHplcm9zKDEsIHNpemUozrYsIDIpKSAgICAgICAgICAgICAgICMgTWVhbiB2YWx1ZSBvZiB0aGUgb3V0c2lkZSBvcHRpb25cbiAgICB1ID0gW860OyDOtDBdICsgzr4gICAgICAgICAgICAgICAgICAgICAgICAgIyBVdGlsaXR5XG4gICAgZSA9IGV4cC4odSkgICAgICAgICAgICAgICAgICAgICAgICAgICAgICMgVGFrZSBleHBvbmVudGlhbFxuICAgIHEgPSBtZWFuKGUgLi8gc3VtKGUsIGRpbXM9MSksIGRpbXM9MikgICAjIENvbXB1dGUgZGVtYW5kXG4gICAgcmV0dXJuIHFbMTplbmQtMV0sIHFbZW5kXVxuZW5kO1xuYGBgIn0= -->
+<pre class="julia"><code>function demand(p::Vector, X::Matrix, β::Vector, ξ::Matrix, ζ::Matrix)::Tuple{Vector, Number}
+    &quot;&quot;&quot;Compute demand&quot;&quot;&quot;
+    δ = [X p] * (β .+ ζ)                    # Mean value
+    δ0 = zeros(1, size(ζ, 2))               # Mean value of the outside option
+    u = [δ; δ0] + ξ                         # Utility
+    e = exp.(u)                             # Take exponential
+    q = mean(e ./ sum(e, dims=1), dims=2)   # Compute demand
+    return q[1:end-1], q[end]
+end;</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
+<div id="supply" class="section level3">
+<h3>Supply</h3>
+<p>Computing profits is instead exactly the same as before. We just have to save the shocks <span class="math inline">\(\zeta\)</span> to be sure demand is stable.</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBganVsaWFcbmZ1bmN0aW9uIHByb2ZpdHMocDo6VmVjdG9yLCBjOjpWZWN0b3IsIFg6Ok1hdHJpeCwgzrI6OlZlY3Rvciwgzr46Ok1hdHJpeCwgzrY6Ok1hdHJpeCk6OlZlY3RvclxuICAgIFwiXCJcIkNvbXB1dGUgcHJvZml0c1wiXCJcIlxuICAgIHEsIF8gPSBkZW1hbmQocCwgWCwgzrIsIM6+LCDOtikgICAgICAgICAgICAjIENvbXB1dGUgZGVtYW5kXG4gICAgcHIgPSAocCAtIGMpIC4qIHEgICAgICAgICAgICAgICAgICAgICAgICMgQ29tcHV0ZSBwcm9maXRzXG4gICAgcmV0dXJuIHByXG5lbmQ7XG5gYGAifQ== -->
+<pre class="julia"><code>function profits(p::Vector, c::Vector, X::Matrix, β::Vector, ξ::Matrix, ζ::Matrix)::Vector
+    &quot;&quot;&quot;Compute profits&quot;&quot;&quot;
+    q, _ = demand(p, X, β, ξ, ζ)            # Compute demand
+    pr = (p - c) .* q                       # Compute profits
+    return pr
+end;</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBganVsaWFcbmZ1bmN0aW9uIHByb2ZpdHNfaihwajo6TnVtYmVyLCBqOjpJbnQsIHA6OlZlY3RvciwgYzo6VmVjdG9yLCBYOjpNYXRyaXgsIM6yOjpWZWN0b3IsIM6+OjpNYXRyaXgsIM62OjpNYXRyaXgpOjpOdW1iZXJcbiAgICBcIlwiXCJDb21wdXRlIHByb2ZpdHMgb2YgZmlybSBqXCJcIlwiXG4gICAgcFtqXSA9IHBqICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICMgSW5zZXJ0IHByaWNlIG9mIGZpcm0galxuICAgIHByID0gcHJvZml0cyhwLCBjLCBYLCDOsiwgzr4sIM62KSAgICAgICAgICAjIENvbXB1dGUgcHJvZml0c1xuICAgIHJldHVybiBwcltqXVxuZW5kO1xuYGBgIn0= -->
+<pre class="julia"><code>function profits_j(pj::Number, j::Int, p::Vector, c::Vector, X::Matrix, β::Vector, ξ::Matrix, ζ::Matrix)::Number
+    &quot;&quot;&quot;Compute profits of firm j&quot;&quot;&quot;
+    p[j] = pj                               # Insert price of firm j
+    pr = profits(p, c, X, β, ξ, ζ)          # Compute profits
+    return pr[j]
+end;</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
+<div id="equilibrium" class="section level3">
+<h3>Equilibrium</h3>
+<p>We can now compute the equilibrium for a specific market, as before.</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBganVsaWFcbmZ1bmN0aW9uIGVxdWlsaWJyaXVtKGM6OlZlY3RvciwgWDo6TWF0cml4LCDOsjo6VmVjdG9yLCDOvjo6TWF0cml4LCDOtjo6TWF0cml4KTo6VmVjdG9yXG4gICAgXCJcIlwiQ29tcHV0ZSBlcXVpbGlicml1bSBwcmljZXMgYW5kIHByb2ZpdHNcIlwiXCJcbiAgICBwID0gMiAuKiBjO1xuICAgIGRpc3QgPSAxO1xuICAgIGl0ZXIgPSAwO1xuXG4gICAgIyBJdGVyYXRlIHVudGlsIGNvbnZlcmdlbmNlXG4gICAgd2hpbGUgKGRpc3QgPiAxZS04KSAmJiAoaXRlcjwxMDAwKVxuXG4gICAgICAgICMgQ29tcHV0ZSBiZXN0IHJlcGx5IGZvciBlYWNoIGZpcm1cbiAgICAgICAgcF9vbGQgPSBjb3B5KHApO1xuICAgICAgICBmb3Igaj0xOmxlbmd0aChwKVxuICAgICAgICAgICAgb2JqX2Z1bihwaikgPSAtIHByb2ZpdHNfaihwalsxXSwgaiwgcCwgYywgWCwgzrIsIM6+LCDOtik7XG4gICAgICAgICAgICBvcHRpbWl6ZSh4IC0+IG9ial9mdW4oeCksIFsxLjBdLCBMQkZHUygpKTtcbiAgICAgICAgZW5kXG5cbiAgICAgICAgIyBVcGRhdGUgZGlzdGFuY2VcbiAgICAgICAgZGlzdCA9IG1heChhYnMuKHAgLSBwX29sZCkuLi4pO1xuICAgICAgICBpdGVyICs9IDE7XG4gICAgZW5kXG4gICAgcmV0dXJuIHBcbmVuZDtcbmBgYCJ9 -->
+<pre class="julia"><code>function equilibrium(c::Vector, X::Matrix, β::Vector, ξ::Matrix, ζ::Matrix)::Vector
+    &quot;&quot;&quot;Compute equilibrium prices and profits&quot;&quot;&quot;
+    p = 2 .* c;
+    dist = 1;
+    iter = 0;
+
+    # Iterate until convergence
+    while (dist &gt; 1e-8) &amp;&amp; (iter&lt;1000)
+
+        # Compute best reply for each firm
+        p_old = copy(p);
+        for j=1:length(p)
+            obj_fun(pj) = - profits_j(pj[1], j, p, c, X, β, ξ, ζ);
+            optimize(x -&gt; obj_fun(x), [1.0], LBFGS());
+        end
+
+        # Update distance
+        dist = max(abs.(p - p_old)...);
+        iter += 1;
+    end
+    return p
+end;</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
+<div id="simulating-data" class="section level3">
+<h3>Simulating Data</h3>
+<p>We are now ready to simulate the data, i.e. equilibrium outcomes across different markets. We first draw all the variables.</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBganVsaWFcbmZ1bmN0aW9uIGRyYXdfZGF0YShJOjpJbnQsIEo6OkludCwgSzo6SW50LCByYW5nZUo6OlZlY3RvciwgdmFyzrY6Ok51bWJlciwgdmFyWDo6TnVtYmVyLCB2YXLOvjo6TnVtYmVyKTo6VHVwbGVcbiAgICBcIlwiXCJEcmF3IGRhdGEgZm9yIG9uZSBtYXJrZXRcIlwiXCJcbiAgICBKXyA9IHJhbmQocmFuZ2VKWzFdOnJhbmdlSlsyXSkgICAgICAgICAgICAgICMgTnVtYmVyIG9mIGZpcm1zIChwcm9kdWN0cylcbiAgICBYXyA9IHJhbmQoRXhwb25lbnRpYWwodmFyWCksIEpfLCBLKSAgICAgICAgICMgUHJvZHVjdCBjaGFyYWN0ZXJpc3RpY3NcbiAgICDOvl8gPSByYW5kKE5vcm1hbCgwLCB2YXLOviksIEpfKzEsIEkpICAgICAgICAgIyBQcm9kdWN0LWxldmVsIHV0aWxpdHkgc2hvY2tzXG4gICAgIyBDb25zdW1lci1wcm9kdWN0LWxldmVsIHByZWZlcmVuY2Ugc2hvY2tzXG4gICAgzrZfID0gW3JhbmQoTm9ybWFsKDAsMSksIDEsIEkpICogdmFyzrY7IHplcm9zKEssSSldXG4gICAgd18gPSByYW5kKFVuaWZvcm0oMCwgMSksIEpfKSAgICAgICAgICAgICAgICAjIENvc3Qgc2hpZnRlcnNcbiAgICDPiV8gPSByYW5kKFVuaWZvcm0oMCwgMSksIEpfKSAgICAgICAgICAgICAgICAjIENvc3Qgc2hvY2tzXG4gICAgY18gPSB3XyArIM+JXyAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIyBDb3N0XG4gICAgal8gPSBzb3J0KHNhbXBsZSgxOkosIEpfLCByZXBsYWNlPWZhbHNlKSkgICAjIFN1YnNldCBvZiBmaXJtc1xuICAgIHJldHVybiBYXywgzr5fLCDOtl8sIHdfLCBjXywgal9cbmVuZDtcbmBgYCJ9 -->
+<pre class="julia"><code>function draw_data(I::Int, J::Int, K::Int, rangeJ::Vector, varζ::Number, varX::Number, varξ::Number)::Tuple
+    &quot;&quot;&quot;Draw data for one market&quot;&quot;&quot;
+    J_ = rand(rangeJ[1]:rangeJ[2])              # Number of firms (products)
+    X_ = rand(Exponential(varX), J_, K)         # Product characteristics
+    ξ_ = rand(Normal(0, varξ), J_+1, I)         # Product-level utility shocks
+    # Consumer-product-level preference shocks
+    ζ_ = [rand(Normal(0,1), 1, I) * varζ; zeros(K,I)]
+    w_ = rand(Uniform(0, 1), J_)                # Cost shifters
+    ω_ = rand(Uniform(0, 1), J_)                # Cost shocks
+    c_ = w_ + ω_                                # Cost
+    j_ = sort(sample(1:J, J_, replace=false))   # Subset of firms
+    return X_, ξ_, ζ_, w_, c_, j_
+end;</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
+<div id="simulating-data-1" class="section level3">
+<h3>Simulating Data</h3>
+<p>Then we simulate the data for one market.</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBganVsaWFcbmZ1bmN0aW9uIGNvbXB1dGVfbWt0X2VxKEk6OkludCwgSjo6SW50LCDOsjo6VmVjdG9yLCByYW5nZUo6OlZlY3RvciwgdmFyzrY6Ok51bWJlciwgdmFyWDo6TnVtYmVyLCB2YXLOvjo6TnVtYmVyKTo6RGF0YUZyYW1lXG4gICAgXCJcIlwiQ29tcHV0ZSBlcXVpbGlicml1bSBvbmUgbWFya2V0XCJcIlwiXG5cbiAgICAjIEluaXRpYWxpemUgdmFyaWFibGVzXG4gICAgSyA9IHNpemUozrIsIDEpIC0gMVxuICAgIFhfLCDOvl8sIM62Xywgd18sIGNfLCBqXyA9IGRyYXdfZGF0YShJLCBKLCBLLCByYW5nZUosIHZhcs62LCB2YXJYLCB2YXLOvilcblxuICAgICMgQ29tcHV0ZSBlcXVpbGlicml1bVxuICAgIHBfID0gZXF1aWxpYnJpdW0oY18sIFhfLCDOsiwgzr5fLCDOtl8pICAgICMgRXF1aWxpYnJpdW0gcHJpY2VzXG4gICAgcV8sIHEwID0gZGVtYW5kKHBfLCBYXywgzrIsIM6+XywgzrZfKSAgICAgIyBEZW1hbmQgd2l0aCBzaG9ja3NcbiAgICBwcl8gPSAocF8gLSBjXykgLiogcV8gICAgICAgICAgICAgICAgICAgICAgICMgUHJvZml0c1xuXG4gICAgIyBTYXZlIHRvIGRhdGFcbiAgICBxMF8gPSBvbmVzKGxlbmd0aChqXykpIC4qIHEwXG4gICAgZGYgPSBEYXRhRnJhbWUoaj1qXywgdz13XywgcD1wXywgcT1xXywgcTA9cTBfLCBwcj1wcl8pXG4gICAgZm9yIGs9MTpLXG4gICAgICBkZlshLFwieCRrXCJdID0gWF9bOixrXVxuICAgICAgZGZbISxcInoka1wiXSA9IHN1bShYX1s6LGtdKSAuLSBYX1s6LGtdXG4gICAgZW5kXG4gICAgcmV0dXJuIGRmXG5lbmQ7XG5gYGAifQ== -->
+<pre class="julia"><code>function compute_mkt_eq(I::Int, J::Int, β::Vector, rangeJ::Vector, varζ::Number, varX::Number, varξ::Number)::DataFrame
+    &quot;&quot;&quot;Compute equilibrium one market&quot;&quot;&quot;
+
+    # Initialize variables
+    K = size(β, 1) - 1
+    X_, ξ_, ζ_, w_, c_, j_ = draw_data(I, J, K, rangeJ, varζ, varX, varξ)
+
+    # Compute equilibrium
+    p_ = equilibrium(c_, X_, β, ξ_, ζ_)    # Equilibrium prices
+    q_, q0 = demand(p_, X_, β, ξ_, ζ_)     # Demand with shocks
+    pr_ = (p_ - c_) .* q_                       # Profits
+
+    # Save to data
+    q0_ = ones(length(j_)) .* q0
+    df = DataFrame(j=j_, w=w_, p=p_, q=q_, q0=q0_, pr=pr_)
+    for k=1:K
+      df[!,&quot;x$k&quot;] = X_[:,k]
+      df[!,&quot;z$k&quot;] = sum(X_[:,k]) .- X_[:,k]
+    end
+    return df
+end;</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
+<div id="simultate-the-data-2" class="section level3">
+<h3>Simultate the Data (2)</h3>
+<p>We repeat for <span class="math inline">\(T\)</span> markets.</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBganVsaWFcbmZ1bmN0aW9uIHNpbXVsYXRlX2RhdGEoSTo6SW50LCBKOjpJbnQsIM6yOjpWZWN0b3IsIFQ6OkludCwgcmFuZ2VKOjpWZWN0b3IsIHZhcs62OjpOdW1iZXIsIHZhclg6Ok51bWJlciwgdmFyzr46Ok51bWJlcilcbiAgICBcIlwiXCJTaW11bGF0ZSBmdWxsIGRhdGFzZXRcIlwiXCJcbiAgICBkZiA9IGNvbXB1dGVfbWt0X2VxKEksIEosIM6yLCByYW5nZUosIHZhcs62LCB2YXJYLCB2YXLOvilcbiAgICBkZlshLCBcInRcIl0gPSBvbmVzKG5yb3coZGYpKSAqIDFcbiAgICBmb3IgdD0yOlRcbiAgICAgICAgZGZfdGVtcCA9IGNvbXB1dGVfbWt0X2VxKEksIEosIM6yLCByYW5nZUosIHZhcs62LCB2YXJYLCB2YXLOvilcbiAgICAgICAgZGZfdGVtcFshLCBcInRcIl0gPSBvbmVzKG5yb3coZGZfdGVtcCkpICogdFxuICAgICAgICBhcHBlbmQhKGRmLCBkZl90ZW1wKVxuICAgIGVuZFxuICAgIENTVi53cml0ZShcIi4uL2RhdGEvYmxwLmNzdlwiLCBkZilcbiAgICByZXR1cm4gZGZcbmVuZDtcbmBgYCJ9 -->
+<pre class="julia"><code>function simulate_data(I::Int, J::Int, β::Vector, T::Int, rangeJ::Vector, varζ::Number, varX::Number, varξ::Number)
+    &quot;&quot;&quot;Simulate full dataset&quot;&quot;&quot;
+    df = compute_mkt_eq(I, J, β, rangeJ, varζ, varX, varξ)
+    df[!, &quot;t&quot;] = ones(nrow(df)) * 1
+    for t=2:T
+        df_temp = compute_mkt_eq(I, J, β, rangeJ, varζ, varX, varξ)
+        df_temp[!, &quot;t&quot;] = ones(nrow(df_temp)) * t
+        append!(df, df_temp)
+    end
+    CSV.write(&quot;../data/blp.csv&quot;, df)
+    return df
+end;</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
+<div id="simulate-the-data-3" class="section level3">
+<h3>Simulate the Data (3)</h3>
+<p>Now let’s run the code</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBganVsaWFcbiMgU2ltdWxhdGVcbmRmID0gc2ltdWxhdGVfZGF0YShpLCBKLCDOsiwgVCwgcmFuZ2VKLCB2YXLOtiwgdmFyWCwgdmFyzr4pO1xuYGBgIn0= -->
+<pre class="julia"><code># Simulate
+df = simulate_data(i, J, β, T, rangeJ, varζ, varX, varξ);</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
+<div id="the-data" class="section level3">
+<h3>The Data</h3>
+<p>What does the data look like? Let’s switch to R!</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBSZWFkIGRhdGFcbmRmID0gZnJlYWQoXCIuLi9kYXRhL2JscC5jc3ZcIilcbmthYmxlKGRmWzE6NSxdLCBkaWdpdHM9NClcbmBgYCJ9 -->
+<pre class="r"><code># Read data
+df = fread(&quot;../data/blp.csv&quot;)
+kable(df[1:5,], digits=4)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
+<div id="estimation" class="section level3">
+<h3>Estimation</h3>
+<p>The BLP estimation procedure</p>
+</div>
+<div id="from-deltas-to-shares" class="section level3">
+<h3>From deltas to shares</h3>
+<p>First, we need to compute the shares implied by aspecific vector of <span class="math inline">\(\delta\)</span>s</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBganVsaWFcbmZ1bmN0aW9uIGltcGxpZWRfc2hhcmVzKFh0Xzo6TWF0cml4LCDOtnRfOjpNYXRyaXgsIM60dF86OlZlY3RvciwgzrQwOjpNYXRyaXgpOjpWZWN0b3JcbiAgICBcIlwiXCJDb21wdXRlIHNoYXJlcyBpbXBsaWVkIGJ5IGRlbHRhcyBhbmQgc2hvY2tzXCJcIlwiXG4gICAgdSA9IFvOtHRfIC4rIChYdF8gKiDOtnRfKTsgzrQwXSAgICAgICAgICAgICAgICAgICMgVXRpbGl0eVxuICAgIGUgPSBleHAuKHUpICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIyBUYWtlIGV4cG9uZW50aWFsXG4gICAgcSA9IG1lYW4oZSAuLyBzdW0oZSwgZGltcz0xKSwgZGltcz0yKSAgICAgICAjIENvbXB1dGUgZGVtYW5kXG4gICAgcmV0dXJuIHFbMTplbmQtMV1cbmVuZDtcbmBgYCJ9 -->
+<pre class="julia"><code>function implied_shares(Xt_::Matrix, ζt_::Matrix, δt_::Vector, δ0::Matrix)::Vector
+    &quot;&quot;&quot;Compute shares implied by deltas and shocks&quot;&quot;&quot;
+    u = [δt_ .+ (Xt_ * ζt_); δ0]                  # Utility
+    e = exp.(u)                                 # Take exponential
+    q = mean(e ./ sum(e, dims=1), dims=2)       # Compute demand
+    return q[1:end-1]
+end;</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
+<div id="inner-loop" class="section level3">
+<h3>Inner Loop</h3>
+<p>We can now compute the inner loop and invert the demand function: from shares <span class="math inline">\(q\)</span> to <span class="math inline">\(\delta\)</span>s</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBganVsaWFcbmZ1bmN0aW9uIGlubmVyX2xvb3AocXRfOjpWZWN0b3IsIFh0Xzo6TWF0cml4LCDOtnRfOjpNYXRyaXgpOjpWZWN0b3JcbiAgICBcIlwiXCJTb2x2ZSB0aGUgaW5uZXIgbG9vcDogY29tcHV0ZSBkZWx0YSwgZ2l2ZW4gdGhlIHNoYXJlc1wiXCJcIlxuICAgIM60dF8gPSBvbmVzKHNpemUocXRfKSlcbiAgICDOtDAgPSB6ZXJvcygxLCBzaXplKM62dF8sIDIpKVxuICAgIGRpc3QgPSAxXG5cbiAgICAjIEl0ZXJhdGUgdW50aWwgY29udmVyZ2VuY2VcbiAgICB3aGlsZSAoZGlzdCA+IDFlLTgpXG4gICAgICAgIHEgPSBpbXBsaWVkX3NoYXJlcyhYdF8sIM62dF8sIM60dF8sIM60MClcbiAgICAgICAgzrR0Ml8gPSDOtHRfICsgbG9nLihxdF8pIC0gbG9nLihxKVxuICAgICAgICBkaXN0ID0gbWF4KGFicy4ozrR0Ml8gLSDOtHRfKS4uLilcbiAgICAgICAgzrR0XyA9IM60dDJfXG4gICAgZW5kXG4gICAgcmV0dXJuIM60dF9cbmVuZDtcbmBgYCJ9 -->
+<pre class="julia"><code>function inner_loop(qt_::Vector, Xt_::Matrix, ζt_::Matrix)::Vector
+    &quot;&quot;&quot;Solve the inner loop: compute delta, given the shares&quot;&quot;&quot;
+    δt_ = ones(size(qt_))
+    δ0 = zeros(1, size(ζt_, 2))
+    dist = 1
+
+    # Iterate until convergence
+    while (dist &gt; 1e-8)
+        q = implied_shares(Xt_, ζt_, δt_, δ0)
+        δt2_ = δt_ + log.(qt_) - log.(q)
+        dist = max(abs.(δt2_ - δt_)...)
+        δt_ = δt2_
+    end
+    return δt_
+end;</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
+<div id="compute-delta" class="section level3">
+<h3>Compute Delta</h3>
+<p>We can now repeat the inversion for every market and get the vector of mean utilities <span class="math inline">\(\delta\)</span>s from the observed market shares <span class="math inline">\(q\)</span>.</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBganVsaWFcbmZ1bmN0aW9uIGNvbXB1dGVfZGVsdGEocV86OlZlY3RvciwgWF86Ok1hdHJpeCwgzrZfOjpNYXRyaXgsIFQ6OlZlY3Rvcik6OlZlY3RvclxuICAgIFwiXCJcIkNvbXB1dGUgcmVzaWR1YWxzXCJcIlwiXG4gICAgzrRfID0gemVyb3Moc2l6ZShUKSlcblxuICAgICMgTG9vcCBvdmVyIGVhY2ggbWFya2V0XG4gICAgZm9yIHQgaW4gdW5pcXVlKFQpXG4gICAgICAgIHF0XyA9IHFfW1QuPT10XSAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIyBRdWFudGl0eSBpbiBtYXJrZXQgdFxuICAgICAgICBYdF8gPSBYX1tULj09dCw6XSAgICAgICAgICAgICAgICAgICAgICAgICAgICMgQ2hhcmFjdGVyaXN0aWNzIGluIG1rdCB0XG4gICAgICAgIM60X1tULj09dF0gPSBpbm5lcl9sb29wKHF0XywgWHRfLCDOtl8pICAgICAgICAjIFNvbHZlIGlubmVyIGxvb3BcbiAgICBlbmRcbiAgICByZXR1cm4gzrRfXG5lbmQ7XG5gYGAifQ== -->
+<pre class="julia"><code>function compute_delta(q_::Vector, X_::Matrix, ζ_::Matrix, T::Vector)::Vector
+    &quot;&quot;&quot;Compute residuals&quot;&quot;&quot;
+    δ_ = zeros(size(T))
+
+    # Loop over each market
+    for t in unique(T)
+        qt_ = q_[T.==t]                             # Quantity in market t
+        Xt_ = X_[T.==t,:]                           # Characteristics in mkt t
+        δ_[T.==t] = inner_loop(qt_, Xt_, ζ_)        # Solve inner loop
+    end
+    return δ_
+end;</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
+<div id="compute-xi" class="section level3">
+<h3>Compute Xi</h3>
+<p>Now that we have <span class="math inline">\(\delta\)</span>, it is pretty straightforward to compute <span class="math inline">\(\xi\)</span>. We just need to perform a linear regression (with instruments) of mean utilities <span class="math inline">\(\delta\)</span> on prices <span class="math inline">\(p\)</span> and product characteristics <span class="math inline">\(X\)</span> and compute the residuals <span class="math inline">\(\xi\)</span>.</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBganVsaWFcbmZ1bmN0aW9uIGNvbXB1dGVfeGkoWF86Ok1hdHJpeCwgSVZfOjpNYXRyaXgsIM60Xzo6VmVjdG9yKTo6VHVwbGVcbiAgICBcIlwiXCJDb21wdXRlIHJlc2lkdWFsLCBnaXZlbiBkZWx0YSAoSVYpXCJcIlwiXG4gICAgzrJfID0gaW52KElWXycgKiBYXykgKiAoSVZfJyAqIM60XykgICAgICAgICAgICMgQ29tcHV0ZSBjb2VmZmljaWVudHMgKElWKVxuICAgIM6+XyA9IM60XyAtIFhfICogzrJfICAgICAgICAgICAgICAgICAgICAgICAgICAgIyBDb21wdXRlIGVycm9yc1xuICAgIHJldHVybiDOvl8sIM6yX1xuZW5kO1xuYGBgIn0= -->
+<pre class="julia"><code>function compute_xi(X_::Matrix, IV_::Matrix, δ_::Vector)::Tuple
+    &quot;&quot;&quot;Compute residual, given delta (IV)&quot;&quot;&quot;
+    β_ = inv(IV_&#39; * X_) * (IV_&#39; * δ_)           # Compute coefficients (IV)
+    ξ_ = δ_ - X_ * β_                           # Compute errors
+    return ξ_, β_
+end;</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
+<div id="objective-function" class="section level3">
+<h3>Objective Function</h3>
+<p>We now have all the ingredients to set up the GMM objective function.</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBganVsaWFcbmZ1bmN0aW9uIEdNTSh2YXLOtl86Ok51bWJlcik6OlR1cGxlXG4gICAgXCJcIlwiQ29tcHV0ZSBHTU0gb2JqZWN0aXZlIGZ1bmN0aW9uXCJcIlwiXG4gICAgzrRfID0gY29tcHV0ZV9kZWx0YShxXywgWF8sIM62XyAqIHZhcs62XywgVCkgICAjIENvbXB1dGUgZGVsdGFzXG4gICAgzr5fLCDOsl8gPSBjb21wdXRlX3hpKFhfLCBJVl8sIM60XykgICAgICAgICAgICAjIENvbXB1dGUgcmVzaWR1YWxzXG4gICAgZ21tID0gzr5fJyAqIFpfICogWl8nICogzr5fIC8gbGVuZ3RoKM6+XyleMiAgICAjIENvbXB1dGUgb3J0b2dvbmFsaXR5IGNvbmRpdGlvblxuICAgIHJldHVybiBnbW0sIM6yX1xuZW5kO1xuYGBgIn0= -->
+<pre class="julia"><code>function GMM(varζ_::Number)::Tuple
+    &quot;&quot;&quot;Compute GMM objective function&quot;&quot;&quot;
+    δ_ = compute_delta(q_, X_, ζ_ * varζ_, T)   # Compute deltas
+    ξ_, β_ = compute_xi(X_, IV_, δ_)            # Compute residuals
+    gmm = ξ_&#39; * Z_ * Z_&#39; * ξ_ / length(ξ_)^2    # Compute ortogonality condition
+    return gmm, β_
+end;</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
+<div id="estimation-1" class="section level3">
+<h3>Estimation (1)</h3>
+<p>First, we need to set up our objects</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBganVsaWFcbiMgUmV0cmlldmUgZGF0YVxuVCA9IEludC4oZGYudClcblhfID0gW2RmLngxIGRmLngyIGRmLnBdXG5xXyA9IGRmLnFcbnEwXyA9IGRmLnEwXG5JVl8gPSBbZGYueDEgZGYueDIgZGYud11cblpfID0gW2RmLngxIGRmLngyIGRmLnoxIGRmLnoyXVxuYGBgIn0= -->
+<pre class="julia"><code># Retrieve data
+T = Int.(df.t)
+X_ = [df.x1 df.x2 df.p]
+q_ = df.q
+q0_ = df.q0
+IV_ = [df.x1 df.x2 df.w]
+Z_ = [df.x1 df.x2 df.z1 df.z2]</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
+<div id="estimation-2" class="section level3">
+<h3>Estimation (2)</h3>
+<p>What would a logit regression estimate?</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-output-begin eyJkYXRhIjoiRXN0aW1hdGVkIGxvZ2l0IGNvZWZmaWNpZW50czogWzIuOTcyMjI3Njk3MjIzMTkzLCAxLjE5NzYzNjEyNzUzNTgzMiwgLTEuMTExMDI4NzE2NTE5NDMxNV1cbiJ9 -->
+<pre><code>Estimated logit coefficients: [2.972227697223193, 1.197636127535832, -1.1110287165194315]</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
+<div id="estimation-3" class="section level3">
+<h3>Estimation (3)</h3>
+<p>We can now run the BLP machinery</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-output-begin eyJkYXRhIjoiRXN0aW1hdGVkIEJMUCBjb2VmZmljaWVudHM6IFstMC4wOTM4MDA4NTIxMDA5MTk0OSwgMS4xNzA4NTM2MTQzNTg1MTA0LCAtMC41ODU4NDQwMzYzNjY0MDE3XVxuIn0= -->
+<pre><code>Estimated BLP coefficients: [-0.09380085210091949, 1.1708536143585104, -0.5858440363664017]</code></pre>
+<!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 </div>
@@ -307,7 +630,7 @@ Berry, Steven, James Levinsohn, and Ariel Pakes. 1995. <span>“Automobile Price
 </div>
 </div>
 
-<div id="rmd-source-code">LS0tCnRpdGxlOiAiQ29kaW5nOiBCTFAgKDE5OTUpIgphdXRob3I6ICJNYXR0ZW8gQ291cnRob3VkIgp0eXBlOiBib29rCndlaWdodDogMTIKZGF0ZTogMjAyMS0xMC0yOQpiaWJsaW9ncmFwaHk6IHJlZmVyZW5jZXMuYmliCmxpbmstY2l0YXRpb25zOiB0cnVlCm91dHB1dDogCiAgaHRtbF9ub3RlYm9vazogCiAgICB0b2M6IHRydWUKICAgIHRvY19kZXB0aDogMgogIGlvc2xpZGVzX3ByZXNlbnRhdGlvbjoKICAgIHdpZGVzY3JlZW46IHRydWUKICAgIHNtYWxsZXI6IHRydWUKICAgIHRyYW5zaXRpb246IDAKICAgIHNsaWRlX2xldmVsOiAzCiAgICBjc3M6IGN1c3RvbS5jc3MKICBtZF9kb2N1bWVudDoKICAgIHZhcmlhbnQ6IG1hcmtkb3duX21tZAogICAgcHJlc2VydmVfeWFtbDogdHJ1ZQotLS0KCmBgYHtyLCBpbmNsdWRlPUZBTFNFLCBlY2hvPUZBTFNFfQojIEltcG9ydCBwYWNrYWdlcwpsaWJyYXJ5KHRpZHl2ZXJzZSkgICAgIyBGdXIgYWxsZXMKbGlicmFyeShkYXRhLnRhYmxlKSAgICMgRm9yIGZyZWFkcgpsaWJyYXJ5KGtuaXRyKSAgICAgICAgIyBGb3Iga2FibGUKbGlicmFyeShicm9vbSkgICAgICAgICMgRm9yIHRpZHkKbGlicmFyeShBRVIpICAgICAgICAgICMgRm9yIGl2cmVnCmBgYAoKYGBge3IgbG9hZCBqdWxpYSBpZiBub3QgYWxyZWFkeSBsb2FkZWQsIGluY2x1ZGU9RkFMU0UsIGVjaG89RkFMU0V9CmlmICghKCJKdWxpYUNhbGwiICVpbiUgKC5wYWNrYWdlcygpKSkpIHsKICBsaWJyYXJ5KEp1bGlhQ2FsbCkKICBqdWxpYSA8LSBqdWxpYV9zZXR1cCgiL1VzZXJzL21jb3VydC9Eb2N1bWVudHMvSnVsaWEtMS41LmFwcC9Db250ZW50cy9SZXNvdXJjZXMvanVsaWEvYmluIikKfQpgYGAKCmBgYHtqdWxpYSwgaW5jbHVkZT1GQUxTRSwgZWNobz1GQUxTRX0KI2ltcG9ydCBQa2cKI1BrZy5hZGQoIk9wdGltIikKI1BrZy5hZGQoIlN0YXRpc3RpY3MiKQojUGtnLmFkZCgiRGlzdHJpYnV0aW9ucyIpCiNQa2cuYWRkKCJSYW5kb20iKQojUGtnLmFkZCgiRGF0YUZyYW1lcyIpCiNQa2cuYWRkKCJDU1YiKQoKdXNpbmcgT3B0aW0KdXNpbmcgRGlzdHJpYnV0aW9ucwp1c2luZyBTdGF0aXN0aWNzCnVzaW5nIFJhbmRvbQp1c2luZyBEYXRhRnJhbWVzCnVzaW5nIENTVgpgYGAKCiMjIyBJbnRybwoKSW4gdGhpcyBzZXNzaW9uLCBJIGFtIGdvaW5nIHRvIGNvdmVyIGRlbWFuZCBlc3RpbWF0aW9uLgoKLSBDb21wdXRlIGVxdWlsaWJyaXVtIG91dGNvbWVzIHdpdGggUkNMIGRlbWFuZAotIFNpbXVsYXRlIG1hcmtldC1sZXZlbCBkYXRhCiAgLSBFeHRyZW1lbHkgc2ltaWxhciB0byB0aGUgbG9naXQgZGVtYW5kIHNpbXVsYXRpb24KLSBCdWlsZCB0aGUgQkxQIGVzdGltYXRvciBmcm9tIEBiZXJyeTE5OTVhdXRvbW9iaWxlCgoKCiMjIyBNb2RlbAoKSW4gdGhpcyBmaXJzdCBwYXJ0LCB3ZSBhcmUgZ29pbmcgdG8gYXNzdW1lIHRoYXQgY29uc3VtZXIgJGkgXGluIFxsYnJhY2UxLC4uLixJXHJicmFjZSQgdXRpbGl0eSBmcm9tIGdvb2QgJGogXGluIFxsYnJhY2UxLC4uLixKXHJicmFjZSQgaW4gbWFya2V0ICR0IFxpbiBcbGJyYWNlMSwuLi4sVFxyYnJhY2UkIHRha2VzIHRoZSBmb3JtCgokJAp1X3tpanR9ID0gXGJvbGRzeW1ib2wgeF97anR9IFxib2xkc3ltYm9sIFxiZXRhX3tpdH0gLSBcYWxwaGEgcF97anR9ICsgXHhpX3tqdH0gKyBcZXBzaWxvbl97aWp0fQokJAoKd2hlcmUKCi0gJFx4aV97anR9JCBpcyB0eXBlLTEgZXh0cmVtZSB2YWx1ZSBkaXN0cmlidXRlZAotICRcYm9sZHN5bWJvbCBcYmV0YV97aXR9JDogaGFzIGRpbWVuc2lvbiAkSyQKICAkJFxiZXRhX3tpdH1eayA9IFxiZXRhXzBeayArIFxzaWdtYV9rIFx6ZXRhX3tpdH1eayQkCiAgLSAkXGJldGFfMF5rJDogZml4ZWQgdGFzdGUgZm9yIGNoYXJhY3RlcmlzdGljICRrJCAodGhlIHVzdWFsICRcYmV0YSQpCiAgLSAkXHpldGFfe2l0fV5rJDogcmFuZG9tIHRhc3RlLCBpLmkuZC4gYWNyb3NzIGNvbnN1bWVycyBhbmQgbWFya2V0cyAkdCQKCiMjIyBTZXR1cAoKV2UgaGF2ZSAkSiQgZmlybXMgYW5kIGVhY2ggcHJvZHVjdCBoYXMgJEskIGNoYXJhY3RlcmlzdGljcy4gCgpgYGB7anVsaWF9CkogPSAzOyAgICAgICAgICAgICAgICAgICMgMyBmaXJtcyA9PSBwcm9kdWN0cwpLID0gMjsgICAgICAgICAgICAgICAgICAjIDIgcHJvZHVjdCBjaGFyYWN0ZXJpc3RpY3MKYyA9IHJhbmQoSik7ICAgICAgICAgICAgIyBSYW5kb20gdW5pZm9ybSBtYXJnaW5hbCBjb3N0cwp4aSA9IHJhbmRuKEorMSk7ICAgICAgICAjIFJhbmRvbSBub3JtYWwgaW5kaXZpZHVhbCBzaG9ja3MKWCA9IHJhbmRleHAoSiwgSyk7ICAgICAgIyBSYW5kb20gZXhwb25lbnRpYWwgcHJvZHVjdCBjaGFyYWN0ZXJpc3RpY3MKYiA9IFtvbmVzKEspOyAtMV0gICAgICAgIyBVbml0YXJ5IHByZWZlcmVuY2VzIChhbHNvIGZvciBwcmljZXMpCmBgYAoKCgoKCiMjIFJlZmVyZW5jZXMKCi0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQo=</div>
+<div id="rmd-source-code">LS0tCnRpdGxlOiAiQ29kaW5nOiBCTFAgKDE5OTUpIgphdXRob3I6ICJNYXR0ZW8gQ291cnRob3VkIgp0eXBlOiBib29rCndlaWdodDogMTIKZGF0ZTogMjAyMS0xMC0yOQpiaWJsaW9ncmFwaHk6IHJlZmVyZW5jZXMuYmliCmxpbmstY2l0YXRpb25zOiB0cnVlCm91dHB1dDogCiAgaHRtbF9ub3RlYm9vazogCiAgICB0b2M6IHRydWUKICAgIHRvY19kZXB0aDogMgogIGlvc2xpZGVzX3ByZXNlbnRhdGlvbjoKICAgIHdpZGVzY3JlZW46IHRydWUKICAgIHNtYWxsZXI6IHRydWUKICAgIHRyYW5zaXRpb246IDAKICAgIHNsaWRlX2xldmVsOiAzCiAgICBjc3M6IGN1c3RvbS5jc3MKICBtZF9kb2N1bWVudDoKICAgIHZhcmlhbnQ6IG1hcmtkb3duX21tZAogICAgcHJlc2VydmVfeWFtbDogdHJ1ZQotLS0KCmBgYHtyLCBpbmNsdWRlPUZBTFNFLCBlY2hvPUZBTFNFfQojIEltcG9ydCBwYWNrYWdlcwpsaWJyYXJ5KHRpZHl2ZXJzZSkgICAgIyBGdXIgYWxsZXMKbGlicmFyeShkYXRhLnRhYmxlKSAgICMgRm9yIGZyZWFkcgpsaWJyYXJ5KGtuaXRyKSAgICAgICAgIyBGb3Iga2FibGUKbGlicmFyeShicm9vbSkgICAgICAgICMgRm9yIHRpZHkKbGlicmFyeShBRVIpICAgICAgICAgICMgRm9yIGl2cmVnCmBgYAoKYGBge3IgbG9hZCBqdWxpYSBpZiBub3QgYWxyZWFkeSBsb2FkZWQsIGluY2x1ZGU9RkFMU0UsIGVjaG89RkFMU0V9CmlmICghKCJKdWxpYUNhbGwiICVpbiUgKC5wYWNrYWdlcygpKSkpIHsKICBsaWJyYXJ5KEp1bGlhQ2FsbCkKICBqdWxpYSA8LSBqdWxpYV9zZXR1cCgiL1VzZXJzL21jb3VydC9Eb2N1bWVudHMvSnVsaWEtMS41LmFwcC9Db250ZW50cy9SZXNvdXJjZXMvanVsaWEvYmluIikKfQpgYGAKCmBgYHtqdWxpYSwgaW5jbHVkZT1GQUxTRSwgZWNobz1GQUxTRX0KI2ltcG9ydCBQa2cKI1BrZy5hZGQoIk9wdGltIikKI1BrZy5hZGQoIlN0YXRpc3RpY3MiKQojUGtnLmFkZCgiRGlzdHJpYnV0aW9ucyIpCiNQa2cuYWRkKCJSYW5kb20iKQojUGtnLmFkZCgiRGF0YUZyYW1lcyIpCiNQa2cuYWRkKCJDU1YiKQoKdXNpbmcgT3B0aW0KdXNpbmcgRGlzdHJpYnV0aW9ucwp1c2luZyBTdGF0aXN0aWNzCnVzaW5nIERhdGFGcmFtZXMKdXNpbmcgQ1NWCmBgYAoKIyMjIEludHJvCgpJbiB0aGlzIHNlc3Npb24sIEkgYW0gZ29pbmcgdG8gY292ZXIgZGVtYW5kIGVzdGltYXRpb24uCgotIENvbXB1dGUgZXF1aWxpYnJpdW0gb3V0Y29tZXMgd2l0aCBSQ0wgZGVtYW5kCi0gU2ltdWxhdGUgbWFya2V0LWxldmVsIGRhdGEKICAtIEV4dHJlbWVseSBzaW1pbGFyIHRvIHRoZSBsb2dpdCBkZW1hbmQgc2ltdWxhdGlvbgotIEJ1aWxkIHRoZSBCTFAgZXN0aW1hdG9yIGZyb20gQGJlcnJ5MTk5NWF1dG9tb2JpbGUKCgoKIyMjIE1vZGVsCgpJbiB0aGlzIGZpcnN0IHBhcnQsIHdlIGFyZSBnb2luZyB0byBhc3N1bWUgdGhhdCBjb25zdW1lciAkaSBcaW4gXGxicmFjZTEsLi4uLElccmJyYWNlJCB1dGlsaXR5IGZyb20gZ29vZCAkaiBcaW4gXGxicmFjZTEsLi4uLEpccmJyYWNlJCBpbiBtYXJrZXQgJHQgXGluIFxsYnJhY2UxLC4uLixUXHJicmFjZSQgdGFrZXMgdGhlIGZvcm0KCiQkCnVfe2lqdH0gPSBcYm9sZHN5bWJvbCB4X3tqdH0gXGJvbGRzeW1ib2wgXGJldGFfe2l0fSAtIFxhbHBoYSBwX3tqdH0gKyBceGlfe2p0fSArIFxlcHNpbG9uX3tpanR9CiQkCgp3aGVyZQoKLSAkXHhpX3tqdH0kIGlzIHR5cGUtMSBleHRyZW1lIHZhbHVlIGRpc3RyaWJ1dGVkCi0gJFxib2xkc3ltYm9sIFxiZXRhX3tpdH0kOiBoYXMgZGltZW5zaW9uICRLJAogICQkXGJldGFfe2l0fV5rID0gXGJldGFfMF5rICsgXHNpZ21hX2sgXHpldGFfe2l0fV5rJCQKICAtICRcYmV0YV8wXmskOiBmaXhlZCB0YXN0ZSBmb3IgY2hhcmFjdGVyaXN0aWMgJGskICh0aGUgdXN1YWwgJFxiZXRhJCkKICAtICRcemV0YV97aXR9XmskOiByYW5kb20gdGFzdGUsIGkuaS5kLiBhY3Jvc3MgY29uc3VtZXJzIGFuZCBtYXJrZXRzICR0JAoKIyMjIFNldHVwCgpXZSBoYXZlICRKJCBmaXJtcyBhbmQgZWFjaCBwcm9kdWN0IGhhcyAkSyQgY2hhcmFjdGVyaXN0aWNzLiAKCmBgYHtqdWxpYSwgcmVzdWx0cz0iaGlkZSJ9CmkgPSAxMDA7ICAgICAgICAgICAgICAgICMgTnVtYmVyIG9mIGNvbnN1bWVycwpKID0gMTA7ICAgICAgICAgICAgICAgICAjIE51bWJlciBvZiBmaXJtcwpLID0gMjsgICAgICAgICAgICAgICAgICAjIFByb2R1Y3QgY2hhcmFjdGVyaXN0aWNzClQgPSAxMDA7ICAgICAgICAgICAgICAgICMgTnVtYmVyIG9mIG1hcmtldHMKzrIgPSBbLjUsIDIsIC0xXTsgICAgICAgICMgUHJlZmVyZW5jZXMKdmFyzrYgPSA1OyAgICAgICAgICAgICAgICMgVmFyaWFuY2Ugb2YgdGhlIHJhbmRvbSB0YXN0ZQpyYW5nZUogPSBbMiwgNl07ICAgICAgICAjIE1pbiBhbmQgbWF4IGZpcm1zIHBlciBtYXJrZXQKdmFyWCA9IDE7ICAgICAgICAgICAgICAgIyBWYXJpYW5jZSBvZiBYCnZhcs6+ID0gMjsgICAgICAgICAgICAgICAjIFZhcmlhbmNlIG9mIHhpCmBgYAoKCgojIyMgRGVtYW5kCgpEZW1hbmQgaXMgdGhlIG1haW4gZGlmZmVyZW5jZSB3LnIudC4gdGhlIGxvZ2l0IG1vZGVsLiBOb3cgd2UgaGF2ZSBpbmRpdmlkdWFsIHNob2NrcyAkXHpldGEkIHdlIGhhdmUgdG8gaW50ZWdyYXRlIG92ZXIuCgpgYGB7anVsaWF9CmZ1bmN0aW9uIGRlbWFuZChwOjpWZWN0b3IsIFg6Ok1hdHJpeCwgzrI6OlZlY3Rvciwgzr46Ok1hdHJpeCwgzrY6Ok1hdHJpeCk6OlR1cGxle1ZlY3RvciwgTnVtYmVyfQogICAgIiIiQ29tcHV0ZSBkZW1hbmQiIiIKICAgIM60ID0gW1ggcF0gKiAozrIgLisgzrYpICAgICAgICAgICAgICAgICAgICAjIE1lYW4gdmFsdWUKICAgIM60MCA9IHplcm9zKDEsIHNpemUozrYsIDIpKSAgICAgICAgICAgICAgICMgTWVhbiB2YWx1ZSBvZiB0aGUgb3V0c2lkZSBvcHRpb24KICAgIHUgPSBbzrQ7IM60MF0gKyDOviAgICAgICAgICAgICAgICAgICAgICAgICAjIFV0aWxpdHkKICAgIGUgPSBleHAuKHUpICAgICAgICAgICAgICAgICAgICAgICAgICAgICAjIFRha2UgZXhwb25lbnRpYWwKICAgIHEgPSBtZWFuKGUgLi8gc3VtKGUsIGRpbXM9MSksIGRpbXM9MikgICAjIENvbXB1dGUgZGVtYW5kCiAgICByZXR1cm4gcVsxOmVuZC0xXSwgcVtlbmRdCmVuZDsKYGBgCgojIyMgU3VwcGx5CgpDb21wdXRpbmcgcHJvZml0cyBpcyBpbnN0ZWFkIGV4YWN0bHkgdGhlIHNhbWUgYXMgYmVmb3JlLiBXZSBqdXN0IGhhdmUgdG8gc2F2ZSB0aGUgc2hvY2tzICRcemV0YSQgdG8gYmUgc3VyZSBkZW1hbmQgaXMgc3RhYmxlLgoKYGBge2p1bGlhfQpmdW5jdGlvbiBwcm9maXRzKHA6OlZlY3RvciwgYzo6VmVjdG9yLCBYOjpNYXRyaXgsIM6yOjpWZWN0b3IsIM6+OjpNYXRyaXgsIM62OjpNYXRyaXgpOjpWZWN0b3IKICAgICIiIkNvbXB1dGUgcHJvZml0cyIiIgogICAgcSwgXyA9IGRlbWFuZChwLCBYLCDOsiwgzr4sIM62KSAgICAgICAgICAgICMgQ29tcHV0ZSBkZW1hbmQKICAgIHByID0gKHAgLSBjKSAuKiBxICAgICAgICAgICAgICAgICAgICAgICAjIENvbXB1dGUgcHJvZml0cwogICAgcmV0dXJuIHByCmVuZDsKYGBgCgpgYGB7anVsaWF9CmZ1bmN0aW9uIHByb2ZpdHNfaihwajo6TnVtYmVyLCBqOjpJbnQsIHA6OlZlY3RvciwgYzo6VmVjdG9yLCBYOjpNYXRyaXgsIM6yOjpWZWN0b3IsIM6+OjpNYXRyaXgsIM62OjpNYXRyaXgpOjpOdW1iZXIKICAgICIiIkNvbXB1dGUgcHJvZml0cyBvZiBmaXJtIGoiIiIKICAgIHBbal0gPSBwaiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAjIEluc2VydCBwcmljZSBvZiBmaXJtIGoKICAgIHByID0gcHJvZml0cyhwLCBjLCBYLCDOsiwgzr4sIM62KSAgICAgICAgICAjIENvbXB1dGUgcHJvZml0cwogICAgcmV0dXJuIHByW2pdCmVuZDsKYGBgCgojIyMgRXF1aWxpYnJpdW0KCldlIGNhbiBub3cgY29tcHV0ZSB0aGUgZXF1aWxpYnJpdW0gZm9yIGEgc3BlY2lmaWMgbWFya2V0LCBhcyBiZWZvcmUuCgpgYGB7anVsaWF9CmZ1bmN0aW9uIGVxdWlsaWJyaXVtKGM6OlZlY3RvciwgWDo6TWF0cml4LCDOsjo6VmVjdG9yLCDOvjo6TWF0cml4LCDOtjo6TWF0cml4KTo6VmVjdG9yCiAgICAiIiJDb21wdXRlIGVxdWlsaWJyaXVtIHByaWNlcyBhbmQgcHJvZml0cyIiIgogICAgcCA9IDIgLiogYzsKICAgIGRpc3QgPSAxOwogICAgaXRlciA9IDA7CgogICAgIyBJdGVyYXRlIHVudGlsIGNvbnZlcmdlbmNlCiAgICB3aGlsZSAoZGlzdCA+IDFlLTgpICYmIChpdGVyPDEwMDApCgogICAgICAgICMgQ29tcHV0ZSBiZXN0IHJlcGx5IGZvciBlYWNoIGZpcm0KICAgICAgICBwX29sZCA9IGNvcHkocCk7CiAgICAgICAgZm9yIGo9MTpsZW5ndGgocCkKICAgICAgICAgICAgb2JqX2Z1bihwaikgPSAtIHByb2ZpdHNfaihwalsxXSwgaiwgcCwgYywgWCwgzrIsIM6+LCDOtik7CiAgICAgICAgICAgIG9wdGltaXplKHggLT4gb2JqX2Z1bih4KSwgWzEuMF0sIExCRkdTKCkpOwogICAgICAgIGVuZAoKICAgICAgICAjIFVwZGF0ZSBkaXN0YW5jZQogICAgICAgIGRpc3QgPSBtYXgoYWJzLihwIC0gcF9vbGQpLi4uKTsKICAgICAgICBpdGVyICs9IDE7CiAgICBlbmQKICAgIHJldHVybiBwCmVuZDsKYGBgCgojIyMgU2ltdWxhdGluZyBEYXRhCgpXZSBhcmUgbm93IHJlYWR5IHRvIHNpbXVsYXRlIHRoZSBkYXRhLCBpLmUuIGVxdWlsaWJyaXVtIG91dGNvbWVzIGFjcm9zcyBkaWZmZXJlbnQgbWFya2V0cy4gV2UgZmlyc3QgZHJhdyBhbGwgdGhlIHZhcmlhYmxlcy4KCmBgYHtqdWxpYX0KZnVuY3Rpb24gZHJhd19kYXRhKEk6OkludCwgSjo6SW50LCBLOjpJbnQsIHJhbmdlSjo6VmVjdG9yLCB2YXLOtjo6TnVtYmVyLCB2YXJYOjpOdW1iZXIsIHZhcs6+OjpOdW1iZXIpOjpUdXBsZQogICAgIiIiRHJhdyBkYXRhIGZvciBvbmUgbWFya2V0IiIiCiAgICBKXyA9IHJhbmQocmFuZ2VKWzFdOnJhbmdlSlsyXSkgICAgICAgICAgICAgICMgTnVtYmVyIG9mIGZpcm1zIChwcm9kdWN0cykKICAgIFhfID0gcmFuZChFeHBvbmVudGlhbCh2YXJYKSwgSl8sIEspICAgICAgICAgIyBQcm9kdWN0IGNoYXJhY3RlcmlzdGljcwogICAgzr5fID0gcmFuZChOb3JtYWwoMCwgdmFyzr4pLCBKXysxLCBJKSAgICAgICAgICMgUHJvZHVjdC1sZXZlbCB1dGlsaXR5IHNob2NrcwogICAgIyBDb25zdW1lci1wcm9kdWN0LWxldmVsIHByZWZlcmVuY2Ugc2hvY2tzCiAgICDOtl8gPSBbcmFuZChOb3JtYWwoMCwxKSwgMSwgSSkgKiB2YXLOtjsgemVyb3MoSyxJKV0KICAgIHdfID0gcmFuZChVbmlmb3JtKDAsIDEpLCBKXykgICAgICAgICAgICAgICAgIyBDb3N0IHNoaWZ0ZXJzCiAgICDPiV8gPSByYW5kKFVuaWZvcm0oMCwgMSksIEpfKSAgICAgICAgICAgICAgICAjIENvc3Qgc2hvY2tzCiAgICBjXyA9IHdfICsgz4lfICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAjIENvc3QKICAgIGpfID0gc29ydChzYW1wbGUoMTpKLCBKXywgcmVwbGFjZT1mYWxzZSkpICAgIyBTdWJzZXQgb2YgZmlybXMKICAgIHJldHVybiBYXywgzr5fLCDOtl8sIHdfLCBjXywgal8KZW5kOwpgYGAKCiMjIyBTaW11bGF0aW5nIERhdGEKClRoZW4gd2Ugc2ltdWxhdGUgdGhlIGRhdGEgZm9yIG9uZSBtYXJrZXQuCgpgYGB7anVsaWF9CmZ1bmN0aW9uIGNvbXB1dGVfbWt0X2VxKEk6OkludCwgSjo6SW50LCDOsjo6VmVjdG9yLCByYW5nZUo6OlZlY3RvciwgdmFyzrY6Ok51bWJlciwgdmFyWDo6TnVtYmVyLCB2YXLOvjo6TnVtYmVyKTo6RGF0YUZyYW1lCiAgICAiIiJDb21wdXRlIGVxdWlsaWJyaXVtIG9uZSBtYXJrZXQiIiIKCiAgICAjIEluaXRpYWxpemUgdmFyaWFibGVzCiAgICBLID0gc2l6ZSjOsiwgMSkgLSAxCiAgICBYXywgzr5fLCDOtl8sIHdfLCBjXywgal8gPSBkcmF3X2RhdGEoSSwgSiwgSywgcmFuZ2VKLCB2YXLOtiwgdmFyWCwgdmFyzr4pCgogICAgIyBDb21wdXRlIGVxdWlsaWJyaXVtCiAgICBwXyA9IGVxdWlsaWJyaXVtKGNfLCBYXywgzrIsIM6+XywgzrZfKSAgICAjIEVxdWlsaWJyaXVtIHByaWNlcwogICAgcV8sIHEwID0gZGVtYW5kKHBfLCBYXywgzrIsIM6+XywgzrZfKSAgICAgIyBEZW1hbmQgd2l0aCBzaG9ja3MKICAgIHByXyA9IChwXyAtIGNfKSAuKiBxXyAgICAgICAgICAgICAgICAgICAgICAgIyBQcm9maXRzCgogICAgIyBTYXZlIHRvIGRhdGEKICAgIHEwXyA9IG9uZXMobGVuZ3RoKGpfKSkgLiogcTAKICAgIGRmID0gRGF0YUZyYW1lKGo9al8sIHc9d18sIHA9cF8sIHE9cV8sIHEwPXEwXywgcHI9cHJfKQogICAgZm9yIGs9MTpLCiAgICAgIGRmWyEsIngkayJdID0gWF9bOixrXQogICAgICBkZlshLCJ6JGsiXSA9IHN1bShYX1s6LGtdKSAuLSBYX1s6LGtdCiAgICBlbmQKICAgIHJldHVybiBkZgplbmQ7CmBgYAoKIyMjIFNpbXVsdGF0ZSB0aGUgRGF0YSAoMikKCldlIHJlcGVhdCBmb3IgJFQkIG1hcmtldHMuCgpgYGB7anVsaWF9CmZ1bmN0aW9uIHNpbXVsYXRlX2RhdGEoSTo6SW50LCBKOjpJbnQsIM6yOjpWZWN0b3IsIFQ6OkludCwgcmFuZ2VKOjpWZWN0b3IsIHZhcs62OjpOdW1iZXIsIHZhclg6Ok51bWJlciwgdmFyzr46Ok51bWJlcikKICAgICIiIlNpbXVsYXRlIGZ1bGwgZGF0YXNldCIiIgogICAgZGYgPSBjb21wdXRlX21rdF9lcShJLCBKLCDOsiwgcmFuZ2VKLCB2YXLOtiwgdmFyWCwgdmFyzr4pCiAgICBkZlshLCAidCJdID0gb25lcyhucm93KGRmKSkgKiAxCiAgICBmb3IgdD0yOlQKICAgICAgICBkZl90ZW1wID0gY29tcHV0ZV9ta3RfZXEoSSwgSiwgzrIsIHJhbmdlSiwgdmFyzrYsIHZhclgsIHZhcs6+KQogICAgICAgIGRmX3RlbXBbISwgInQiXSA9IG9uZXMobnJvdyhkZl90ZW1wKSkgKiB0CiAgICAgICAgYXBwZW5kIShkZiwgZGZfdGVtcCkKICAgIGVuZAogICAgQ1NWLndyaXRlKCIuLi9kYXRhL2JscC5jc3YiLCBkZikKICAgIHJldHVybiBkZgplbmQ7CmBgYAoKIyMjIFNpbXVsYXRlIHRoZSBEYXRhICgzKQoKTm93IGxldCdzIHJ1biB0aGUgY29kZQoKYGBge2p1bGlhfQojIFNpbXVsYXRlCmRmID0gc2ltdWxhdGVfZGF0YShpLCBKLCDOsiwgVCwgcmFuZ2VKLCB2YXLOtiwgdmFyWCwgdmFyzr4pOwpgYGAKCiMjIyBUaGUgRGF0YQoKV2hhdCBkb2VzIHRoZSBkYXRhIGxvb2sgbGlrZT8gTGV0J3Mgc3dpdGNoIHRvIFIhCgpgYGB7cn0KIyBSZWFkIGRhdGEKZGYgPSBmcmVhZCgiLi4vZGF0YS9ibHAuY3N2IikKa2FibGUoZGZbMTo1LF0sIGRpZ2l0cz00KQpgYGAKCiMjIyBFc3RpbWF0aW9uCgpUaGUgQkxQIGVzdGltYXRpb24gcHJvY2VkdXJlCgoKIyMjIEZyb20gZGVsdGFzIHRvIHNoYXJlcwoKRmlyc3QsIHdlIG5lZWQgdG8gY29tcHV0ZSB0aGUgc2hhcmVzIGltcGxpZWQgYnkgIGFzcGVjaWZpYyB2ZWN0b3Igb2YgJFxkZWx0YSRzCgpgYGB7anVsaWF9CmZ1bmN0aW9uIGltcGxpZWRfc2hhcmVzKFh0Xzo6TWF0cml4LCDOtnRfOjpNYXRyaXgsIM60dF86OlZlY3RvciwgzrQwOjpNYXRyaXgpOjpWZWN0b3IKICAgICIiIkNvbXB1dGUgc2hhcmVzIGltcGxpZWQgYnkgZGVsdGFzIGFuZCBzaG9ja3MiIiIKICAgIHUgPSBbzrR0XyAuKyAoWHRfICogzrZ0Xyk7IM60MF0gICAgICAgICAgICAgICAgICAjIFV0aWxpdHkKICAgIGUgPSBleHAuKHUpICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIyBUYWtlIGV4cG9uZW50aWFsCiAgICBxID0gbWVhbihlIC4vIHN1bShlLCBkaW1zPTEpLCBkaW1zPTIpICAgICAgICMgQ29tcHV0ZSBkZW1hbmQKICAgIHJldHVybiBxWzE6ZW5kLTFdCmVuZDsKYGBgCgojIyMgSW5uZXIgTG9vcAoKV2UgY2FuIG5vdyBjb21wdXRlIHRoZSBpbm5lciBsb29wIGFuZCBpbnZlcnQgdGhlIGRlbWFuZCBmdW5jdGlvbjogZnJvbSBzaGFyZXMgJHEkIHRvICRcZGVsdGEkcwoKYGBge2p1bGlhfQpmdW5jdGlvbiBpbm5lcl9sb29wKHF0Xzo6VmVjdG9yLCBYdF86Ok1hdHJpeCwgzrZ0Xzo6TWF0cml4KTo6VmVjdG9yCiAgICAiIiJTb2x2ZSB0aGUgaW5uZXIgbG9vcDogY29tcHV0ZSBkZWx0YSwgZ2l2ZW4gdGhlIHNoYXJlcyIiIgogICAgzrR0XyA9IG9uZXMoc2l6ZShxdF8pKQogICAgzrQwID0gemVyb3MoMSwgc2l6ZSjOtnRfLCAyKSkKICAgIGRpc3QgPSAxCgogICAgIyBJdGVyYXRlIHVudGlsIGNvbnZlcmdlbmNlCiAgICB3aGlsZSAoZGlzdCA+IDFlLTgpCiAgICAgICAgcSA9IGltcGxpZWRfc2hhcmVzKFh0XywgzrZ0XywgzrR0XywgzrQwKQogICAgICAgIM60dDJfID0gzrR0XyArIGxvZy4ocXRfKSAtIGxvZy4ocSkKICAgICAgICBkaXN0ID0gbWF4KGFicy4ozrR0Ml8gLSDOtHRfKS4uLikKICAgICAgICDOtHRfID0gzrR0Ml8KICAgIGVuZAogICAgcmV0dXJuIM60dF8KZW5kOwpgYGAKCiMjIyBDb21wdXRlIERlbHRhCgpXZSBjYW4gbm93IHJlcGVhdCB0aGUgaW52ZXJzaW9uIGZvciBldmVyeSBtYXJrZXQgYW5kIGdldCB0aGUgdmVjdG9yIG9mIG1lYW4gdXRpbGl0aWVzICRcZGVsdGEkcyBmcm9tIHRoZSBvYnNlcnZlZCBtYXJrZXQgc2hhcmVzICRxJC4KCmBgYHtqdWxpYX0KZnVuY3Rpb24gY29tcHV0ZV9kZWx0YShxXzo6VmVjdG9yLCBYXzo6TWF0cml4LCDOtl86Ok1hdHJpeCwgVDo6VmVjdG9yKTo6VmVjdG9yCiAgICAiIiJDb21wdXRlIHJlc2lkdWFscyIiIgogICAgzrRfID0gemVyb3Moc2l6ZShUKSkKCiAgICAjIExvb3Agb3ZlciBlYWNoIG1hcmtldAogICAgZm9yIHQgaW4gdW5pcXVlKFQpCiAgICAgICAgcXRfID0gcV9bVC49PXRdICAgICAgICAgICAgICAgICAgICAgICAgICAgICAjIFF1YW50aXR5IGluIG1hcmtldCB0CiAgICAgICAgWHRfID0gWF9bVC49PXQsOl0gICAgICAgICAgICAgICAgICAgICAgICAgICAjIENoYXJhY3RlcmlzdGljcyBpbiBta3QgdAogICAgICAgIM60X1tULj09dF0gPSBpbm5lcl9sb29wKHF0XywgWHRfLCDOtl8pICAgICAgICAjIFNvbHZlIGlubmVyIGxvb3AKICAgIGVuZAogICAgcmV0dXJuIM60XwplbmQ7CmBgYAoKIyMjIENvbXB1dGUgWGkKCk5vdyB0aGF0IHdlIGhhdmUgJFxkZWx0YSQsIGl0IGlzIHByZXR0eSBzdHJhaWdodGZvcndhcmQgdG8gY29tcHV0ZSAkXHhpJC4gV2UganVzdCBuZWVkIHRvIHBlcmZvcm0gYSBsaW5lYXIgcmVncmVzc2lvbiAod2l0aCBpbnN0cnVtZW50cykgb2YgbWVhbiB1dGlsaXRpZXMgJFxkZWx0YSQgb24gcHJpY2VzICRwJCBhbmQgcHJvZHVjdCBjaGFyYWN0ZXJpc3RpY3MgJFgkIGFuZCBjb21wdXRlIHRoZSByZXNpZHVhbHMgJFx4aSQuCgpgYGB7anVsaWF9CmZ1bmN0aW9uIGNvbXB1dGVfeGkoWF86Ok1hdHJpeCwgSVZfOjpNYXRyaXgsIM60Xzo6VmVjdG9yKTo6VHVwbGUKICAgICIiIkNvbXB1dGUgcmVzaWR1YWwsIGdpdmVuIGRlbHRhIChJVikiIiIKICAgIM6yXyA9IGludihJVl8nICogWF8pICogKElWXycgKiDOtF8pICAgICAgICAgICAjIENvbXB1dGUgY29lZmZpY2llbnRzIChJVikKICAgIM6+XyA9IM60XyAtIFhfICogzrJfICAgICAgICAgICAgICAgICAgICAgICAgICAgIyBDb21wdXRlIGVycm9ycwogICAgcmV0dXJuIM6+XywgzrJfCmVuZDsKYGBgCgojIyMgT2JqZWN0aXZlIEZ1bmN0aW9uCgpXZSBub3cgaGF2ZSBhbGwgdGhlIGluZ3JlZGllbnRzIHRvIHNldCB1cCB0aGUgR01NIG9iamVjdGl2ZSBmdW5jdGlvbi4KCmBgYHtqdWxpYX0KZnVuY3Rpb24gR01NKHZhcs62Xzo6TnVtYmVyKTo6VHVwbGUKICAgICIiIkNvbXB1dGUgR01NIG9iamVjdGl2ZSBmdW5jdGlvbiIiIgogICAgzrRfID0gY29tcHV0ZV9kZWx0YShxXywgWF8sIM62XyAqIHZhcs62XywgVCkgICAjIENvbXB1dGUgZGVsdGFzCiAgICDOvl8sIM6yXyA9IGNvbXB1dGVfeGkoWF8sIElWXywgzrRfKSAgICAgICAgICAgICMgQ29tcHV0ZSByZXNpZHVhbHMKICAgIGdtbSA9IM6+XycgKiBaXyAqIFpfJyAqIM6+XyAvIGxlbmd0aCjOvl8pXjIgICAgIyBDb21wdXRlIG9ydG9nb25hbGl0eSBjb25kaXRpb24KICAgIHJldHVybiBnbW0sIM6yXwplbmQ7CmBgYAoKIyMjIEVzdGltYXRpb24gKDEpCgpGaXJzdCwgd2UgbmVlZCB0byBzZXQgdXAgb3VyIG9iamVjdHMKCmBgYHtqdWxpYSwgcmVzdWx0cz0iaGlkZSJ9CiMgUmV0cmlldmUgZGF0YQpUID0gSW50LihkZi50KQpYXyA9IFtkZi54MSBkZi54MiBkZi5wXQpxXyA9IGRmLnEKcTBfID0gZGYucTAKSVZfID0gW2RmLngxIGRmLngyIGRmLnddClpfID0gW2RmLngxIGRmLngyIGRmLnoxIGRmLnoyXQpgYGAKCiMjIyBFc3RpbWF0aW9uICgyKQoKV2hhdCB3b3VsZCBhIGxvZ2l0IHJlZ3Jlc3Npb24gZXN0aW1hdGU/CgpgYGB7anVsaWF9CiMgQ29tcHV0ZSBsb2dpdCBlc3RpbWF0ZQp5ID0gbG9nLihkZi5xKSAtIGxvZy4oZGYucTApOwrOsl9sb2dpdCA9IGludihJVl8nICogWF8pICogKElWXycgKiB5KTsKcHJpbnQoIkVzdGltYXRlZCBsb2dpdCBjb2VmZmljaWVudHM6ICTOsl9sb2dpdCIpCmBgYAoKCiMjIyBFc3RpbWF0aW9uICgzKQoKV2UgY2FuIG5vdyBydW4gdGhlIEJMUCBtYWNoaW5lcnkKCmBgYHtqdWxpYX0KIyBEcmF3IHNob2NrcyAobGVzcykKzrZfID0gW3JhbmQoTm9ybWFsKDAsMSksIDEsIGkpOyB6ZXJvcyhLLCBpKV07CgojIE1pbmltaXplIEdNTSBvYmplY3RpdmUgZnVuY3Rpb24KdmFyzrZfID0gb3B0aW1pemUoeCAtPiBHTU0oeFsxXSlbMV0sIFsyLjBdLCBMQkZHUygpKS5taW5pbWl6ZXJbMV07Cs6yX2JscCA9IEdNTSh2YXLOtl8pWzJdOwpwcmludCgiRXN0aW1hdGVkIEJMUCBjb2VmZmljaWVudHM6ICTOsl9ibHAiKQpgYGAKCgoKCgoKCgojIyBSZWZlcmVuY2VzCgotLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0K</div>
 
 
 
