@@ -7,14 +7,14 @@ Please, if you find any typos or mistakes, [open a new issue](https://help.githu
 
 The course will cover the following content
 
-1. Introduction
-2. Production Function Estimation
+1. Production Function Estimation
 3. Demand Estimation [[Html](https://matteocourthoud.github.io/course/empirical-io/02_demand_estimation) | [Slides](https://matteocourthoud.github.io/course/empirical-io/02_demand_estimation_slides)]
 4. Demand Identification
 5. Merger Analysis
 6. Entry and Exit
 7. Single-Agent Dynamics [[Html](https://matteocourthoud.github.io/course/empirical-io/07_dynamics_singleagent) | [Slides](https://matteocourthoud.github.io/course/empirical-io/07_dynamics_singleagent_slides)]
 8. Dynamic Games [[Html](https://matteocourthoud.github.io/course/empirical-io/08_dynamics_games) | [Slides](https://matteocourthoud.github.io/course/empirical-io/08_dynamics_games_slides)]
+8. AI and IO
 9. Auctions
 10. Media
 

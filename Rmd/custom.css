@@ -1,29 +1,58 @@
 /*
-Custom CSS
-Matteo Courthoud
+Custom CSS template for ioslides
+
+Author: Matteo Courthoud
+Repo: https://github.com/matteocourthoud/ioslides-theme
 */
 
 /* Import google fonts */
 @import url('https://fonts.googleapis.com/css?family=Lora|Open+Sans&display=swap');
 
-/* Change for of all slides and allow scrolling */
+/* Slide: change font */
 slides > slide {
   font-family: 'Source Sans Pro', sans-serif;
   overflow: scroll;
 }
 
-/* Change slide content */
+/* Slide: text color black */
 slides > slide > article {
   color: black;
   font-weight: 300;
 }
 
-/* References */
+/* Slide: transition slides white */
+slides > slide.dark {
+  background-color: white !important;
+}
+
+/* Header: change color */
+h1 {
+  color: #003f5c !important;
+}
+h2 {
+  color: #003f5c !important;
+}
+
+/* Header: underline section slides */
+.auto-fadein {
+  width: 70%;
+}
+.auto-fadein > h1 {
+  border-bottom: 2px solid grey;
+  padding-bottom: 10px;
+}
+.auto-fadein > h2 {
+  border-bottom: 2px solid grey;
+  padding-bottom: 10px;
+}
+
+/* References: text color white
 .csl-entry p {
   color: white;
 }
+*/
 
-/* Color citations */
+/* Citations: colored */
 .cite {
   color: #2b7ddf;
 }
@@ -34,6 +63,7 @@ img {
   margin-left: auto;
   margin-right: auto;
   margin-bottom: 25px;
+  max-width: 100%;
 }
 
 /* Unordered list style */
@@ -54,6 +84,46 @@ ul > li > ul > li {
   list-style-type: circle;
 }
 
+/* Unordered list style */
+ul {
+  margin-left: 2em !important;
+}
+ul > li {
+  margin-top: .5em !important;
+  margin-bottom: 1em !important;
+}
+ul > li > p {
+  margin-bottom: 0em !important;
+}
+ul > li > ul {
+  margin-top: 0em !important;
+  margin-bottom: .25em !important;
+}
+ul > li > ul > li {
+  margin-top: .25em !important;
+  margin-bottom: .25em !important;
+}
+
+/* Ordered list style */
+ol {
+  margin-left: 2em !important;
+}
+ol > li {
+  margin-top: .5em !important;
+  margin-bottom: 1em !important;
+}
+ol > li > p {
+  margin-bottom: 0em !important;
+}
+ol > li > ul {
+  margin-top: 0em !important;
+  margin-bottom: .25em !important;
+}
+ol > li > ul > li {
+  margin-top: .25em !important;
+  margin-bottom: .25em !important;
+}
+
 
 /* Code */
 pre {
@@ -72,6 +142,17 @@ pre.prettyprint {
 
 
 
+/* Blockquotes */
+blockquote {
+  background: #ffe8e4;
+  border-left: 5px solid #ff6e54;
+  margin-right: 2em;
+  padding: 0.5em 1.5em;
+}
+blockquote p {
+  font-style: italic;
+  margin-bottom: .5em !important;
+}
 
 /* Table */
 table.rmdtable {

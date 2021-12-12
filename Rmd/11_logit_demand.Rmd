@@ -305,7 +305,7 @@ What does the data look like? Let's switch to R!
 ```{r}
 # Read data
 df = fread("../data/logit.csv")
-kable(df[1:5,], digits=4)
+kable(df[1:6,], digits=4)
 ```
 
 
@@ -355,6 +355,6 @@ Also the BLP instruments deliver an estimate of $\alpha$ is negative and signifi
 
 
 
-## References
+## Appendix
 
-------------------------------------------------------------------------
+### References

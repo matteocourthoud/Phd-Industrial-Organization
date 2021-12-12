@@ -34,127 +34,123 @@ editor_options:
 
 
 
-## Model
+## Introduction
 
 ### Intro
 
-Setting: agents making **strategic decisions** in **dynamic environments**. 
+Setting: agents making **strategic decisions** (new) in **dynamic environments**. 
 
 - Entry and exit: @collard2013demand
 - Sunk costs: @ryan2012costs
-- Innovation: @igami2017estimating
+- Innovation: @goettler2011does
   - (or whatever changes in response to investment)
-- Learning-by-doing
-- Switching costs
-- Stockpiling: @hendel2006measuring
+- Exploitation of natural resources: @huang2014dynamic
+- Durable goods: @esteban2007durable
 
 
 
-### Simple Example
+> **Lit review**: forthcoming IO Handbook chapter @aguirregabiria2021dynamic
 
-Lousely taken from @ericson1995markov
 
-- Builds on @maskin1988theory, @maskin1988theory, @maskin1987theory
 
-- Firms invest to increase the future quality of their product
 
-- State $s_{it}$: quality of product $i$ in period $t$
 
-- Per period profits
+### Single- vs Multi-Agent
+
+Typically in IO we study agents in **strategic** environments. Complicated in dynamic environments.
+
+-   **Curse of dimensionality**
+    -   Single agent: need to track what the agent sees ($k$ states)
+    -   Multi-agent: need to keep track what every agent sees ($k^J$states)
+    -   Difference exponential in the number of agents
+-   **Expectations**
+    -   Need not only to keep track of how the environment evolves
+    -   ... but also of how other players act
+-   **Equilibrium**
+    -   Because of the strategic interaction, the Bellman equation is *not a contraction* anymore
+        -   Equilibrium existence?
+        -   Equilibrium uniqueness?
+
+
+
+### Plan
+
+We will cover **first the estimation** and then the computation of dynamic games
+
+- Weird...
+- Standard estimation method: @bajari2007estimating
+- Does **not** require to solve the model
+- Indeed, that's the **advantage** of the method
+- **Disadvantages**: still need to solve the model for counterfactuals
+- So we'll cover computation afterwards
+
+**Last**: bridge between Structural IO and Artificial Intelligence
+
+- Different *objectives* but similar *methods*
+- Dynamic tools niche in IO but at the core of AI
+
+
+
+
+
+## Bajari, Benkard, Levin (2008)
+
+### Model
+
+Stylized version of @ericson1995markov (no entry/exit)
+
+- $J$ firms (products) indexed by $j \in \lbrace 1, ..., J \rbrace$
+
+- Time $t$ is dicrete, horizon is infinite
+
+- **States** $s_{jt} \in \lbrace 1, ... \bar s \rbrace$: quality of product $j$ in period $t$
+
+- **Actions** $a_{jt} \in \mathbb R^+$: investment decision of firm $j$ in period $t$ 
+
+- **Static payoffs**
   $$
-  \pi ( s_{it}, s_{-it}, ; \theta^\pi)
+  \pi_j (s_{jt}, \boldsymbol s_{-jt}, a_{jt}; \theta^\pi)
   $$
   where
 
-  - $s_{-it}$: state vector of all other firms in period $t$
+  - $\boldsymbol s_{-it}$: state vector of all other firms in period $t$
   - $\theta^\pi$: parameters that govern static profits
 
-- We can micro-fund profits with some demand and supply functions
+> **Note**: if we micro-fund $\pi(\cdot)$ , e.g. with some demand and supply model, we have 2 strategic decisions: prices (static) and investment (dynamic).
 
 
 
-### Dynamic Decisions
+### Model (2)
 
-In each period firms have 3 choices (in order)
+- **State transitions**
+  $$
+  \boldsymbol s_{t+1} = f(\boldsymbol s_t, \boldsymbol a_t, \boldsymbol \epsilon_t; \theta^f)
+  $$
+  where
 
-1. If entrant, $e_{it}$: whether to enter the market or not
+  - $\boldsymbol a_t$: vector of actions of all firm
+  - $\boldsymbol \epsilon_t$: vector of idiosyncratic shocks
+  - $\theta^f$: parameters that govern state transitions
 
-2. If incumbent, $d_{it}$: whether to exit the market or not
-
-3. If incumbent, $a_{it}$: investment
-
-   - Influences your state transition probability $f$
-     $$
-     s_{i, t+1} = f(s_{it}, a_{it}, \epsilon_{it} ; \theta^f)
-     $$
-     where
-
-     - $\epsilon_{it}$: shock that is not known to the firm when making the decision
-       - it does not need to be there
-     - $\theta^f$: parameters that govern state transitions
-
-   - Example of transition
-     $$
-     s_{i, t+1} = \delta s_{it} + a_{it} + \epsilon_{it}
-     $$
-     I.e. depreciation of capital + investment and noise
-
-
+- **Objective function**: firms maximize expected discounted future profits
+  $$
+  \max_{\boldsymbol a} \ \mathbb E_t \left[ \sum_{\tau=0}^\infty \beta^{\tau} \pi_{j, t+\tau} (\theta^\pi) \right]
+  $$
+  
 
 ### Value Function
 
-Belman Equation incumbent $i$ at time $t$
+The value function of firm $j$ at time $t$ in state $\boldsymbol s_{t}$, under a set of strategy functions $\boldsymbol P$ (one for each firm) is
 $$
-\begin{aligned}
-V (s_{i t}, s_{-i t} ; \theta) = & \pi(s_{i t}, s_{-i t} ; \theta^{\pi}) + \max_{d_{i} \in \lbrace 0,1 \rbrace} 
-\Bigg\lbrace
-\begin{array}{c}
-\beta \phi \ ; \newline
-\max _{a_{i t} \geq 0} \Big\lbrace - a_{i t} + \beta \mathbb E \Big[V (s_{i, t+1}, s_{-i, t+1} \ ; \ \theta) \Big| s_{i t}, s_{-i t}, a_{i t} \Big] \Big\rbrace 
-\end{array}
-\Bigg\rbrace
-\end{aligned}
+V^{\boldsymbol P_{-j}}_{j} (\mathbf{s}_{t}) = \max_{a_{jt} \in \mathcal{A}_j \left(\mathbf{s}_{t}\right)} \Bigg\lbrace \pi_{j}^{\boldsymbol P_{-j}} (a_{jt}, \mathbf{s}_{t} ; \theta^\pi ) + \beta \mathbb E_{\boldsymbol s_{t+1}} \Big[  V_{j}^{\boldsymbol P_{-j}} \left(\mathbf{s}_{t+1}\right) \ \Big| \ a_{jt}, \boldsymbol s_{t} ; \theta^f \Big] \Bigg\rbrace
 $$
 where
 
-- $\beta \in (0,1)$: discount factor
-- $\phi$: exit scrap value
-- $a_{it} \in \mathbb R_+$: investment decision, in dollars
-- $d_{it} \in \lbrace 0,1 \rbrace$: exit decision
-- The expectation $\mathbb E$ is over
-  - The shocks $\epsilon_{it}$
-  - Rivals future states $s_{-i,t+1}$
+- $\pi_{j}^{\boldsymbol P_{-j}} (a_{jt}, \mathbf{s}_{t} ; \theta^\pi )$ are the static profits of firm $j$ given action $a_{jt}$ and policy functions $\boldsymbol P_{-j}$ for all firms a part from $j$
 
+- The expecation $\mathbb E$ is taken with respect to the conditional transition probabilities $f^{\boldsymbol P_{-j}} (\mathbf{s}_{t+1} | \mathbf{s}_{t}, a_{jt} ; \theta^f)$
 
-
-### Entry
-
-We can also incorporate endogenous entry.
-
-- One or more **potential entrants** exist outside the market
-- They can pay an entry cost $\kappa$ and enter the market at a quality state $\bar s$
-
-Value function
-$$
-V^{\text {e}} (s_{i t}, s_{-i t} ; \theta) = \max_{e \in \lbrace 0,1 \rbrace }
-\Bigg\lbrace
-\begin{array}{c}
-0 \ ; \newline
--\kappa + \beta \mathbb E \Big[ V(\bar s, s_{-i, t+1} ; \theta) \Big| s_{t} \Big]
-\end{array}
-\Bigg\rbrace
-$$
-where
-
-- $e \in \lbrace 0,1 \rbrace$: entry decision
-- $\kappa$: entry cost
-
-Do we observe potential entrants?
-
-- @igami2017estimating: tech industry announce their entry
-- Critique: not really potential entrants, they are half-way inside
-
-
+  
 
 
 
@@ -162,14 +158,10 @@ Do we observe potential entrants?
 
 Equillibrium notion: **Markow Perfect Equilibrium** [@maskin1988theory]
 
-- A set value, policy functions and transition probabilities
-  $$
-  \Big \lbrace \ V(\cdot), \ V^{e n t}(\cdot), \ d(\cdot), \ a(\cdot), \ e(\cdot), \ f(s_{-i, t+1} | s_{t}) \ \Big \rbrace
-  $$
-  such that
-
-  1. $V(\cdot), \ V^{e n t}(\cdot), \ d(\cdot), \ a(\cdot), \ e(\cdot)$ solve their respective equations *given* $f(s_{-i, t+1} | s_{t})$
-  2. the transition probabilities $f(s_{-i, t+1} | s_{t})$ are generated by the strategies $d(\cdot), \ a(\cdot), \ e(\cdot)$
+- **Assumption**: players’ strategies at period $t$ are functions only of payoff-relevant state variables at the same period
+- **Definition**: a set of $J$ value and policy functions, $\boldsymbol V$ and $\boldsymbol P$ such that each firm
+  1. maximizes its value function $V_j$
+  2. given the policy function of every other firm $\boldsymbol P_{-j}$
 
 What is it basically?
 
@@ -180,73 +172,20 @@ What is it basically?
 
 
 
-### Solving the model
-
-Numerically!
-
-1. Given parameter values $\theta$
-2. Start with a guess for the value and policy functions
-3. They will imply some transition probabilities
-4. That will imply some new policies and so on...
-5. ... until what?
 
 
+### Estimation
 
-**Issues**
+We want to estimate 2 sets of **parameters**:
 
-- No guarantee of convergence
-  - @doraszelski2010computable: prove existence of MPE with random costs/scrap values
-  - The BR iteration can never find mixed-strategy equilibria
-- Multiple equilibria issues
-- Curse of dimensionality (computational issue, not conceptual)
-
-
-
-### Multiple Equilibria
-
-- @besanko2010learning and @borkovsky2010user: homotopy method 
-  - can find some equilibria
-  - not all
-  - complicated to implement
-- @iskhakov2017endogenous: grid method
-  - can find all equilibria
-  - but for very specific class of dynamic games
-  - must always proceed "forward" 
-    - e.g. either entry or exit but not both
-- @pesendorfer2010sequential: the BR iteration cannot find all possible equilibria, because some equilibria are not Lyapunov-stable, which means you cannot find one unless you start your numerical search from the exact solution
-- @su2012constrained and @egesdal2015estimating: show this point numerically, by using their proposed Mathematical Programming with Equilibrium Constraints (MPEC) approach
-
-
-
-### Curse of Dimensionality
-
-Two potential solutions:
-
-1. **Computational**: approximate the equilibrium
-   - @doraszelski2019dynamic: games with random moves
-   - @farias2012approximate: solve the global problem approximately
-2. **Conceptual**: define another game
-   - @weintraub2008markov: oblivious equilibrium
-   - @pakes2001stochastic and @fershtman2012dynamic: experience-based equilibrium
-   - @doraszelski2012avoiding: games in continuous time
-
-
-
-## Estimation - Bajari, Benkard, Levin (2008)
-
-### Methods
-
-We want to estimate 3 sets of **parameters**:
-
-- $\theta^\pi$: parameterizes period profit function $\pi()$
-- $\theta^f$: parameterizes state transition function $f()$
-- $\theta^{ddc}$: scrap value $\phi$ and entry cost $\kappa$
+- $\theta^\pi$: parameterizes period profit function $\pi(\cdot)$
+- $\theta^f$: parameterizes state transition function $f(\cdot)$
 
 Generally 2 **approaches**
 
 1. Full solution
-   - Impractical
-2. @hotz1993conditional CCP inversion
+   - Impractical (we'll see more details later)
+2. Rely on some sort of @hotz1993conditional CCP inversion
    - @aguirregabiria2007sequential
    - @bajari2007estimating
    - @pakes2007simple
@@ -254,108 +193,167 @@ Generally 2 **approaches**
 
 
 
+### BBL Overview
+
+@bajari2007estimating plan
+
+1. Estimate **transition probabilities** and **conditional choice probabilities** from the data
+2. Use them to simulate the **expected value function**, given a set of parameters
+3. Use optimality of estimated choices to pin down static profit parameters
+   - I.e. repeat (2) for alternative strategies
+     - By definition suboptimal
+   - **Estimating equation**: values implied by observed strategies should be higher than values implied by alternative strategies
+
+
+
 ### BBL: First Stage
 
-First stage: estimate the policy functions (CCP) non-parametrically
+- Estimate the **transition probabilities** $f ( \cdot | a_{jt}, \boldsymbol s_t; \hat \theta^f )$
+  - I.e. what is the observed frequency of any state-to-state transition?
+  - For any given action of firm $j$
 
-- Directly retrievable from data
-  - Entry decisions $\hat e (s_{i t}, s_{-i t})$
-  - Exit decisions $\hat d (s_{i t}, s_{-i t})$
-  - Investment decisions $\hat a (s_{i t}, s_{-i t})$
-  - Transition probabilities $\hat f (s_{i t}, s_{-i t} ; \theta^f)$
-- Conditional on having enough data
-  - **Note**: need to estimate choice probabilities, conditional on each state
-  - Problem with many states but especially with many players
+- ... and **conditional choice probabilities** $\hat P_j(\cdot | \boldsymbol s_t)$
+  - I.e. what is the probability of each action, for each firm $j$ in each state $\boldsymbol s$
+- Can be done **non-parametrically**
+  - i.e. just observe frequencies
+  - Conditional on having enough data
+  - **Note**: need to estimate transitions, conditional on each state and action
+  - Problem with many states and actions, but especially with **many players**
     - Curse of dimensionality
-  - Problem especially for transition probabilities: state $\times$ state
-- Important to do it non-parametrically: parametric assumptions would contradict the model for the estimation of value/polify functions
+    - Number of states increases exponentially in number of players
+
+
+> **Important**: parametric assumptions would contradict the model for the estimation of value/policy functions
 
 
 
 ### BBL: Second Stage
 
-We now have the policy functions, CCPs and state transition probabilities
+**First step**: from transitions $f(\hat \theta^f)$ and CCPs $\boldsymbol{\hat P}$ to values
 
-- We can use them together to simulate **histories**
-- If we have a candidate value of $\theta^\pi$, we can compute static payoffs
-- Simulated history + static payoffs = simualted value function
-- We can average over may simulated value functions to get an **expected value function**
+- We can use transitions and CCPs to simulate **histories** (of length $\tilde T$)
 
-What is the objective function?
+  - of states $\lbrace \boldsymbol{\tilde{s}_{\tau}} \rbrace_{\tau = 1}^{\tilde T}$
+  - and actions $\lbrace \boldsymbol{\tilde{a}_{\tau}} \rbrace_{\tau = 1}^{\tilde T}$
 
-- Potentially many options
-- We want parameters that give firms the highest values, given those strategies (CCPs)
+- Given a parameter value $\tilde \theta^\pi$, we can compute **static payoffs**: $\pi_{j}^{\boldsymbol {\hat{P}_{-j}}} \left( \tilde a_{j\tau}, \boldsymbol{\tilde s}_{\tau} ; \tilde \theta^\pi \right)$
 
+- Simulated history + static payoffs = **simulated value function**
+  $$
+  {V}_{j}^{\boldsymbol {\hat{P}}} \left(\boldsymbol{s}_{t} ; \tilde \theta^\pi \right) =  \sum_{\tau=0}^{\tilde T} \beta^{\tau} \pi_{j}^{\boldsymbol {\hat{P}_{-j}}} \left( \tilde a_{j\tau}, \boldsymbol{\tilde s}_{\tau} ; \tilde \theta^\pi \right)
+  $$
 
+- We can average over many, e.g. $R$, simulated value functions to get an **expected value function**
+  $$
+  {V}_{j}^{\boldsymbol {\hat{P}}, R} \left( \boldsymbol{s}_{t} ; \tilde \theta^\pi \right) = \frac{1}{R}  \sum_{r=0}^{R}\Bigg( \sum_{\tau=0}^{\tilde T} \beta^{\tau} \pi_{j}^{\boldsymbol {\hat{P}_{-j}}} \left(\tilde a^{(r)}_{j\tau}, \boldsymbol{\tilde s}^{(r)}_{\tau} ; \tilde \theta^\pi \right) \Bigg)
+  $$
+  
 
-### In Practice
+### In practice, for a parameter value $\tilde \theta^\pi$
 
-Take a parameter $\theta$.
-
-For many simulations do:
+For $r = 1, ..., R$ simulations do:
 
 - Initialize firms value to zero
-- Fot $t=0 ... \infty$ do
-  - For each state do:
-    - For each firm do:
-      - Compute static profits $\pi(s_{i t}, s_{-i t} ; \theta^{\pi})$
-      - Compute firms actions using $\hat a (s_{i t}, s_{-i t})$ and $\hat d (s_{i t}, s_{-i t})$
-      - If firm exits, $\hat d = 0$, end
-      - If not, $\hat d = 1$, subtract $a_{i,t}$ from profits 
-      - Use $\hat f (s_{i t}, s_{-i t} ; \theta^f)$ to *simulate* next state for firm $i$
-      - Add discounted profits to the value function $\beta^t \pi(s_{i t}, s_{-i t} ; \theta^{\pi})$
-    - Use the next state, $(s_{i t+1}, s_{-i t+1})$ as current state for the next iteration
+- Fot $\tau=0, ..., \tilde T$ do
+  - For each state in $\boldsymbol{\tilde s}^{(r)}_{\tau}$ do:
+    - Use $\boldsymbol{\hat P}$ to *draw* a vector of firm actions $\boldsymbol{\tilde a}^{(r)}_{\tau}$
+    - For each firm $j = 1, ..., J$ do:
+      - Compute static profits $\pi_{j}^{\boldsymbol {\hat{P}_{-j}}} \left(\tilde a^{(r)}_{j\tau}, \boldsymbol{\tilde s}^{(r)}_{\tau} ; \tilde \theta^\pi \right)$
+      - Add discounted profits $\beta^{\tau} \pi_{j}^{\boldsymbol {\hat{P}_{-j}}} \left(\tilde a^{(r)}_{j\tau}, \boldsymbol{\tilde s}^{(r)}_{\tau} ; \tilde \theta^\pi \right)$ to the value function
+    - Use $f ( \cdot | \boldsymbol {a_{t}}, \boldsymbol s_t; \hat \theta^f )$ to *draw* the next state $\boldsymbol{\tilde s}^{(r)}_{\tau + 1}$
+    - Use the next state, $\boldsymbol{\tilde s}^{(r)}_{\tau + 1}$ as current state for the next iteration
 
-Then average all the value functions together to obtain an **expected value function** $\mathbb E \Big[ V (s_{i t}, s_{-i t} ; \theta) \Big]$
+Then average all the value functions together to obtain an **expected value function** $V_{j}^{\boldsymbol {\hat{P}}, R} \left(\boldsymbol{s}_{t} ; \tilde \theta^\pi \right)$
 
-- **Note**: advantage of simulations: can be parallelized
+>  **Note**: advantage of simulations: can be parallelized
 
 
 
 ### Objective Function
 
+What have we done so far?
+
+- Given some parameters $\theta^\pi$, we computed the **expected value function**
+
+How do we pick the $\theta^\pi$ that best rationalizes the data?
+
+- I.e. what is the **objective function**?
+- Potentially many options
+
+**BBL idea**
+
+- the expected value function has to be optimal, given the CCPs
+- I.e. any other policy function should give a lower expected value
+- **"Best"** $\theta^\pi$: those for which the implied expected value function under the estimated CCPs is greater than the one implied by *any other* CCP 
+
+> **Note**: it's an inequality statement
+
+
+
+### Objective Function (2)
+
 **Idea**
 
-- If the observed choices $\hat a (s_{i t}, s_{-i t})$ and $\hat d (s_{i t}, s_{-i t})$ are optimal, 
+- If the observed policy ${\color{green}{\boldsymbol{\hat P}}}$  is optimal, 
 
-  - All other choices $\tilde a (s_{i t}, s_{-i t})$ and $\tilde d (s_{i t}, s_{-i t})$ 
+  - All other policies ${\color{red}{\boldsymbol{\tilde P}}}$ 
 
-  - At the true parameters $\theta$
+  - ... at the true parameters $\theta^f$
 
-  - Should give a lower expected value
+  - ... should give a lower expected value
     $$
-    \mathbb E \Big[ \tilde V (s_{i t}, s_{-i t} ; \theta) \Big] \leq \mathbb E \Big[ V (s_{i t}, s_{-i t} ; \theta) \Big]
+    V_{j}^{{\color{red}{\boldsymbol{\tilde P}}}, R} \left( \boldsymbol{s}_{t} ; \tilde \theta^\pi \right) \leq V_{j}^{{\color{green}{\boldsymbol{\hat P}}}, R} \left( \boldsymbol{s}_{t} ; \tilde \theta^\pi \right)
     $$
     
 
 - So which are the true parameters?
 
-  - Those for which any deviation from the policy yields a lowe value
+  - Those for which any deviation from the observed policy ${\color{green}{\boldsymbol{\hat P}}}$ yields a lower value
 
-  - **Objective function**: minimize the violations
+  - **Objective function** to minimize: **violations** under alternative policies ${\color{red}{\boldsymbol{\tilde P}}}$
     $$
-    \hat{\theta}= \arg \min_{\theta} \sum_{\left(s_{i t}, s_{-i t}\right)} \sum_{(\tilde{a}, \tilde{d})} \Bigg[\min \bigg\lbrace \mathbb E \Big[ \tilde V (s_{i t}, s_{-i t} ; \theta) \Big] - \mathbb E \Big[ V (s_{i t}, s_{-i t} ; \theta) \Big], 0 \bigg\rbrace \Bigg]^{2}
+    \min_{\tilde \theta^\pi} \sum_{\boldsymbol s_{t}} \sum_{{\color{red}{\boldsymbol{\tilde P}}}} \Bigg[\min \bigg\lbrace V_{j}^{{\color{green}{\boldsymbol{\hat P}}}, R} \left( \boldsymbol{s}_{t} ; \tilde \theta^\pi \right) - V_{j}^{{\color{red}{\boldsymbol{\tilde P}}}, R} \left( \boldsymbol{s}_{t} ; \tilde \theta^\pi \right) \ , \ 0 \bigg\rbrace \Bigg]^{2}
     $$
     
 
 
 
-### Comments
+### Estimator
 
-**Objective function**: minimization of the violations for any other policy
+**Estimator**: $\theta^\pi$ that minimizes the average (squared) magnitude of violations for any alternative policy ${\color{red}{\boldsymbol{\tilde P}}}$
 $$
-\hat{\theta}= \arg \min_{\theta} \sum_{\left(s_{i t}, s_{-i t}\right)} \sum_{(\tilde{a}, \tilde{d})} \Bigg[\min \bigg\lbrace \mathbb E \Big[ \tilde V (s_{i t}, s_{-i t} ; \theta) \Big] - \mathbb E \Big[ V (s_{i t}, s_{-i t} ; \theta) \Big], 0 \bigg\rbrace \Bigg]^{2}
+\hat{\theta}^\pi= \arg \min_{\tilde \theta^\pi} \sum_{\boldsymbol s_{t}} \sum_{{\color{red}{\boldsymbol{\tilde P}}}} \Bigg[\min \bigg\lbrace V_{j}^{{\color{green}{\boldsymbol{\hat P}}}, R} \left( \boldsymbol{s}_{t} ; \tilde \theta^\pi \right) - V_{j}^{{\color{red}{\boldsymbol{\tilde P}}}, R} \left( \boldsymbol{s}_{t} ; \tilde \theta^\pi \right) \ , \ 0 \bigg\rbrace \Bigg]^{2}
 $$
 
-- $\min \lbrace g(\cdot), 0  \rbrace$ to pick only the violations
-  - If inequality is respected, we can ignore
+- $\min \Big\lbrace V_{j}^{{\color{green}{\boldsymbol{\hat P}}}, R} - V_j^{{\color{red}{\boldsymbol{\tilde P}}}, R}  \ , \ 0  \Big\rbrace$ to pick only the violations
+  - If ${\color{green}{\boldsymbol{\hat P}}}$ implies higher value, we can ignore
   - Doesn't matter by how much you respect the inequality
-- Which perturbation $\tilde a (s_{i t}, s_{-i t})$ and $\tilde d (s_{i t}, s_{-i t})$ ?
+- **Which alternative policies** ${\color{red}{\boldsymbol{\tilde P}}}$ should we use?
   - In principle, any perturbation is ok
-  - But in practice, if we perturbe it too much, we can go too far off
-  - Tip 1: start with *very small perturbations*
-  - Tip 2: use perturbation that sensibly affect the dynamics
-    - E.g. exiting less in states with already low exit probability is probably irrelevant
+  - But **in practice**, if we perturbe it too much, we can go too far off
+  - **Tip 1**: start with very *small* perturbations
+  - **Tip 2**: use perturbation that *sensibly* affect the dynamics
+    - E.g. exiting in a state in which a firm is not a competitive threat
+  - **Tip 3**: use perturbations on dimensions that are *relevant* for the research question
+    - E.g. they affect dimensions where you want to make counterfactual predictions
+
+
+
+### Advantages
+
+We have seen that there are **competing methods**.
+
+What are the **advantages** of @bajari2007estimating over those?
+
+1. **Continuous actions**
+   - BBL does not require actions to be discretised
+   - You can just sample actions from the data!
+2. **Choice of alternative CCPs** 
+   - The researcher is free to choose the alternative CCPs ${\color{red}{\boldsymbol{\tilde P}}}$
+   - **Pros**: can make source of variation more transparent
+     - *allows the researcher to focus on those predictions of the model that are key for the specific research questions*
+   - **Cons**: it's a *very* high dimensional space
+     - There are *very very* many alternative policy functions
 
 
 
@@ -366,8 +364,8 @@ $$
    - Need a lot of markets because **now 1 market is 1 observation**
 2. **Multiple equilibria**??
    - We are basically assuming it away
-   - Estimating the CCPs in the first stage we assume that is the equilibrium tht is played in all markets at all times
-   - To run counterfactuals, we still need to solve the model
+   - Estimating the CCPs in the first stage we assume that is the equilibrium that is played in all markets at all times
+   - To run counterfactuals, we **still need to solve the model**
 3. Unobserved heterogeneity
    - @kasahara2009nonparametric: how to identify the (minimum) number of unobserved types
    - @arcidiacono2011conditional: how to use an EM algorithm for the 1st stage estimation with unobserved types, conditional on the number of types
@@ -377,476 +375,534 @@ $$
 
 
 
-## Igami, Uetake (2019)
 
-### Question
 
-**Q**:  *how much should an industry be allowed to consolidate?*
+## Ericson Pakes (1995)
 
-- Normally analyzed statically
-- Static trade-offs
-  - Price effects
-  - Synergies (scale economies?)
-- However, mergers are not exogenous events
-- Dynamic trade-offs
-  - @demsetz1973industry: monopoly as a winner of an innovation race
-  - @berry1993some: any dynamic benefit could offset static inefficiences
-  - @gilbert2014merging: FTC and DOJ always *try* to assess "impact on innovation"
+### Introduction
 
+@ericson1995markov and companion paper @pakes1994computing for the computation
 
+- $J$ firms indexed by $j \in \lbrace 1, ..., J \rbrace$
 
-### Dynamic Trade-offs
+- Time $t$ is dicrete  $t$, horizon is infinite
 
-With mergers, entry and exit
+- State $s_{jt}$: quality of firm $j$ in period $t$
 
-- Statically
-  - Price effects (-)
-  - Synergies (+)
-- Ex-post effects
-  - Regress mergers on competition (HHI)? 🙅🙅🙅
-  - Innovation: literature finds almost anything (+/-/invU/plateau)
-- Dynamic
-  - The potential for a merger can induce more ex-ante innovation and ex-ante entry 
-
-**This Paper**
-
-- **Model**: mergers, innovation, entry and exit in the HD industry
-- **Objective**: study optimal merger policy
-
-
-
-### Empirical Issues
-
-On the dynamics
-
-- Mergers are rare events $=$ no experiment $\to$ need a model
-- Dynamic games $=$ multiple equilibria $\to$ no "full solution"
-- Innovative industries $=$ global & nonstationary$\to$ no “2-step”estimation
-  - we have 1 market $\leftrightarrow$ 1 data point
-
-**Solution** 
-
-- Random moves
-- Like Rust
-
-
-
-### Model
-
-**State** $\omega_{it}$: productivity of firm $i$ at time $t$
-
-**Actions**
-
-- Exit
-  - Get a scrap value $\kappa^e$
-  - Exit the industry
-- Idle
-  - No cost
-  - Productivity stays the same
-- Innovation
-  - Pay innovation cost $\kappa^i$
-  - Productivity increases stochastically: $\omega_{i,t+1} = \omega_{i,t+1} + 1$
-- Merger
-  - pay a merger cost $\kappa^m$
-  - Get the maximum productivity of both firms $\omega_{i,t+1} = \max \lbrace \omega_{it}, \omega_{jt} \rbrace$
-
-
-
-### Timeline
-
-Timing of moves, within a period
-
-1. Nature picks a mover $i$ uniformly at random
-2. Firm $i$ market a take-it-or-leave-it offer
-3. All active firms get payoffs $\pi_{it} (\omega_t)$
-4. State transitions realize from $\omega_t$ to $\omega_{t+1}$
-   - Stochastic Poisson synergy $\Delta{ijt}$
-   - You might jump up more than 1 level
-
-Finite horizon $T (=2025)$!
-
-**Equilibrium**
-
-- Unique sequential equilibrium 
-- In practice, it's a single agent problem
-- Can be solved by backward induction
-
-
-
-### Motivating Evidence (1): 
-
-Expansion in the 80s followed by a lot of consolidation.
-
-![](../img/8_01.png){width=50%}
-
-
-### Motivating Evidence (2)
-
-Consolidation or exit?
-
-- In the 80/90s mostly exit
-- Then mergers
-
-![](../img/8_02.png){width=90%}
-
-
-
-### Steps
-
-- Estimate **demand** $(\alpha_0, \alpha_1, \alpha_2)$
-  - Log-linear specification: $\log Q_{t}=\alpha_{0}+\alpha_{1} \log P_{t}+\alpha_{2} \log X_{t}+\varepsilon_{t}$
-  - IV $Z_t$: input cost, disk price
-- Compute marginal costs $mc_{it}$
-  - Cournot competition
-  - Invert the first-order condition and back out marginal costs: $mc_{it} = p_{it} + \frac{\partial p}{\partial q} q_{it}$ 
-- Estimate **sunk costs** $(\kappa^i, \kappa^m, \kappa^e)$
-  - @keane1997career kind of routine
-    - Pick a parameter value
-    - Solve the game by backward induction
-    - Compute CCPs
-    - Compute likelihood
-  - Estimate parameter by maximum likelihood
-
-
-
-### FAQ
-
-- **State space**?
-  - Marginal cost of firms
-  - As if in the first step we are estimating the state space
-  - Only in the second step we have the dynamics
-- How to deal with the **sequential moves**?
-  - Split the time frame into sufficiently granular time spans
-  - So that there is never 2 actions occurring at the same time
-- How to deal with **periods where nothing happens**?
-  - Could be that nobody moves
-  - Or some mergers are tried and failed
-- **Bargaining power**?
-  - Mergers ar erare events: sensitivity analysis
-
-
-
-### Results (1): Model Fit
-
-Model fits data reasonably well
-
-![](../img/8_03.png){width=60%}
-
-
-
-### Results (2): Mergers and Innovation
-
-What is the estimated **innovation** curve?
-
-- Plateau: increasing concave returns from innnovation in the number of (identical) firms
-
-**Merger** incentives?
-
-- U-shaped: as concentration increases, outside option of merging parties increse
-
-![](../img/8_04.png){width=90%}
-
-
-
-### Policy
-
-What is the optimal number of firms? Definitely not 1.
-
-![](../img/8_05.png){width=70%}
-
-
-
-
-
-## Igami, Sugaya (2021)
-
-### Literature
-
-- @porter1983study
-  - Railroad cartel before the Sherman Act: legal
-  - Firms were keeping records of cartel activity
-- @green1984noncooperative
-  - Theory: including demand uncertainty
-- @ellison1994theories
-  - Why cartels break down at the top of the business cycle?
-    - You expect there to be a downturn in the future 
-    - Low future continuation value
-    - Higher incentives to cheat
-- @asker2010study
-  - Bid rigging cartel of stamp dealers
-- @igami2021measuring
-  - Dynamic model of cartel survival
-
-
-
-### Setting
-
-**Problem** of cartel papers: **variation** in markets
-
-- Usually 1 cartel in 1 market $\to$ no variation for estimation
-
-Vitamin cartel
-
-- one of the biggest cartels in history
-- affected a lot of different vitamins
-- each vitamin is a separate market
-- also, different cartels for different vitamins
-  - broke at different points in time (endogenously, no antitrust action)
-  - **research question**: why?
-- a lot of insider information on the cartels
-
-
-
-### Research Question
-
-Why did some cartels survive for a decade while others collapsed after only a few years?
-
-![](../img/8_06.png){width=60%}
-
-
-
-How do mergers affect the incentive to collude?
-
-
-
-### Bernheim Report
-
-- [Bates White witness report (2002)](https://appliedantitrust.com/04_private_actions/damages/vitamin_c/vitamin_c_edny_bernheim_report11_14_2008.pdf)
-- On behalf of 4000+ vitamin buyers claiming damages from the cartel
-- Involved in jury trial and made public in 2003
-- Contains price and cost information for La Roche
-
-![](../img/8_07.png){width=50%}
-
-
-
-### Vitamins
-
-**Product**: vitamins
-
-- Geographically is a global market
-- But each vitamin constitute a separate market
-- Homogeneous good
-
-**Demand**
-
-- General health benefits, but no clear scientific evidence (on humans)
-- Generally 9000+ purchasers of vitamins
-  - Who? Farmers, cooperatives, .... Coca cola has 2.14% marekt share
-
-**Supply**
-
-- Market dominated by european big3: Roche, BASF, RP
-
-
-
-### The Cartel (1): History 
-
-**History**
-
-- 1989: price war
-- June 7 1989 in Basel, BASF and la Roche start talk
-- August 1989, Zurich: RP joins the talks
-
-**Design**
-
-- For vitamins A and B
-- Foresee demand growth
-- Split it according to pre-1989  market shares
-- Quarterly meetings to monitor the cartel performance
-
-**Cartel expansion**
-
-- 1990 and 1991: added new members
-
-
-
-### The Cartel (2): Structure
-
-**Monitoring**: almost perfect
-
-- Self-reported sales data
-- They were using government trade statistics to verify self-reports
-  - Published with a time lag
-
-**Punishment**
-
-- Threat of reversion to competitive prices
-- EC report (2003)
-  - Takeda was often not complying with the agreement
-  - “*the three European producers presented Takeda with an ultimatum unless it agreed to cut back its vitamin C sales, they would withdraw from the agreement*” (p. 44)
-
-Other collusion-relevant info
-
-- No multi-market contact
-- No complicated punishment strategies, like carrot-stick
-- No proce wars as part of the equilibrium (a la @green1984noncooperative)
-
-
-
-### The Cartel (3): End
-
-- 6 **natural deaths**
-  - Entry of foreign suppliers
-- 10 forced terminations
-  - RP applied for Corporative Leniency Program
-  - One of the first major cartel cases to make use of this instrument
-  - Roche and BASF pleaded guilty
-- **Mergers**
-  - RP merged with Hoechst $\to$ Aventis (1998)
-  - BASF acquired Takeda (2001)
-
-
-
-### Model
-
-Demand: linear
-$$
-Q_{t}^{D}=\alpha_{0}+\alpha_{1} P_{t}+\alpha_{2} X_{t}+\varepsilon_{t}
-$$
-Fringe supply
-
-- Preferred specification: constant fraction of total quantity: $Q_{t}^{D}=Q_{c a r, t}+Q_{f r i, t}$
-
-Supply: Cournot. With **FOC**
-$$
-P_{t}+\frac{d P}{d Q_{t}} \times q_{i, t}=c_{\text {roche }, t}^{\text {obs }}+\gamma_{i}+\eta_{i, t}
-$$
-Different **profit functions** 
-
-1. Cartel: all collude
-2. Deviation: all collude a part for the deviator that best responds
-3. Competition: all best respond
-
-
-
-### Estimation
-
-GMM function with three moment conditions
-
-- Independence of demand shock and supply cost shifter
+- Per period profits
   $$
-  \bar{m}_{1}(\theta)=\sum_{y} \bar{\varepsilon}_{y} \cdot Z_{y}
+  \pi (s_{jt}, \boldsymbol s_{-jt}, ; \theta^\pi)
   $$
-  
+  where
 
-- Independence of supply shock and demand shifter
+  - $\boldsymbol s_{-it}$: state vector of all other firms in period $t$
+  - $\theta^\pi$: parameters that govern static profits
+
+- We can micro-fund profits with some demand and supply functions
+
+  - There can be some underlying static strategic interaction
+  - E.g. logit demand and bertrand competition in prices $p_{it}$
+
+
+
+### State Transitions
+
+**Investment**: firms can invest an dollar amount $x$ to increase their future quality
+
+- Continuous decision variable ($\neq$ Rust)
+
+- Probability that investment is successful
   $$
-  \bar{m}_{2, i}(\theta)=\sum_{y} \bar{\eta}_{i, y} \cdot W_{i, y}
+  \Pr \big(i_{jt} \ \big| \ a_{it} = x \big) = \frac{\alpha x}{1 + \alpha x}
   $$
-  
 
-- Independence between controls and demand error term
-  $$
-  \bar{m}_{3}(\theta)=\sum_{t} \bar{\eta}_{t} \cdot X_{t}
-  $$
-  
+- Higher investment, higher success probability
 
+- $\alpha$ parametrizes the returns on investment
 
+**Quality depreciation**
 
-### Incentive Compatibility (1)
+- With probability $\delta$, quality decreases by one level
 
-Value of complying
+**Law of motion**
 $$
-V_{i, \tau \mid t}^{C}=\sum_{s \geq \tau} \beta^{s-\tau} \pi_{i, s \mid t}^{C}
+s_{j,t+1} = s_{jt} + i_{jt} - \delta
 $$
-Value of not complying
+
+
+### Decision Variables
+
+Note that in @ericson1995markov we have two separate decision variables
+
+1. **Static** decision variable: price $p_{jt}$
+2. **Dynamic** decision variable: investment $i_{jt}$
+
+Does not have to be the case!
+
+**Example**: @besanko2010learning
+
+- Model of **learning-by-doing**: firms decrease their marginal cost through sales
+- State variable: firm stock of know how $e$
+  - The higher the stock of know-how, the lower the marginal cost
+  - Increases when a firm manages to make a sale
+    - $q \in [0,1]$ now is both static quantity and transition probability
+- **Single** decision variable: price $p$
+  - Usual static effects on profits $\pi_{jt} = (p_{jt} - c(e_{jt})) \cdot  q_j(\boldsymbol p_t)$
+  - But also dynamic effect through transition probabilities
+    - Probability of increasing $e_t$: $q_j(\boldsymbol p_t)$
+
+
+
+### Equilibrium
+
+Firms maximize the expected flow of discounted profits
 $$
-V_{i, \tau \mid t}^{D}=\sum_{s=\tau}^{\tau+2} \beta^{s-\tau} \pi_{i, s \mid t}^{D}+\sum_{s \geq \tau+3} \beta^{s-\tau} \pi_{i, s \mid t}^{N}
+\max_{\boldsymbol a} \ \mathbb E_t \left[ \sum_{\tau=0}^\infty \beta^{\tau} \pi_{j, t+\tau} (\theta^\pi) \right]
 $$
-ICC
+**Markow Perfect Equilibrium**
+
+Equillibrium notion: **Markow Perfect Equilibrium** [@maskin1988theory]
+
+- A set of $J$ value and policy functions, $\boldsymbol V$ and $\boldsymbol P$ such that each firm
+  1. maximizes its value function $V_j$
+  2. given the policy function of every other firm $\boldsymbol P_{-j}$
+
+
+
+### Exit
+
+One important extension is **exit**. 
+
+- In each time period, incuments decide whether to stay 
+- ... or exit and get a scrap value $\phi^{exit}$
+
+The Belman Equation of incumbent $j$ at time $t$ is
 $$
-\min _{i \in I, \tau \geq t}\left(V_{i, \tau \mid t}^{C}-V_{i, \tau \mid t}^{D}\right) \geq 0
+V^{\boldsymbol P_{-j}}_{j} (\mathbf{s}_{t}) = \max_{d^{exit}_{jt} \in \lbrace 0, 1 \rbrace} \Bigg\lbrace 
+\begin{array}{c}
+\beta \phi^{exit} \ , \newline
+\max_{a_{jt} \in \mathcal{A}_j \left(\mathbf{s}_{t}\right)} \Big\lbrace  \pi_{j}^{\boldsymbol P_{-j}} (a_{jt}, \mathbf{s}_{t} ; \theta^\pi ) + \beta \mathbb E_{\boldsymbol s_{t+1}} \Big[  V_{j}^{\boldsymbol P_{-j}} \left(\mathbf{s}_{t+1}\right) \ \Big| \ a_{jt}, \boldsymbol s_{t} ; \theta^f \Big] \Big\rbrace
+\end{array}
+\Bigg\rbrace
 $$
-How to **compute** it? We need expectation of
+where
 
-- Future **market size**
-- Future size of the **supply fringe**
-
-
-
-### Incentive Compatibility (2): Computation
-
-**Demand**: market size
-
-- Assume perfect foresight
-- Also pretty stable
-
-**Supply**: size of the supply fringe
-
-- Series of shocks in the 90s
-  - Bew method invented
-  - Bosnian war 1992-95
-  - Deng's '92 speech
-- All unforeseen shocks
-- Firms project current level of fringe output to the future
+- $\phi^{exit}$: exit scrap value
+- $d^{exit}_{jt} \in \lbrace 0,1 \rbrace$: exit decision
 
 
 
-### Incentive Compatibility (2): Results
+### Entry
 
-We can plot the firm incentives $V_{i, \tau \mid t}^{C}-V_{i, \tau \mid t}^{D}$ for each firm.
+We can also incorporate endogenous **entry**.
 
+- One or more **potential entrants** exist outside the market
+- They can pay an entry cost $\phi^{entry}$ and enter the market at a quality state $\bar s$
+- ... or remain outside at no cost
 
+Value function
+$$
+V_{j}^{\boldsymbol P_{-j}} (e, \boldsymbol x_{-jt} ; \theta) = \max_{d^{entry} \in \lbrace 0,1 \rbrace }
+\Bigg\lbrace
+\begin{array}{c}
+0 \ ; \newline
+- \phi^{entry} + \beta \mathbb E_{\boldsymbol s_{t+1}} \Big[ V_{j}^{\boldsymbol P_{-j}} (\bar s, \boldsymbol s_{-j, t+1} ; \theta) \ \Big| \ \boldsymbol s_{t} ; \theta^f \Big]
+\end{array}
+\Bigg\rbrace
+$$
+where
 
-![](../img/8_08.png){width=50%}
+- $d^{entry} \in \lbrace 0,1 \rbrace$: entry decision
+- $\phi^{entry}$: entry cost
+- $\bar s$: state in which entrants enters (could be random)
 
+Do we observe potential entrants?
 
-
-As fringe enters the market, incentives drop.
-
-
-
-### Counterfactuals (1)
-
-Who killed the vitamin cartel? Explore different combinations of
-
-1. **Fringe** stopped growing after 1994 
-2. **Demand** did not slow down because of the 1990's shocks
-
-![](../img/8_09.png){width=50%}
-
-
-
-### Counterfactuals (2)
-
-Could the **BASF-Takeda** merger save the vitamin cartel?
-
-- What if they had done it before?
-- BASF gets the minimum marginal cost + some synergy
-- No capacity constraints
-- Same cartel quotas
+- @igami2017estimating: tech industry announce their entry
+- Critique: not really potential entrants, they are half-way inside
 
 
 
-![](../img/8_10.png){width=80%}
+### Equilibrium Existence
 
+@doraszelski2010computable: a MPE might not exist in @ericson1995markov model.
 
+**Solution**
 
-**Remark**: too many synergies make the cartel more asymmetric $\to$ less sustainable
+- Replace fixed entry costs $\phi^{entry}$ and exit scrap values $\phi^{exit}$ with random ones
+- It becomes a game of incomplete information
+  - First explored in @rust1994structural
+- New equilibrium concept
 
+**Markov Perfect Bayesian Nash Equilibrium (MPBNE)**
 
-
-### Counterfactuals (3)
-
-Which merger would have helped the most?
-
-- Simulate **Roche mergers** with different combinations of competittors
-
-
-
-![](../img/8_11.png){width=90%}
-
-
-
-**Remark**: again, because of asymmetries, incentives do not monotonically increase with HHI
+- Basically the same, with rational beliefs on random variables
 
 
 
 
 
+### Solving the Model
+
+Solving the model is very similar to Rust
+
+- Given parameter values $\theta$
+- Start with a guess for the value and policy functions
+- Until convergence, do:
+  - For each firm $j = 1, ..., J$, do:
+    - Take the policy functions of all other firms 
+    - Compute the implied transition probabilities
+    - Use them to compute the new policy function for firm $j$
+    - Compute the implied value function
 
 
-## References
 
-------------------------------------------------------------------------
+> Where do things get complicated / tricky? Policy function update
+
+
+
+### Policy Update Example: exit game
+
+Imagine a stylized exit game with 2 firms
+
+- Easy to get an update rule of the form: *"exit if opponent stays, stay if opponent exits"*
+
+**Computationally**
+
+- Initialize policy functions to $(exit, exit)$
+- Iteration 1: 
+  - Each firm takes opponent policy as given: $exit$
+  - Update own optimal policy: $stay$
+  - New policy: $(stay, stay)$
+- Iteration 2: $(stay, stay) \to (exit, exit)$
+- Iteration 2: $(exit, exit) \to (stay, stay)$
+- Etc...
+
+> **Issues**: value function iteration might not converge and equilibrium multeplicity.
+
+
+
+### Convergence Tips
+
+- Try different **starting values**
+  - Often it's what makes the biggest difference
+  - Ideally, start as close as possible to true values
+  - **Approximation methods** can help (we'll see more later)
+    - I.e. get a fast approximation to use as starting vlaue for solution algorithm
+- Partial/stochastic **value function update rule**
+  - Instead of $V' = T(V)$, use $V' = \alpha T(V) + (1-\alpha)V$
+  - Very good to break loops, especially if $\alpha$ is stochastic, e.g. $\alpha \sim U(0,1)$
+- How large is the **support of the entry/exit costs**?
+  - If support is too small, you end up back in the entry/exit loop
+- Try alternative **non-parallel updating schemes**
+  - E.g. update value one state at the time (in random order?)
+- Last but not least: **change the model**
+  - In particular, from simultaneous to alternating moves 
+  - or continuous time
+
+
+
+### Multiple Equilibria
+
+How to find them?
+
+- @besanko2010learning and @borkovsky2010user: **homotopy method** 
+  - can find some equilibria, but not all
+  - complicated to implement: need to compute first order conditions $H(\boldsymbol V, \theta) = 0$ and their Jacobian $\Delta H(\boldsymbol V, \theta)$
+  - **Idea**: trace the equilibrium correspondence $H^{-1} = \lbrace (\boldsymbol V, \theta) : H(\boldsymbol V, \theta) = 0 \rbrace$ in the value-parameter space
+- @eibelshauser2019markov
+  - Markov Quantal Response Equilibrium
+  - approact dynamic games from a evolutionary game theory perspective
+    - actions played at random and those bringing highest payoffs survive
+
+  - $\to$ homothopy method guaranteed to find one equilibrium
+
+- @pesendorfer2010sequential: some equilibria are not Lyapunov-stable
+  - BR iteration cannot find them unless you start exactly at the solution
+
+- @su2012constrained and @egesdal2015estimating: same point, but numerically
+  - using MPEC approach
+
+
+
+
+### Multiple Equilibria (2)
+
+Can we assume them away?
+
+- @igami2017estimating
+  - Finite horizon
+  - Homogenous firms (in profit functions and state transitions)
+  - One dynamic move per period (overall, not per-firm)
+- @abbring2010last
+  - Entry/exit game
+  - Homogeneous firms
+  - Entry and exit decisions are follow a last-in first-out (LIFO) structure
+    - *"An entrant expects to produce no longer than any incumbent"*
+- @iskhakov2016recursive
+  - can find all equilibria, but for very specific class of dynamic games
+  - must always proceed "forward" 
+    - e.g. either entry or exit but not both
+  - Idea: can solve by backward induction even if horizon is infinite
+
+
+
+### Curse of Dimensionality
+
+What are the computational bottlenecks?
+$$
+V^{\boldsymbol P_{-j}}_{j} ({\color{red}{\mathbf{s}_{t}}}) = \max_{a_{jt} \in \mathcal{A}_j \left(\mathbf{s}_{t}\right)} \Bigg\lbrace \pi_{j}^{\boldsymbol P_{-j}} (a_{jt}, \mathbf{s}_{t} ; \theta^\pi ) + \beta \mathbb E_{{\color{red}{\mathbf{s}_{t+1}}}} \Big[  V_{j}^{\boldsymbol P_{-j}} \left(\mathbf{s}_{t+1}\right) \ \Big| \ a_{jt}, \boldsymbol s_{t} ; \theta^f \Big] \Bigg\rbrace
+$$
+
+1. **Dimension of the state space**
+   - In single agent problems, we have as many states as many values of $s_{jt}$ ($k$)
+   - In dynamics games, the state space goes from $k$ to $k^J$
+   - **symmetry helps**: state $[1,2,3]$ and $[1,3,2]$ become the same for firm 1
+   - How much do we gain? From $k^J$ to $k \cdot {k + J - 2 \choose k - 1}$
+2. **Dimension of the integrand**
+   - If in single agent problems, we have to integrate over $\kappa$ outcomes,
+     - 4 in Rust: engine replaced (yes|no) $\times$ mileage increases (yes|no)
+   - ... in dynamic games, we have to consider $\kappa^J$ outcomes
+
+> **Note**: bottlenecks are not addittive but multiplicative: have to solve the expectation for each point in the state space. Improving on any of the two helps a lot.
+
+
+
+
+
+### Curse of Dimensionality (2)
+
+Two and a half classes of solutions:
+
+1. **Computational**: approximate the equilibrium
+   - @doraszelski2003r: use Chebyshev polynomials for a basis function
+   - @farias2012approximate: combine approximations with a MPEC-like approach
+2. **Conceptual**: define another game
+   - @weintraub2008markov: oblivious equilibrium
+   - @ifrach2017framework: moment based equilibrium
+   - @doraszelski2012avoiding: games in continuous time
+   - @doraszelski2019dynamic: games with random moves
+3. Kind of both: @pakes2001stochastic
+   - experience-based equilibrium [@fershtman2012dynamic]
+
+
+
+> **Note**: useful also to get good starting values for a full solution method!
+
+
+
+
+
+### Oblivious Equilibrium
+
+@weintraub2008markov: what if **firms had no idea about the state of other firms**?
+
+- or atomistic firms
+
+The value function becomes
+$$
+V_{j} ({\color{red}{s_{t}}}) = \max_{a_{jt} \in \mathcal{A}_j \left({\color{red}{s_{t}}}\right)} \Bigg\lbrace {\color{red}{\mathbb E_{\boldsymbol s_t}}} \Big[ \pi_{j} (a_{jt}, \mathbf{s}_{t} ; \theta^\pi ) \Big|  P  \Big] + \beta \mathbb E_{{\color{red}{s_{t+1}}}} \Big[  V_{j} \left({\color{red}{s_{t+1}}}\right) \ \Big| \ a_{jt}, {\color{red}{s_{t}}} ; \theta^f \Big] \Bigg\rbrace
+$$
+
+- Now the state is just $s_t$ instead of $\boldsymbol s_t$
+  - **Huge** computational gain: from $k^J$ points to $k$ 
+  - Also the expectation of future states is taken over $3$ instead of $3^J$ points
+    - (3 because quality can go up, down or stay the same)
+- But need to compute static profits as the expected value given the current policy function
+  - Need to keep track of the asymptotic state distribution as you iterate the value
+
+
+
+### Games with Random Moves
+
+@doraszelski2019dynamic: what if instead of simultaneously, firms would **move one at the time at random**?
+
+- **Important**: to have the same frequency of play, **a period now is $J$ times shorter**
+
+The value function becomes
+$$
+V^{\boldsymbol P_{-j}}_{j} (\mathbf{s}_{t}, {\color{red}{n=j}}) = \max_{a_{jt} \in \mathcal{A}_j \left(\mathbf{s}_{t}\right)} \Bigg\lbrace {\color{red}{\frac{1}{J}}}\pi_{j}^{\boldsymbol P_{-j}} (a_{jt}, \mathbf{s}_{t} ; \theta^\pi ) + {\color{red}{\sqrt[J]{\beta}}} \mathbb E_{{\color{red}{n,  s_{j, t+1}}}} \Big[  V_{j}^{\boldsymbol P_{-j}} \left(\mathbf{s}_{t+1}, {\color{red}{n}} \right) \ \Big| \ a_{jt}, \boldsymbol s_{t} ; \theta^f \Big] \Bigg\rbrace
+$$
+
+- $n$: indicates whose turn is to play
+- since a turn is $J$ times shorter, profits are $\frac{1}{J} \pi$  and discount factor is $\sqrt[J]{\beta}$
+
+**Computational gain**
+
+- Expectation now taken over $n, s_{j, t+1}$ instead of $\boldsymbol s_{t+1}$
+- I.e. $Jk$ points instead of $3^k$ (3 because quality can go up, down or stay the same)
+- Huge computational difference!
+
+
+
+### Games in Continuous Time
+
+@doraszelski2012avoiding: what's the advantage of continuous time? 
+
+- Probability that two firms take a decision simultaneously is zero
+
+With continuous time, the value function becomes
+$$
+V^{\boldsymbol P_{-j}}_{j} (\mathbf{s}_{t}) = \max_{a_{jt} \in \mathcal{A}_j \left(\mathbf{s}_{t}\right)} \Bigg\lbrace \frac{1}{\lambda(a_{jt}) - \log(\beta)} \Bigg( \pi_{j}^{\boldsymbol P_{-j}} (a_{jt}, \mathbf{s}_{t} ; \theta^\pi ) + \lambda(a_{jt}) \mathbb E_{\boldsymbol s_{t+1}} \Big[  V_{j}^{\boldsymbol P_{-j}} \left(\mathbf{s}_{t+1}\right) \ \Big| \ a_{jt}, \boldsymbol s_{t} ; \theta^f \Big] \Bigg) \Bigg\rbrace
+$$
+
+- $\lambda(a_{jt}) = \delta + \frac{\alpha a_{jt}}{1 + \alpha a_{jt}}$ is the hazard rate for firm $j$ that **something happens**
+  - i.e. either an increase in quality, with probability $\frac{\alpha a_{jt}}{1 + \alpha a_{jt}}$
+  - ... or a decrease in quality with probability $\delta$
+
+**Computational gain**
+
+- Now the expectation over future states $\mathbb E_{\boldsymbol s_{t+1}}$ is over $2J$ points instead of $3^J$
+  - 3 because quality can go up, down or stay the same
+  - 2 because in continuous time we don't care if the state does not change (investment fails)
+
+
+
+### Comparison
+
+Which method is **best**?
+
+I compare them in @courthoud2020approximation
+
+- Fastest: @weintraub2008markov
+  - Effectively transforms the game into single-agent dynamics
+- Best trade-off: @doraszelski2019dynamic
+  - Simple, practical and also helps in terms of equilibrium multeplicity 
+- Also in @courthoud2020approximation: games with random order
+  - Better approximation than @doraszelski2019dynamic
+  - And similar similar time
+
+
+
+### Applications
+
+Some applications of these methods include
+
+- Approximation methods
+  - @sweeting2013dynamic: product repositioning among radio stations
+  - @barwick2015costs: entry and exit in the real estate brokerage industry
+- Oblivious equilibrium
+  - @xu2020structural: R&D investment in the Korean electric motor industry
+- Moment based equilibrium
+  - @jeon2020learning: demand learning in the container shipping industry
+  - @caoui2019estimating: technology adoption with network effects in the movie industry
+  - @vreugdenhil2020booms: search and matching in the oil drilling industry
+- Games in continuous time
+  - @arcidiacono2016estimation: entry, exit and scale decisions in retail competition
+- Games with random moves
+  - @igami2017estimating: innovation, entry, exit in the hard drive industry
+
+
+
+## From IO to AI
+
+### Bridging two Literatures
+
+There is one method to approximate the equilibrium in dynamic games that is a bit different from the others: @pakes2001stochastic
+
+- **Idea**: approximate the value function by Monte-Carlo simulation
+- Firms start with a guess for the alternative-specific value function
+- Act according to it
+- Observe realized payoffs and state transitions
+- And update the alternative-specific value function according to the realized outcomes
+
+
+
+**Experience-Based Equilibrium** 
+
+- Defined in @fershtman2012dynamic
+- **Def**: *policy is optimal given beliefs of state transitions and observed transitions are consistent with the beliefs*
+- **Note**: definition silent on off-equilibrium path beliefs
+
+
+
+### Pakes and McGuire (2001)
+
+- Players start with **alternative-specific value function** 
+
+  - yes, the ASV from @rust1994structural
+  - $\bar V_{j,a}^{(0)} (\boldsymbol s ; \theta)$: initial value of player $j$ for action $a$ in state $\boldsymbol s$ 
+
+- Until convergence, do:
+
+  - Compute optimal action, given $\bar V_{j, a}^{(t)} (\boldsymbol s ; \theta)$
+    $$
+    a^* = \arg \max_a \bar V_{j, a}^{(t)} (\boldsymbol s ; \theta)
+    $$
+
+  - Observe the realized payoff $\pi_{j, a^*}(\boldsymbol s ; \theta)$ and the realized next state $\boldsymbol {s'}(\boldsymbol s, a^*; \theta)$
+
+  - Update the alternative-specific value function of the chosen action $k^*$
+    $$
+    \bar V_{j, a^*}^{(t+1)} (\boldsymbol s ; \theta) = (1-\alpha_{\boldsymbol s, t}) \bar V_{j, a^*}^{(t)} (\boldsymbol s ; \theta) + \alpha_{\boldsymbol s, t} \Big[\pi_{j, a^*}(\boldsymbol s ; \theta) + \arg \max_a \bar V_{j, a}^{(t)} (\boldsymbol s' ; \theta) \Big]
+    $$
+    where
+
+    - $\alpha_{\boldsymbol s, t} = \frac{1}{\text{number of times state } \boldsymbol s \text{ has been visited}}$ 
+
+
+
+### Comments
+
+Where is the **strategic interaction**?
+
+- Firm always take *"best action so far"* in each state
+  - Start to take a new action only when the previous best has performed badly for many periods
+- Remindful of literature of evolutionary game theory
+
+Importance of **starting values**
+
+- Imagine, all payoffs are positive but value initialized to zero
+- First action in each state $\to$ only action ever taken in that state
+- Loophole. 
+  - Why? Firms always take $\arg \max_a \bar V_a$  and never *explore* the alternatives
+
+**Convergence** by desing
+
+- As $\lim_{t \to \infty} \alpha_{\boldsymbol s, t} = 1$
+- Firms stop updating the value by design
+
+
+
+### Q-Learning
+
+Computer Science reinforcement learning literature (AI): **Q-learning**
+
+**Differences**
+
+- $\bar V_a( \boldsymbol s)$ called $Q_a(\boldsymbol s)$, hence the name
+- Firms don't always take the optimal action
+  - At the beginning of the algorithm: **exploration**
+    - Firms take actions at random
+    - Just to explore what happens taking different actions
+  - Gradually shift towards **exploitation**
+    - I.e. take the optimal action, given $\bar V^{(t)}( \boldsymbol s)$ at iteration $t$
+    - I.e. shift towards @pakes2001stochastic
+
+
+
+
+
+### Applications
+
+- @doraszelski2018just
+  - Firm do actually learn by trial and error
+  - Setting: demand learning in the UK frequency response market (electricity)
+
+- @asker2020computational
+  - Uses @pakes2001stochastic for estimation
+  - Setting: dynamic timber auctions with information sharing
+- @calvano2020artificial
+  - Study Q-learning pricing algorithms
+  - In repeated price competition with differentiated products
+  - (Computational) lab experiment: what do these algorithms converge to?
+  - **Finding**: algorithms learn reward-punishment collusive strategies
+
+
+
+
+
+## Appendix
+
+### References
+

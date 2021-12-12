@@ -219,7 +219,7 @@ pre code {
 
 <div id="TOC">
 <ul>
-<li><a href="#references">References</a></li>
+<li><a href="#appendix">Appendix</a></li>
 </ul>
 </div>
 
@@ -261,109 +261,225 @@ u_{ijt} = \boldsymbol x_{jt} \boldsymbol \beta_{it} - \alpha p_{jt} + \xi_{jt} +
 <p>We have <span class="math inline">\(J\)</span> firms and each product has <span class="math inline">\(K\)</span> characteristics</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBganVsaWFcbkogPSAzOyAgICAgICAgICAgICAgICAgICAgICAgICAgICAjIDMgZmlybXMgPT0gcHJvZHVjdHNcbksgPSAyOyAgICAgICAgICAgICAgICAgICAgICAgICAgICAjIDIgcHJvZHVjdCBjaGFyYWN0ZXJpc3RpY3NcbmMgPSByYW5kKFVuaWZvcm0oMCwgMSksIEopOyAgICAgICAjIFJhbmRvbSB1bmlmb3JtIG1hcmdpbmFsIGNvc3RzXG7OviA9IHJhbmQoTm9ybWFsKDAsIDEpLCBKKzEpOyAgICAgICMgUmFuZG9tIG5vcm1hbCBpbmRpdmlkdWFsIHNob2Nrc1xuWCA9IHJhbmQoRXhwb25lbnRpYWwoMSksIEosIEspOyAgICMgUmFuZG9tIGV4cG9uZW50aWFsIHByb2R1Y3QgY2hhcmFjdGVyaXN0aWNzXG7OsiA9IFsuNSwgMiwgLTFdOyAgICAgICAgICAgICAgICAgICMgUHJlZmVyZW5jZXMgKGxhc3Qgb25lIGlzIGZvciBwcmljZXMsIGkuZS4gYWxwaGEpXG5gYGAifQ== -->
-<pre class="julia"><code>J = 3;                            # 3 firms == products
+<!-- rnb-source-begin eyJkYXRhIjoiYGBganVsaWFcbmBgYGp1bGlhXG5KID0gMzsgICAgICAgICAgICAgICAgICAgICAgICAgICAgIyAzIGZpcm1zID09IHByb2R1Y3RzXG5LID0gMjsgICAgICAgICAgICAgICAgICAgICAgICAgICAgIyAyIHByb2R1Y3QgY2hhcmFjdGVyaXN0aWNzXG5jID0gcmFuZChVbmlmb3JtKDAsIDEpLCBKKTsgICAgICAgIyBSYW5kb20gdW5pZm9ybSBtYXJnaW5hbCBjb3N0c1xuzr4gPSByYW5kKE5vcm1hbCgwLCAxKSwgSisxKTsgICAgICAjIFJhbmRvbSBub3JtYWwgaW5kaXZpZHVhbCBzaG9ja3NcblggPSByYW5kKEV4cG9uZW50aWFsKDEpLCBKLCBLKTsgICAjIFJhbmRvbSBleHBvbmVudGlhbCBwcm9kdWN0IGNoYXJhY3RlcmlzdGljc1xuzrIgPSBbLjUsIDIsIC0xXTsgICAgICAgICAgICAgICAgICAjIFByZWZlcmVuY2VzIChsYXN0IG9uZSBpcyBmb3IgcHJpY2VzLCBpLmUuIGFscGhhKVxuYGBgXG5gYGAifQ== -->
+<pre class="julia"><code>```julia
+J = 3;                            # 3 firms == products
 K = 2;                            # 2 product characteristics
 c = rand(Uniform(0, 1), J);       # Random uniform marginal costs
 ξ = rand(Normal(0, 1), J+1);      # Random normal individual shocks
 X = rand(Exponential(1), J, K);   # Random exponential product characteristics
 β = [.5, 2, -1];                  # Preferences (last one is for prices, i.e. alpha)</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-</div>
-<div id="code-demand" class="section level3">
-<h3>Code Demand</h3>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBganVsaWFcbmZ1bmN0aW9uIGRlbWFuZChwOjpWZWN0b3IsIFg6Ok1hdHJpeCwgzrI6OlZlY3Rvciwgzr46OlZlY3Rvcik6OlR1cGxle1ZlY3RvciwgTnVtYmVyfVxuICAgIFwiXCJcIkNvbXB1dGUgZGVtYW5kXCJcIlwiXG4gICAgzrQgPSAxIC4rIFtYIHBdICogzrIgICAgICAgICAgICAgICMgTWVhbiB2YWx1ZVxuICAgIHUgPSBbzrQ7IDBdICsgzr4gICAgICAgICAgICAgICAgICAjIFV0aWxpdHlcbiAgICBlID0gZXhwLih1KSAgICAgICAgICAgICAgICAgICAgICMgVGFrZSBleHBvbmVudGlhbFxuICAgIHEgPSBlIC4vIHN1bShlKSAgICAgICAgICAgICAgICAgIyBDb21wdXRlIGRlbWFuZFxuICAgIHJldHVybiBxWzE6ZW5kLTFdLCBxW2VuZF1cbmVuZDtcbmBgYCJ9 -->
-<pre class="julia"><code>function demand(p::Vector, X::Matrix, β::Vector, ξ::Vector)::Tuple{Vector, Number}
-    &quot;&quot;&quot;Compute demand&quot;&quot;&quot;
+<pre><code>
+&lt;!-- rnb-source-end --&gt;
+
+&lt;!-- rnb-chunk-end --&gt;
+
+
+&lt;!-- rnb-text-begin --&gt;
+
+
+
+### Code Demand
+
+
+&lt;!-- rnb-text-end --&gt;
+
+
+&lt;!-- rnb-chunk-begin --&gt;
+
+
+&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBganVsaWFcbmBgYGp1bGlhXG5mdW5jdGlvbiBkZW1hbmQocDo6VmVjdG9yLCBYOjpNYXRyaXgsIM6yOjpWZWN0b3IsIM6+OjpWZWN0b3IpOjpUdXBsZXtWZWN0b3IsIE51bWJlcn1cbiAgICBcXFxcXFxDb21wdXRlIGRlbWFuZFxcXFxcXFxuICAgIM60ID0gMSAuKyBbWCBwXSAqIM6yICAgICAgICAgICAgICAjIE1lYW4gdmFsdWVcbiAgICB1ID0gW860OyAwXSArIM6+ICAgICAgICAgICAgICAgICAgIyBVdGlsaXR5XG4gICAgZSA9IGV4cC4odSkgICAgICAgICAgICAgICAgICAgICAjIFRha2UgZXhwb25lbnRpYWxcbiAgICBxID0gZSAuLyBzdW0oZSkgICAgICAgICAgICAgICAgICMgQ29tcHV0ZSBkZW1hbmRcbiAgICByZXR1cm4gcVsxOmVuZC0xXSwgcVtlbmRdXG5lbmQ7XG5gYGBcbmBgYCJ9 --&gt;
+
+```julia
+```julia
+function demand(p::Vector, X::Matrix, β::Vector, ξ::Vector)::Tuple{Vector, Number}
+    \\\Compute demand\\\
     δ = 1 .+ [X p] * β              # Mean value
     u = [δ; 0] + ξ                  # Utility
     e = exp.(u)                     # Take exponential
     q = e ./ sum(e)                 # Compute demand
     return q[1:end-1], q[end]
 end;</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<p>We can try with an example.</p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-output-begin eyJkYXRhIjoiKFswLjc1MzMzODUxNzAwMjUyMTIsIDAuMTM1NDUzNDgxNTE5NjY1MjQsIDAuMTA1ODM2MTExMDk5OTE3MDddLCAwLjAwNTM3MTg5MDM3Nzg5NjU1NylcbiJ9 -->
-<pre><code>([0.7533385170025212, 0.13545348151966524, 0.10583611109991707], 0.005371890377896557)</code></pre>
-<!-- rnb-output-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-</div>
-<div id="code-supply" class="section level3">
-<h3>Code Supply</h3>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBganVsaWFcbmZ1bmN0aW9uIHByb2ZpdHMocDo6VmVjdG9yLCBjOjpWZWN0b3IsIFg6Ok1hdHJpeCwgzrI6OlZlY3Rvciwgzr46OlZlY3Rvcik6OlZlY3RvclxuICAgIFwiXCJcIkNvbXB1dGUgcHJvZml0c1wiXCJcIlxuICAgIHEsIF8gPSBkZW1hbmQocCwgWCwgzrIsIM6+KSAgICAgICAjIENvbXB1dGUgZGVtYW5kXG4gICAgcHIgPSAocCAtIGMpIC4qIHEgICAgICAgICAgICAgICAjIENvbXB1dGUgcHJvZml0c1xuICAgIHJldHVybiBwclxuZW5kO1xuYGBgIn0= -->
-<pre class="julia"><code>function profits(p::Vector, c::Vector, X::Matrix, β::Vector, ξ::Vector)::Vector
-    &quot;&quot;&quot;Compute profits&quot;&quot;&quot;
+<pre><code>
+&lt;!-- rnb-source-end --&gt;
+
+&lt;!-- rnb-chunk-end --&gt;
+
+
+&lt;!-- rnb-text-begin --&gt;
+
+
+We can try with an example.
+
+
+&lt;!-- rnb-text-end --&gt;
+
+
+&lt;!-- rnb-chunk-begin --&gt;
+
+
+&lt;!-- rnb-output-begin eyJkYXRhIjoiKFswLjc1MzMzODUxNzAwMjUyMTIsIDAuMTM1NDUzNDgxNTE5NjY1MjQsIDAuMTA1ODM2MTExMDk5OTE3MDddLCAwLjAwNTM3MTg5MDM3Nzg5NjU1NylcbiJ9 --&gt;
+</code></pre>
+<p>([0.7533385170025212, 0.13545348151966524, 0.10583611109991707], 0.005371890377896557)</p>
+<pre><code>
+
+
+&lt;!-- rnb-output-end --&gt;
+
+&lt;!-- rnb-chunk-end --&gt;
+
+
+&lt;!-- rnb-text-begin --&gt;
+
+
+### Code Supply
+
+
+&lt;!-- rnb-text-end --&gt;
+
+
+&lt;!-- rnb-chunk-begin --&gt;
+
+
+&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBganVsaWFcbmBgYGp1bGlhXG5mdW5jdGlvbiBwcm9maXRzKHA6OlZlY3RvciwgYzo6VmVjdG9yLCBYOjpNYXRyaXgsIM6yOjpWZWN0b3IsIM6+OjpWZWN0b3IpOjpWZWN0b3JcbiAgICBcXFxcXFxDb21wdXRlIHByb2ZpdHNcXFxcXFxcbiAgICBxLCBfID0gZGVtYW5kKHAsIFgsIM6yLCDOvikgICAgICAgIyBDb21wdXRlIGRlbWFuZFxuICAgIHByID0gKHAgLSBjKSAuKiBxICAgICAgICAgICAgICAgIyBDb21wdXRlIHByb2ZpdHNcbiAgICByZXR1cm4gcHJcbmVuZDtcbmBgYFxuYGBgIn0= --&gt;
+
+```julia
+```julia
+function profits(p::Vector, c::Vector, X::Matrix, β::Vector, ξ::Vector)::Vector
+    \\\Compute profits\\\
     q, _ = demand(p, X, β, ξ)       # Compute demand
     pr = (p - c) .* q               # Compute profits
     return pr
 end;</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<p>We can try with an example.</p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-output-begin eyJkYXRhIjoiMy1lbGVtZW50IEFycmF5e0Zsb2F0NjQsMX06XG4gMC4zNDk0NTI1NTgzNjQwNzk1N1xuIDAuMDQ1NTA5NDU2MTc2MzY2NTRcbiAwLjAwMzAyNTM1NjkyMTc1ODg3ODdcbiJ9 -->
-<pre><code>3-element Array{Float64,1}:
- 0.34945255836407957
- 0.04550945617636654
- 0.0030253569217588787</code></pre>
-<!-- rnb-output-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-</div>
-<div id="code-best-reply" class="section level3">
-<h3>Code Best Reply</h3>
-<p>We first code the best reply of firm <span class="math inline">\(j\)</span></p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBganVsaWFcbmZ1bmN0aW9uIHByb2ZpdHNfaihwajo6TnVtYmVyLCBqOjpJbnQsIHA6OlZlY3RvciwgYzo6VmVjdG9yLCBYOjpNYXRyaXgsIM6yOjpWZWN0b3IsIM6+OjpWZWN0b3IpOjpOdW1iZXJcbiAgICBcIlwiXCJDb21wdXRlIHByb2ZpdHMgb2YgZmlybSBqXCJcIlwiXG4gICAgcFtqXSA9IHBqICAgICAgICAgICAgICAgICAgICAgICAjIEluc2VydCBwcmljZSBvZiBmaXJtIGpcbiAgICBwciA9IHByb2ZpdHMocCwgYywgWCwgzrIsIM6+KSAgICAgIyBDb21wdXRlIHByb2ZpdHNcbiAgICByZXR1cm4gcHJbal1cbmVuZDtcbmBgYCJ9 -->
-<pre class="julia"><code>function profits_j(pj::Number, j::Int, p::Vector, c::Vector, X::Matrix, β::Vector, ξ::Vector)::Number
-    &quot;&quot;&quot;Compute profits of firm j&quot;&quot;&quot;
+<pre><code>
+&lt;!-- rnb-source-end --&gt;
+
+&lt;!-- rnb-chunk-end --&gt;
+
+
+&lt;!-- rnb-text-begin --&gt;
+
+
+We can try with an example.
+
+
+&lt;!-- rnb-text-end --&gt;
+
+
+&lt;!-- rnb-chunk-begin --&gt;
+
+
+&lt;!-- rnb-output-begin eyJkYXRhIjoiMy1lbGVtZW50IEFycmF5e0Zsb2F0NjQsMX06XG4gMC4zNDk0NTI1NTgzNjQwNzk1N1xuIDAuMDQ1NTA5NDU2MTc2MzY2NTRcbiAwLjAwMzAyNTM1NjkyMTc1ODg3ODdcbiJ9 --&gt;
+</code></pre>
+<p>3-element Array{Float64,1}: 0.34945255836407957 0.04550945617636654 0.0030253569217588787</p>
+<pre><code>
+
+
+&lt;!-- rnb-output-end --&gt;
+
+&lt;!-- rnb-chunk-end --&gt;
+
+
+&lt;!-- rnb-text-begin --&gt;
+
+
+
+
+### Code Best Reply
+
+We first code the best reply of firm $j$
+
+
+&lt;!-- rnb-text-end --&gt;
+
+
+&lt;!-- rnb-chunk-begin --&gt;
+
+
+&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBganVsaWFcbmBgYGp1bGlhXG5mdW5jdGlvbiBwcm9maXRzX2oocGo6Ok51bWJlciwgajo6SW50LCBwOjpWZWN0b3IsIGM6OlZlY3RvciwgWDo6TWF0cml4LCDOsjo6VmVjdG9yLCDOvjo6VmVjdG9yKTo6TnVtYmVyXG4gICAgXFxcXFxcQ29tcHV0ZSBwcm9maXRzIG9mIGZpcm0galxcXFxcXFxuICAgIHBbal0gPSBwaiAgICAgICAgICAgICAgICAgICAgICAgIyBJbnNlcnQgcHJpY2Ugb2YgZmlybSBqXG4gICAgcHIgPSBwcm9maXRzKHAsIGMsIFgsIM6yLCDOvikgICAgICMgQ29tcHV0ZSBwcm9maXRzXG4gICAgcmV0dXJuIHByW2pdXG5lbmQ7XG5gYGBcbmBgYCJ9 --&gt;
+
+```julia
+```julia
+function profits_j(pj::Number, j::Int, p::Vector, c::Vector, X::Matrix, β::Vector, ξ::Vector)::Number
+    \\\Compute profits of firm j\\\
     p[j] = pj                       # Insert price of firm j
     pr = profits(p, c, X, β, ξ)     # Compute profits
     return pr[j]
 end;</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<p>Let’s test it.</p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-output-begin eyJkYXRhIjoiMi4yNjU0MzQxNzE1NTAwOFxuIn0= -->
-<pre><code>2.26543417155008</code></pre>
-<!-- rnb-output-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<p>What are the implied profits now?</p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-output-begin eyJkYXRhIjoiUHJvZml0cyBuZXc6IFswLjgwMTYsIDAuMTAyNCwgMC4wMDY4XVxuIn0= -->
-<pre><code>Profits new: [0.8016, 0.1024, 0.0068]</code></pre>
-<!-- rnb-output-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<p>Indeed firm 1 has increased its profits.</p>
-</div>
-<div id="code-equilibrium" class="section level3">
-<h3>Code Equilibrium</h3>
-<p>We can now compute equilibrium prices</p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBganVsaWFcbmZ1bmN0aW9uIGVxdWlsaWJyaXVtKGM6OlZlY3RvciwgWDo6TWF0cml4LCDOsjo6VmVjdG9yLCDOvjo6VmVjdG9yKTo6VmVjdG9yXG4gICAgXCJcIlwiQ29tcHV0ZSBlcXVpbGlicml1bSBwcmljZXMgYW5kIHByb2ZpdHNcIlwiXCJcbiAgICBwID0gMiAuKiBjO1xuICAgIGRpc3QgPSAxO1xuICAgIGl0ZXIgPSAwO1xuXG4gICAgIyBVbnRpbCBjb252ZXJnZW5jZVxuICAgIHdoaWxlIChkaXN0ID4gMWUtOCkgJiYgKGl0ZXI8MTAwMClcblxuICAgICAgICAjIENvbXB1dGUgYmVzdCByZXBseSBmb3IgZWFjaCBmaXJtXG4gICAgICAgIHAxID0gY29weShwKTtcbiAgICAgICAgZm9yIGo9MTpsZW5ndGgocClcbiAgICAgICAgICAgIG9ial9mdW4ocGopID0gLSBwcm9maXRzX2oocGpbMV0sIGosIHAsIGMsIFgsIM6yLCDOvik7XG4gICAgICAgICAgICBvcHRpbWl6ZSh4IC0+IG9ial9mdW4oeCksIFsxLjBdLCBMQkZHUygpKS5taW5pbWl6ZXJbMV07XG4gICAgICAgIGVuZFxuXG4gICAgICAgICMgVXBkYXRlIGRpc3RhbmNlXG4gICAgICAgIGRpc3QgPSBtYXgoYWJzLihwIC0gcDEpLi4uKTtcbiAgICAgICAgaXRlciArPSAxO1xuICAgIGVuZFxuICAgIHJldHVybiBwXG5lbmQ7XG5gYGAifQ== -->
-<pre class="julia"><code>function equilibrium(c::Vector, X::Matrix, β::Vector, ξ::Vector)::Vector
-    &quot;&quot;&quot;Compute equilibrium prices and profits&quot;&quot;&quot;
+<pre><code>
+&lt;!-- rnb-source-end --&gt;
+
+&lt;!-- rnb-chunk-end --&gt;
+
+
+&lt;!-- rnb-text-begin --&gt;
+
+
+Let&#39;s test it.
+
+
+&lt;!-- rnb-text-end --&gt;
+
+
+&lt;!-- rnb-chunk-begin --&gt;
+
+
+&lt;!-- rnb-output-begin eyJkYXRhIjoiMi4yNjU0MzQxNzE1NTAwOFxuIn0= --&gt;
+</code></pre>
+<p>2.26543417155008</p>
+<pre><code>
+
+
+&lt;!-- rnb-output-end --&gt;
+
+&lt;!-- rnb-chunk-end --&gt;
+
+
+&lt;!-- rnb-text-begin --&gt;
+
+
+What are the implied profits now?
+
+
+&lt;!-- rnb-text-end --&gt;
+
+
+&lt;!-- rnb-chunk-begin --&gt;
+
+
+&lt;!-- rnb-output-begin eyJkYXRhIjoiUHJvZml0cyBuZXc6IFswLjgwMTYsIDAuMTAyNCwgMC4wMDY4XVxuIn0= --&gt;
+</code></pre>
+<p>Profits new: [0.8016, 0.1024, 0.0068]</p>
+<pre><code>
+
+
+&lt;!-- rnb-output-end --&gt;
+
+&lt;!-- rnb-chunk-end --&gt;
+
+
+&lt;!-- rnb-text-begin --&gt;
+
+
+Indeed firm 1 has increased its profits.
+
+### Code Equilibrium
+
+We can now compute equilibrium prices
+
+
+&lt;!-- rnb-text-end --&gt;
+
+
+&lt;!-- rnb-chunk-begin --&gt;
+
+
+&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBganVsaWFcbmBgYGp1bGlhXG5mdW5jdGlvbiBlcXVpbGlicml1bShjOjpWZWN0b3IsIFg6Ok1hdHJpeCwgzrI6OlZlY3Rvciwgzr46OlZlY3Rvcik6OlZlY3RvclxuICAgIFxcXFxcXENvbXB1dGUgZXF1aWxpYnJpdW0gcHJpY2VzIGFuZCBwcm9maXRzXFxcXFxcXG4gICAgcCA9IDIgLiogYztcbiAgICBkaXN0ID0gMTtcbiAgICBpdGVyID0gMDtcblxuICAgICMgVW50aWwgY29udmVyZ2VuY2VcbiAgICB3aGlsZSAoZGlzdCA+IDFlLTgpICYmIChpdGVyPDEwMDApXG5cbiAgICAgICAgIyBDb21wdXRlIGJlc3QgcmVwbHkgZm9yIGVhY2ggZmlybVxuICAgICAgICBwMSA9IGNvcHkocCk7XG4gICAgICAgIGZvciBqPTE6bGVuZ3RoKHApXG4gICAgICAgICAgICBvYmpfZnVuKHBqKSA9IC0gcHJvZml0c19qKHBqWzFdLCBqLCBwLCBjLCBYLCDOsiwgzr4pO1xuICAgICAgICAgICAgb3B0aW1pemUoeCAtPiBvYmpfZnVuKHgpLCBbMS4wXSwgTEJGR1MoKSkubWluaW1pemVyWzFdO1xuICAgICAgICBlbmRcblxuICAgICAgICAjIFVwZGF0ZSBkaXN0YW5jZVxuICAgICAgICBkaXN0ID0gbWF4KGFicy4ocCAtIHAxKS4uLik7XG4gICAgICAgIGl0ZXIgKz0gMTtcbiAgICBlbmRcbiAgICByZXR1cm4gcFxuZW5kO1xuYGBgXG5gYGAifQ== --&gt;
+
+```julia
+```julia
+function equilibrium(c::Vector, X::Matrix, β::Vector, ξ::Vector)::Vector
+    \\\Compute equilibrium prices and profits\\\
     p = 2 .* c;
     dist = 1;
     iter = 0;
@@ -384,36 +500,63 @@ end;</code></pre>
     end
     return p
 end;</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-</div>
-<div id="code-equilibrium-1" class="section level3">
-<h3>Code Equilibrium</h3>
-<p>Let’s test it</p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-output-begin eyJkYXRhIjoiRXF1aWxpYnJpdW0gcHJvZml0czogWzEuMzIxNiwgMC4zMjM0LCAwLjE5MDldXG4ifQ== -->
-<pre><code>Equilibrium profits: [1.3216, 0.3234, 0.1909]</code></pre>
-<!-- rnb-output-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<p>As expected the prices of the first 2 firms are lower and their profits are higher.</p>
-</div>
-<div id="dgp" class="section level3">
-<h3>DGP</h3>
-<p>Let’s generate our Data Generating Process (DGP).</p>
-<ul>
-<li><span class="math inline">\(\boldsymbol x \sim exp(V_{x})\)</span></li>
-<li><span class="math inline">\(\xi \sim N(0, V_{\xi})\)</span></li>
-<li><span class="math inline">\(w \sim N(0, 1)\)</span></li>
-<li><span class="math inline">\(\omega \sim N(0, 1)\)</span></li>
-</ul>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBganVsaWFcbmZ1bmN0aW9uIGRyYXdfZGF0YShKOjpJbnQsIEs6OkludCwgcmFuZ2VKOjpWZWN0b3IsIHZhclg6Ok51bWJlciwgdmFyzr46Ok51bWJlcik6OlR1cGxlXG4gICAgXCJcIlwiRHJhdyBkYXRhIGZvciBvbmUgbWFya2V0XCJcIlwiXG4gICAgSl8gPSByYW5kKHJhbmdlSlsxXTpyYW5nZUpbMl0pICAgICAgICAgICAgICAjIE51bWJlciBvZiBmaXJtcyAocHJvZHVjdHMpXG4gICAgWF8gPSByYW5kKEV4cG9uZW50aWFsKHZhclgpLCBKXywgSykgICAgICAgICAjIFByb2R1Y3QgY2hhcmFjdGVyaXN0aWNzXG4gICAgzr5fID0gcmFuZChOb3JtYWwoMCwgdmFyzr4pLCBKXysxKSAgICAgICAgICAgICMgUHJvZHVjdC1sZXZlbCB1dGlsaXR5IHNob2Nrc1xuICAgIHdfID0gcmFuZChVbmlmb3JtKDAsIDEpLCBKXykgICAgICAgICAgICAgICAgIyBDb3N0IHNoaWZ0ZXJzXG4gICAgz4lfID0gcmFuZChVbmlmb3JtKDAsIDEpLCBKXykgICAgICAgICAgICAgICAgIyBDb3N0IHNob2Nrc1xuICAgIGNfID0gd18gKyDPiV8gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICMgQ29zdFxuICAgIGpfID0gc29ydChzYW1wbGUoMTpKLCBKXywgcmVwbGFjZT1mYWxzZSkpICAgIyBTdWJzZXQgb2YgZmlybXNcbiAgICByZXR1cm4gWF8sIM6+Xywgd18sIGNfLCBqX1xuZW5kO1xuYGBgIn0= -->
-<pre class="julia"><code>function draw_data(J::Int, K::Int, rangeJ::Vector, varX::Number, varξ::Number)::Tuple
-    &quot;&quot;&quot;Draw data for one market&quot;&quot;&quot;
+<pre><code>
+&lt;!-- rnb-source-end --&gt;
+
+&lt;!-- rnb-chunk-end --&gt;
+
+
+&lt;!-- rnb-text-begin --&gt;
+
+
+### Code Equilibrium
+
+Let&#39;s test it
+
+&lt;!-- rnb-text-end --&gt;
+
+
+&lt;!-- rnb-chunk-begin --&gt;
+
+
+&lt;!-- rnb-output-begin eyJkYXRhIjoiRXF1aWxpYnJpdW0gcHJvZml0czogWzEuMzIxNiwgMC4zMjM0LCAwLjE5MDldXG4ifQ== --&gt;
+</code></pre>
+<p>Equilibrium profits: [1.3216, 0.3234, 0.1909]</p>
+<pre><code>
+
+
+&lt;!-- rnb-output-end --&gt;
+
+&lt;!-- rnb-chunk-end --&gt;
+
+
+&lt;!-- rnb-text-begin --&gt;
+
+
+As expected the prices of the first 2 firms are lower and their profits are higher.
+
+### DGP
+
+Let&#39;s generate our Data Generating Process (DGP).
+
+- $\boldsymbol x \sim exp(V_{x})$
+- $\xi \sim N(0, V_{\xi})$
+- $w \sim N(0, 1)$
+- $\omega \sim N(0, 1)$
+
+
+&lt;!-- rnb-text-end --&gt;
+
+
+&lt;!-- rnb-chunk-begin --&gt;
+
+
+&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBganVsaWFcbmBgYGp1bGlhXG5mdW5jdGlvbiBkcmF3X2RhdGEoSjo6SW50LCBLOjpJbnQsIHJhbmdlSjo6VmVjdG9yLCB2YXJYOjpOdW1iZXIsIHZhcs6+OjpOdW1iZXIpOjpUdXBsZVxuICAgIFxcXFxcXERyYXcgZGF0YSBmb3Igb25lIG1hcmtldFxcXFxcXFxuICAgIEpfID0gcmFuZChyYW5nZUpbMV06cmFuZ2VKWzJdKSAgICAgICAgICAgICAgIyBOdW1iZXIgb2YgZmlybXMgKHByb2R1Y3RzKVxuICAgIFhfID0gcmFuZChFeHBvbmVudGlhbCh2YXJYKSwgSl8sIEspICAgICAgICAgIyBQcm9kdWN0IGNoYXJhY3RlcmlzdGljc1xuICAgIM6+XyA9IHJhbmQoTm9ybWFsKDAsIHZhcs6+KSwgSl8rMSkgICAgICAgICAgICAjIFByb2R1Y3QtbGV2ZWwgdXRpbGl0eSBzaG9ja3NcbiAgICB3XyA9IHJhbmQoVW5pZm9ybSgwLCAxKSwgSl8pICAgICAgICAgICAgICAgICMgQ29zdCBzaGlmdGVyc1xuICAgIM+JXyA9IHJhbmQoVW5pZm9ybSgwLCAxKSwgSl8pICAgICAgICAgICAgICAgICMgQ29zdCBzaG9ja3NcbiAgICBjXyA9IHdfICsgz4lfICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAjIENvc3RcbiAgICBqXyA9IHNvcnQoc2FtcGxlKDE6SiwgSl8sIHJlcGxhY2U9ZmFsc2UpKSAgICMgU3Vic2V0IG9mIGZpcm1zXG4gICAgcmV0dXJuIFhfLCDOvl8sIHdfLCBjXywgal9cbmVuZDtcbmBgYFxuYGBgIn0= --&gt;
+
+```julia
+```julia
+function draw_data(J::Int, K::Int, rangeJ::Vector, varX::Number, varξ::Number)::Tuple
+    \\\Draw data for one market\\\
     J_ = rand(rangeJ[1]:rangeJ[2])              # Number of firms (products)
     X_ = rand(Exponential(varX), J_, K)         # Product characteristics
     ξ_ = rand(Normal(0, varξ), J_+1)            # Product-level utility shocks
@@ -423,18 +566,33 @@ end;</code></pre>
     j_ = sort(sample(1:J, J_, replace=false))   # Subset of firms
     return X_, ξ_, w_, c_, j_
 end;</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-</div>
-<div id="equilibrium" class="section level3">
-<h3>Equilibrium</h3>
-<p>We first compute the equilibrium in one market.</p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBganVsaWFcbmZ1bmN0aW9uIGNvbXB1dGVfbWt0X2VxKEo6OkludCwgYjo6VmVjdG9yLCByYW5nZUo6OlZlY3RvciwgdmFyWDo6TnVtYmVyLCB2YXLOvjo6TnVtYmVyKTo6RGF0YUZyYW1lXG4gICAgXCJcIlwiQ29tcHV0ZSBlcXVpbGlicml1bSBvbmUgbWFya2V0XCJcIlwiXG5cbiAgICAjIEluaXRpYWxpemUgdmFyaWFibGVzXG4gICAgSyA9IHNpemUozrIsIDEpIC0gMVxuICAgIFhfLCDOvl8sIHdfLCBjXywgal8gPSBkcmF3X2RhdGEoSiwgSywgcmFuZ2VKLCB2YXJYLCB2YXLOvilcblxuICAgICMgQ29tcHV0ZSBlcXVpbGlicml1bVxuICAgIHBfID0gZXF1aWxpYnJpdW0oY18sIFhfLCDOsiwgzr5fKSAgICAgICMgRXF1aWxpYnJpdW0gcHJpY2VzXG4gICAgcV8sIHEwID0gZGVtYW5kKHBfLCBYXywgzrIsIM6+XykgICAgICAgIyBEZW1hbmQgd2l0aCBzaG9ja3NcbiAgICBwcl8gPSAocF8gLSBjXykgLiogcV8gICAgICAgICAgICAgICAjIFByb2ZpdHNcblxuICAgICMgU2F2ZSB0byBkYXRhXG4gICAgcTBfID0gb25lcyhsZW5ndGgoal8pKSAuKiBxMFxuICAgIGRmID0gRGF0YUZyYW1lKGo9al8sIHc9d18sIHA9cF8sIHE9cV8sIHEwPXEwXywgcHI9cHJfKVxuICAgIGZvciBrPTE6S1xuICAgICAgZGZbISxcIngka1wiXSA9IFhfWzosa11cbiAgICAgIGRmWyEsXCJ6JGtcIl0gPSBzdW0oWF9bOixrXSkgLi0gWF9bOixrXVxuICAgIGVuZFxuICAgIHJldHVybiBkZlxuZW5kO1xuYGBgIn0= -->
-<pre class="julia"><code>function compute_mkt_eq(J::Int, b::Vector, rangeJ::Vector, varX::Number, varξ::Number)::DataFrame
-    &quot;&quot;&quot;Compute equilibrium one market&quot;&quot;&quot;
+<pre><code>
+&lt;!-- rnb-source-end --&gt;
+
+&lt;!-- rnb-chunk-end --&gt;
+
+
+&lt;!-- rnb-text-begin --&gt;
+
+
+
+### Equilibrium
+
+We first compute the equilibrium in one market.
+
+
+&lt;!-- rnb-text-end --&gt;
+
+
+&lt;!-- rnb-chunk-begin --&gt;
+
+
+&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBganVsaWFcbmBgYGp1bGlhXG5mdW5jdGlvbiBjb21wdXRlX21rdF9lcShKOjpJbnQsIGI6OlZlY3RvciwgcmFuZ2VKOjpWZWN0b3IsIHZhclg6Ok51bWJlciwgdmFyzr46Ok51bWJlcik6OkRhdGFGcmFtZVxuICAgIFxcXFxcXENvbXB1dGUgZXF1aWxpYnJpdW0gb25lIG1hcmtldFxcXFxcXFxuXG4gICAgIyBJbml0aWFsaXplIHZhcmlhYmxlc1xuICAgIEsgPSBzaXplKM6yLCAxKSAtIDFcbiAgICBYXywgzr5fLCB3XywgY18sIGpfID0gZHJhd19kYXRhKEosIEssIHJhbmdlSiwgdmFyWCwgdmFyzr4pXG5cbiAgICAjIENvbXB1dGUgZXF1aWxpYnJpdW1cbiAgICBwXyA9IGVxdWlsaWJyaXVtKGNfLCBYXywgzrIsIM6+XykgICAgICAjIEVxdWlsaWJyaXVtIHByaWNlc1xuICAgIHFfLCBxMCA9IGRlbWFuZChwXywgWF8sIM6yLCDOvl8pICAgICAgICMgRGVtYW5kIHdpdGggc2hvY2tzXG4gICAgcHJfID0gKHBfIC0gY18pIC4qIHFfICAgICAgICAgICAgICAgIyBQcm9maXRzXG5cbiAgICAjIFNhdmUgdG8gZGF0YVxuICAgIHEwXyA9IG9uZXMobGVuZ3RoKGpfKSkgLiogcTBcbiAgICBkZiA9IERhdGFGcmFtZShqPWpfLCB3PXdfLCBwPXBfLCBxPXFfLCBxMD1xMF8sIHByPXByXylcbiAgICBmb3Igaz0xOktcbiAgICAgIGRmWyEsXFx4JGtcXF0gPSBYX1s6LGtdXG4gICAgICBkZlshLFxceiRrXFxdID0gc3VtKFhfWzosa10pIC4tIFhfWzosa11cbiAgICBlbmRcbiAgICByZXR1cm4gZGZcbmVuZDtcbmBgYFxuYGBgIn0= --&gt;
+
+```julia
+```julia
+function compute_mkt_eq(J::Int, b::Vector, rangeJ::Vector, varX::Number, varξ::Number)::DataFrame
+    \\\Compute equilibrium one market\\\
 
     # Initialize variables
     K = size(β, 1) - 1
@@ -449,48 +607,75 @@ end;</code></pre>
     q0_ = ones(length(j_)) .* q0
     df = DataFrame(j=j_, w=w_, p=p_, q=q_, q0=q0_, pr=pr_)
     for k=1:K
-      df[!,&quot;x$k&quot;] = X_[:,k]
-      df[!,&quot;z$k&quot;] = sum(X_[:,k]) .- X_[:,k]
+      df[!,\x$k\] = X_[:,k]
+      df[!,\z$k\] = sum(X_[:,k]) .- X_[:,k]
     end
     return df
 end;</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-</div>
-<div id="simulate-dataset" class="section level3">
-<h3>Simulate Dataset</h3>
-<p>We can now write the code to simulate the whole dataset.</p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBganVsaWFcbmZ1bmN0aW9uIHNpbXVsYXRlX2RhdGEoSjo6SW50LCBiOjpWZWN0b3IsIFQ6OkludCwgcmFuZ2VKOjpWZWN0b3IsIHZhclg6Ok51bWJlciwgdmFyzr46Ok51bWJlcilcbiAgICBcIlwiXCJTaW11bGF0ZSBmdWxsIGRhdGFzZXRcIlwiXCJcbiAgICBkZiA9IGNvbXB1dGVfbWt0X2VxKEosIM6yLCByYW5nZUosIHZhclgsIHZhcs6+KVxuICAgIGRmWyEsIFwidFwiXSA9IG9uZXMobnJvdyhkZikpICogMVxuICAgIGZvciB0PTI6VFxuICAgICAgICBkZl90ZW1wID0gY29tcHV0ZV9ta3RfZXEoSiwgzrIsIHJhbmdlSiwgdmFyWCwgdmFyzr4pXG4gICAgICAgIGRmX3RlbXBbISwgXCJ0XCJdID0gb25lcyhucm93KGRmX3RlbXApKSAqIHRcbiAgICAgICAgYXBwZW5kIShkZiwgZGZfdGVtcClcbiAgICBlbmRcbiAgICBDU1Yud3JpdGUoXCIuLi9kYXRhL2xvZ2l0LmNzdlwiLCBkZilcbmVuZDtcbmBgYCJ9 -->
-<pre class="julia"><code>function simulate_data(J::Int, b::Vector, T::Int, rangeJ::Vector, varX::Number, varξ::Number)
-    &quot;&quot;&quot;Simulate full dataset&quot;&quot;&quot;
+<pre><code>
+&lt;!-- rnb-source-end --&gt;
+
+&lt;!-- rnb-chunk-end --&gt;
+
+
+&lt;!-- rnb-text-begin --&gt;
+
+
+### Simulate Dataset
+
+We can now write the code to simulate the whole dataset.
+
+
+&lt;!-- rnb-text-end --&gt;
+
+
+&lt;!-- rnb-chunk-begin --&gt;
+
+
+&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBganVsaWFcbmBgYGp1bGlhXG5mdW5jdGlvbiBzaW11bGF0ZV9kYXRhKEo6OkludCwgYjo6VmVjdG9yLCBUOjpJbnQsIHJhbmdlSjo6VmVjdG9yLCB2YXJYOjpOdW1iZXIsIHZhcs6+OjpOdW1iZXIpXG4gICAgXFxcXFxcU2ltdWxhdGUgZnVsbCBkYXRhc2V0XFxcXFxcXG4gICAgZGYgPSBjb21wdXRlX21rdF9lcShKLCDOsiwgcmFuZ2VKLCB2YXJYLCB2YXLOvilcbiAgICBkZlshLCBcXHRcXF0gPSBvbmVzKG5yb3coZGYpKSAqIDFcbiAgICBmb3IgdD0yOlRcbiAgICAgICAgZGZfdGVtcCA9IGNvbXB1dGVfbWt0X2VxKEosIM6yLCByYW5nZUosIHZhclgsIHZhcs6+KVxuICAgICAgICBkZl90ZW1wWyEsIFxcdFxcXSA9IG9uZXMobnJvdyhkZl90ZW1wKSkgKiB0XG4gICAgICAgIGFwcGVuZCEoZGYsIGRmX3RlbXApXG4gICAgZW5kXG4gICAgQ1NWLndyaXRlKFxcLi4vZGF0YS9sb2dpdC5jc3ZcXCwgZGYpXG5lbmQ7XG5gYGBcbmBgYCJ9 --&gt;
+
+```julia
+```julia
+function simulate_data(J::Int, b::Vector, T::Int, rangeJ::Vector, varX::Number, varξ::Number)
+    \\\Simulate full dataset\\\
     df = compute_mkt_eq(J, β, rangeJ, varX, varξ)
-    df[!, &quot;t&quot;] = ones(nrow(df)) * 1
+    df[!, \t\] = ones(nrow(df)) * 1
     for t=2:T
         df_temp = compute_mkt_eq(J, β, rangeJ, varX, varξ)
-        df_temp[!, &quot;t&quot;] = ones(nrow(df_temp)) * t
+        df_temp[!, \t\] = ones(nrow(df_temp)) * t
         append!(df, df_temp)
     end
-    CSV.write(&quot;../data/logit.csv&quot;, df)
+    CSV.write(\../data/logit.csv\, df)
 end;</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-</div>
-<div id="simulate-dataset-2" class="section level3">
-<h3>Simulate Dataset (2)</h3>
-<p>We generate the dataset by simulating many markets that differ by</p>
-<ul>
-<li>number of firms (and their identity)</li>
-<li>their marginal costs</li>
-<li>their product characteristics</li>
-</ul>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBganVsaWFcbiMgU2V0IHBhcmFtZXRlcnNcbkogPSAxMDsgICAgICAgICAgICAgICAgICMgTnVtYmVyIG9mIGZpcm1zXG5LID0gMjsgICAgICAgICAgICAgICAgICAjIFByb2R1Y3QgY2FyYWN0ZXJpc3RpY3NcblQgPSA1MDA7ICAgICAgICAgICAgICAgICMgTWFya2V0c1xuzrIgPSBbLjUsIDIsIC0xXTsgICAgICAgICMgUHJlZmVyZW5jZXNcbnJhbmdlSiA9IFsyLCA2XTsgICAgICAgICMgTWluIGFuZCBtYXggZmlybXMgcGVyIG1hcmtldFxudmFyWCA9IDE7ICAgICAgICAgICAgICAgIyBWYXJpYW5jZSBvZiBYXG52YXLOviA9IDI7ICAgICAgICAgICAgICAgIyBWYXJpYW5jZSBvZiB4aVxuXG4jIFNpbXVsYXRlXG5kZiA9IHNpbXVsYXRlX2RhdGEoSiwgzrIsIFQsIHJhbmdlSiwgdmFyWCwgdmFyzr4pO1xuYGBgIn0= -->
-<pre class="julia"><code># Set parameters
+<pre><code>
+&lt;!-- rnb-source-end --&gt;
+
+&lt;!-- rnb-chunk-end --&gt;
+
+
+&lt;!-- rnb-text-begin --&gt;
+
+
+### Simulate Dataset (2)
+
+We generate the dataset by simulating many markets that differ by
+
+- number of firms (and their identity)
+- their marginal costs
+- their product characteristics
+
+
+&lt;!-- rnb-text-end --&gt;
+
+
+&lt;!-- rnb-chunk-begin --&gt;
+
+
+&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBganVsaWFcbmBgYGp1bGlhXG4jIFNldCBwYXJhbWV0ZXJzXG5KID0gMTA7ICAgICAgICAgICAgICAgICAjIE51bWJlciBvZiBmaXJtc1xuSyA9IDI7ICAgICAgICAgICAgICAgICAgIyBQcm9kdWN0IGNhcmFjdGVyaXN0aWNzXG5UID0gNTAwOyAgICAgICAgICAgICAgICAjIE1hcmtldHNcbs6yID0gWy41LCAyLCAtMV07ICAgICAgICAjIFByZWZlcmVuY2VzXG5yYW5nZUogPSBbMiwgNl07ICAgICAgICAjIE1pbiBhbmQgbWF4IGZpcm1zIHBlciBtYXJrZXRcbnZhclggPSAxOyAgICAgICAgICAgICAgICMgVmFyaWFuY2Ugb2YgWFxudmFyzr4gPSAyOyAgICAgICAgICAgICAgICMgVmFyaWFuY2Ugb2YgeGlcblxuIyBTaW11bGF0ZVxuZGYgPSBzaW11bGF0ZV9kYXRhKEosIM6yLCBULCByYW5nZUosIHZhclgsIHZhcs6+KTtcbmBgYFxuYGBgIn0= --&gt;
+
+```julia
+```julia
+# Set parameters
 J = 10;                 # Number of firms
 K = 2;                  # Product caracteristics
 T = 500;                # Markets
@@ -501,111 +686,132 @@ varξ = 2;               # Variance of xi
 
 # Simulate
 df = simulate_data(J, β, T, rangeJ, varX, varξ);</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-</div>
-<div id="the-data" class="section level3">
-<h3>The Data</h3>
-<p>What does the data look like? Let’s switch to R!</p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBSZWFkIGRhdGFcbmRmID0gZnJlYWQoXCIuLi9kYXRhL2xvZ2l0LmNzdlwiKVxua2FibGUoZGZbMTo1LF0sIGRpZ2l0cz0zKVxuYGBgIn0= -->
-<pre class="r"><code># Read data
-df = fread(&quot;../data/logit.csv&quot;)
+<pre><code>
+&lt;!-- rnb-source-end --&gt;
+
+&lt;!-- rnb-chunk-end --&gt;
+
+
+&lt;!-- rnb-text-begin --&gt;
+
+
+
+### The Data
+
+What does the data look like? Let&#39;s switch to R!
+
+
+&lt;!-- rnb-text-end --&gt;
+
+
+&lt;!-- rnb-chunk-begin --&gt;
+
+
+&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuIyBSZWFkIGRhdGFcbmRmID0gZnJlYWQoXFwuLi9kYXRhL2xvZ2l0LmNzdlxcKVxua2FibGUoZGZbMTo1LF0sIGRpZ2l0cz0zKVxuYGBgXG5gYGAifQ== --&gt;
+
+```r
+```r
+# Read data
+df = fread(\../data/logit.csv\)
 kable(df[1:5,], digits=3)</code></pre>
-<!-- rnb-source-end -->
+<pre><code>
+&lt;!-- rnb-source-end --&gt;
 
-<!-- rnb-html-begin eyJtZXRhZGF0YSI6eyJjbGFzc2VzIjpbImtuaXRfYXNpcyJdLCJzaXppbmdQb2xpY3kiOltdfX0= -->
+```{=html}
 
-<table>
-<thead>
-<tr class="header">
-<th align="right">j</th>
-<th align="right">w</th>
-<th align="right">p</th>
-<th align="right">q</th>
-<th align="right">q0</th>
-<th align="right">pr</th>
-<th align="right">x1</th>
-<th align="right">z1</th>
-<th align="right">x2</th>
-<th align="right">z2</th>
-<th align="right">t</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td align="right">6</td>
-<td align="right">0.079</td>
-<td align="right">2.321</td>
-<td align="right">0.510</td>
-<td align="right">0.016</td>
-<td align="right">1.042</td>
-<td align="right">0.160</td>
-<td align="right">3.149</td>
-<td align="right">1.721</td>
-<td align="right">0.255</td>
-<td align="right">1</td>
-</tr>
-<tr class="even">
-<td align="right">8</td>
-<td align="right">0.368</td>
-<td align="right">2.597</td>
-<td align="right">0.474</td>
-<td align="right">0.016</td>
-<td align="right">0.901</td>
-<td align="right">3.149</td>
-<td align="right">0.160</td>
-<td align="right">0.255</td>
-<td align="right">1.721</td>
-<td align="right">1</td>
-</tr>
-<tr class="odd">
-<td align="right">1</td>
-<td align="right">0.338</td>
-<td align="right">5.319</td>
-<td align="right">0.795</td>
-<td align="right">0.070</td>
-<td align="right">3.873</td>
-<td align="right">0.540</td>
-<td align="right">0.483</td>
-<td align="right">1.685</td>
-<td align="right">0.197</td>
-<td align="right">2</td>
-</tr>
-<tr class="even">
-<td align="right">9</td>
-<td align="right">0.038</td>
-<td align="right">2.083</td>
-<td align="right">0.136</td>
-<td align="right">0.070</td>
-<td align="right">0.157</td>
-<td align="right">0.483</td>
-<td align="right">0.540</td>
-<td align="right">0.197</td>
-<td align="right">1.685</td>
-<td align="right">2</td>
-</tr>
-<tr class="odd">
-<td align="right">3</td>
-<td align="right">0.618</td>
-<td align="right">3.333</td>
-<td align="right">0.458</td>
-<td align="right">0.175</td>
-<td align="right">0.844</td>
-<td align="right">1.260</td>
-<td align="right">5.844</td>
-<td align="right">1.305</td>
-<td align="right">0.576</td>
-<td align="right">3</td>
-</tr>
-</tbody>
-</table>
+&lt;!-- rnb-html-begin eyJtZXRhZGF0YSI6eyJtZXRhZGF0YSI6eyJjbGFzc2VzIjoia25pdF9hc2lzIiwic2l6aW5nUG9saWN5IjpbXX19fQ== --&gt;
 
 
-<!-- rnb-html-end -->
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr class=&quot;header&quot;&gt;
+&lt;th align=&quot;right&quot;&gt;j&lt;/th&gt;
+&lt;th align=&quot;right&quot;&gt;w&lt;/th&gt;
+&lt;th align=&quot;right&quot;&gt;p&lt;/th&gt;
+&lt;th align=&quot;right&quot;&gt;q&lt;/th&gt;
+&lt;th align=&quot;right&quot;&gt;q0&lt;/th&gt;
+&lt;th align=&quot;right&quot;&gt;pr&lt;/th&gt;
+&lt;th align=&quot;right&quot;&gt;x1&lt;/th&gt;
+&lt;th align=&quot;right&quot;&gt;z1&lt;/th&gt;
+&lt;th align=&quot;right&quot;&gt;x2&lt;/th&gt;
+&lt;th align=&quot;right&quot;&gt;z2&lt;/th&gt;
+&lt;th align=&quot;right&quot;&gt;t&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr class=&quot;odd&quot;&gt;
+&lt;td align=&quot;right&quot;&gt;6&lt;/td&gt;
+&lt;td align=&quot;right&quot;&gt;0.079&lt;/td&gt;
+&lt;td align=&quot;right&quot;&gt;2.321&lt;/td&gt;
+&lt;td align=&quot;right&quot;&gt;0.510&lt;/td&gt;
+&lt;td align=&quot;right&quot;&gt;0.016&lt;/td&gt;
+&lt;td align=&quot;right&quot;&gt;1.042&lt;/td&gt;
+&lt;td align=&quot;right&quot;&gt;0.160&lt;/td&gt;
+&lt;td align=&quot;right&quot;&gt;3.149&lt;/td&gt;
+&lt;td align=&quot;right&quot;&gt;1.721&lt;/td&gt;
+&lt;td align=&quot;right&quot;&gt;0.255&lt;/td&gt;
+&lt;td align=&quot;right&quot;&gt;1&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&quot;even&quot;&gt;
+&lt;td align=&quot;right&quot;&gt;8&lt;/td&gt;
+&lt;td align=&quot;right&quot;&gt;0.368&lt;/td&gt;
+&lt;td align=&quot;right&quot;&gt;2.597&lt;/td&gt;
+&lt;td align=&quot;right&quot;&gt;0.474&lt;/td&gt;
+&lt;td align=&quot;right&quot;&gt;0.016&lt;/td&gt;
+&lt;td align=&quot;right&quot;&gt;0.901&lt;/td&gt;
+&lt;td align=&quot;right&quot;&gt;3.149&lt;/td&gt;
+&lt;td align=&quot;right&quot;&gt;0.160&lt;/td&gt;
+&lt;td align=&quot;right&quot;&gt;0.255&lt;/td&gt;
+&lt;td align=&quot;right&quot;&gt;1.721&lt;/td&gt;
+&lt;td align=&quot;right&quot;&gt;1&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&quot;odd&quot;&gt;
+&lt;td align=&quot;right&quot;&gt;1&lt;/td&gt;
+&lt;td align=&quot;right&quot;&gt;0.338&lt;/td&gt;
+&lt;td align=&quot;right&quot;&gt;5.319&lt;/td&gt;
+&lt;td align=&quot;right&quot;&gt;0.795&lt;/td&gt;
+&lt;td align=&quot;right&quot;&gt;0.070&lt;/td&gt;
+&lt;td align=&quot;right&quot;&gt;3.873&lt;/td&gt;
+&lt;td align=&quot;right&quot;&gt;0.540&lt;/td&gt;
+&lt;td align=&quot;right&quot;&gt;0.483&lt;/td&gt;
+&lt;td align=&quot;right&quot;&gt;1.685&lt;/td&gt;
+&lt;td align=&quot;right&quot;&gt;0.197&lt;/td&gt;
+&lt;td align=&quot;right&quot;&gt;2&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&quot;even&quot;&gt;
+&lt;td align=&quot;right&quot;&gt;9&lt;/td&gt;
+&lt;td align=&quot;right&quot;&gt;0.038&lt;/td&gt;
+&lt;td align=&quot;right&quot;&gt;2.083&lt;/td&gt;
+&lt;td align=&quot;right&quot;&gt;0.136&lt;/td&gt;
+&lt;td align=&quot;right&quot;&gt;0.070&lt;/td&gt;
+&lt;td align=&quot;right&quot;&gt;0.157&lt;/td&gt;
+&lt;td align=&quot;right&quot;&gt;0.483&lt;/td&gt;
+&lt;td align=&quot;right&quot;&gt;0.540&lt;/td&gt;
+&lt;td align=&quot;right&quot;&gt;0.197&lt;/td&gt;
+&lt;td align=&quot;right&quot;&gt;1.685&lt;/td&gt;
+&lt;td align=&quot;right&quot;&gt;2&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&quot;odd&quot;&gt;
+&lt;td align=&quot;right&quot;&gt;3&lt;/td&gt;
+&lt;td align=&quot;right&quot;&gt;0.618&lt;/td&gt;
+&lt;td align=&quot;right&quot;&gt;3.333&lt;/td&gt;
+&lt;td align=&quot;right&quot;&gt;0.458&lt;/td&gt;
+&lt;td align=&quot;right&quot;&gt;0.175&lt;/td&gt;
+&lt;td align=&quot;right&quot;&gt;0.844&lt;/td&gt;
+&lt;td align=&quot;right&quot;&gt;1.260&lt;/td&gt;
+&lt;td align=&quot;right&quot;&gt;5.844&lt;/td&gt;
+&lt;td align=&quot;right&quot;&gt;1.305&lt;/td&gt;
+&lt;td align=&quot;right&quot;&gt;0.576&lt;/td&gt;
+&lt;td align=&quot;right&quot;&gt;3&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
 
+
+
+
+&lt;!-- rnb-html-end --&gt;
+</code></pre>
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 </div>
@@ -614,66 +820,88 @@ kable(df[1:5,], digits=3)</code></pre>
 <p>First we need to compute the dependent variable</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZGYkeSA9IGxvZyhkZiRxKSAtIGxvZyhkZiRxMClcbmBgYCJ9 -->
-<pre class="r"><code>df$y = log(df$q) - log(df$q0)</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<p>Now we can estimate the logit model. The true values are <span class="math inline">\(alpha=1\)</span>.</p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxub2xzIDwtIGxtKHkgfiB4MSArIHgyICsgcCwgZGF0YT1kZilcbmthYmxlKHRpZHkob2xzKSwgZGlnaXRzPTQpXG5gYGAifQ== -->
-<pre class="r"><code>ols &lt;- lm(y ~ x1 + x2 + p, data=df)
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuZGYkeSA9IGxvZyhkZiRxKSAtIGxvZyhkZiRxMClcbmBgYFxuYGBgIn0= -->
+<pre class="r"><code>```r
+df$y = log(df$q) - log(df$q0)</code></pre>
+<pre><code>
+&lt;!-- rnb-source-end --&gt;
+
+&lt;!-- rnb-chunk-end --&gt;
+
+
+&lt;!-- rnb-text-begin --&gt;
+
+
+Now we can estimate the logit model. The true values are $alpha=1$.
+
+
+&lt;!-- rnb-text-end --&gt;
+
+
+&lt;!-- rnb-chunk-begin --&gt;
+
+
+&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxub2xzIDwtIGxtKHkgfiB4MSArIHgyICsgcCwgZGF0YT1kZilcbmthYmxlKHRpZHkob2xzKSwgZGlnaXRzPTQpXG5gYGBcbmBgYCJ9 --&gt;
+
+```r
+```r
+ols &lt;- lm(y ~ x1 + x2 + p, data=df)
 kable(tidy(ols), digits=4)</code></pre>
-<!-- rnb-source-end -->
+<pre><code>
+&lt;!-- rnb-source-end --&gt;
 
-<!-- rnb-html-begin eyJtZXRhZGF0YSI6eyJjbGFzc2VzIjpbImtuaXRfYXNpcyJdLCJzaXppbmdQb2xpY3kiOltdfX0= -->
+```{=html}
 
-<table>
-<thead>
-<tr class="header">
-<th align="left">term</th>
-<th align="right">estimate</th>
-<th align="right">std.error</th>
-<th align="right">statistic</th>
-<th align="right">p.value</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td align="left">(Intercept)</td>
-<td align="right">-1.6351</td>
-<td align="right">0.1621</td>
-<td align="right">-10.0886</td>
-<td align="right">0</td>
-</tr>
-<tr class="even">
-<td align="left">x1</td>
-<td align="right">0.3959</td>
-<td align="right">0.0575</td>
-<td align="right">6.8838</td>
-<td align="right">0</td>
-</tr>
-<tr class="odd">
-<td align="left">x2</td>
-<td align="right">1.1210</td>
-<td align="right">0.0709</td>
-<td align="right">15.8104</td>
-<td align="right">0</td>
-</tr>
-<tr class="even">
-<td align="left">p</td>
-<td align="right">0.3927</td>
-<td align="right">0.0697</td>
-<td align="right">5.6355</td>
-<td align="right">0</td>
-</tr>
-</tbody>
-</table>
+&lt;!-- rnb-html-begin eyJtZXRhZGF0YSI6eyJtZXRhZGF0YSI6eyJjbGFzc2VzIjoia25pdF9hc2lzIiwic2l6aW5nUG9saWN5IjpbXX19fQ== --&gt;
 
 
-<!-- rnb-html-end -->
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr class=&quot;header&quot;&gt;
+&lt;th align=&quot;left&quot;&gt;term&lt;/th&gt;
+&lt;th align=&quot;right&quot;&gt;estimate&lt;/th&gt;
+&lt;th align=&quot;right&quot;&gt;std.error&lt;/th&gt;
+&lt;th align=&quot;right&quot;&gt;statistic&lt;/th&gt;
+&lt;th align=&quot;right&quot;&gt;p.value&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr class=&quot;odd&quot;&gt;
+&lt;td align=&quot;left&quot;&gt;(Intercept)&lt;/td&gt;
+&lt;td align=&quot;right&quot;&gt;-1.6351&lt;/td&gt;
+&lt;td align=&quot;right&quot;&gt;0.1621&lt;/td&gt;
+&lt;td align=&quot;right&quot;&gt;-10.0886&lt;/td&gt;
+&lt;td align=&quot;right&quot;&gt;0&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&quot;even&quot;&gt;
+&lt;td align=&quot;left&quot;&gt;x1&lt;/td&gt;
+&lt;td align=&quot;right&quot;&gt;0.3959&lt;/td&gt;
+&lt;td align=&quot;right&quot;&gt;0.0575&lt;/td&gt;
+&lt;td align=&quot;right&quot;&gt;6.8838&lt;/td&gt;
+&lt;td align=&quot;right&quot;&gt;0&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&quot;odd&quot;&gt;
+&lt;td align=&quot;left&quot;&gt;x2&lt;/td&gt;
+&lt;td align=&quot;right&quot;&gt;1.1210&lt;/td&gt;
+&lt;td align=&quot;right&quot;&gt;0.0709&lt;/td&gt;
+&lt;td align=&quot;right&quot;&gt;15.8104&lt;/td&gt;
+&lt;td align=&quot;right&quot;&gt;0&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&quot;even&quot;&gt;
+&lt;td align=&quot;left&quot;&gt;p&lt;/td&gt;
+&lt;td align=&quot;right&quot;&gt;0.3927&lt;/td&gt;
+&lt;td align=&quot;right&quot;&gt;0.0697&lt;/td&gt;
+&lt;td align=&quot;right&quot;&gt;5.6355&lt;/td&gt;
+&lt;td align=&quot;right&quot;&gt;0&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
 
+
+
+
+&lt;!-- rnb-html-end --&gt;
+</code></pre>
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <p>The estimate of <span class="math inline">\(\alpha = 1\)</span> is biased (positive and significant) since <span class="math inline">\(p\)</span> is endogenous. We need instruments.</p>
@@ -683,58 +911,65 @@ kable(tidy(ols), digits=4)</code></pre>
 <p>First set of instruments: <strong>cost shifters</strong>.</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZm1fY29zdGl2IDwtIGl2cmVnKHkgfiB4MSArIHgyICsgcCB8IHgxICsgeDIgKyB3LCBkYXRhPWRmKVxua2FibGUodGlkeShmbV9jb3N0aXYpLCBkaWdpdHM9NClcbmBgYCJ9 -->
-<pre class="r"><code>fm_costiv &lt;- ivreg(y ~ x1 + x2 + p | x1 + x2 + w, data=df)
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuZm1fY29zdGl2IDwtIGl2cmVnKHkgfiB4MSArIHgyICsgcCB8IHgxICsgeDIgKyB3LCBkYXRhPWRmKVxua2FibGUodGlkeShmbV9jb3N0aXYpLCBkaWdpdHM9NClcbmBgYFxuYGBgIn0= -->
+<pre class="r"><code>```r
+fm_costiv &lt;- ivreg(y ~ x1 + x2 + p | x1 + x2 + w, data=df)
 kable(tidy(fm_costiv), digits=4)</code></pre>
-<!-- rnb-source-end -->
+<pre><code>
+&lt;!-- rnb-source-end --&gt;
 
-<!-- rnb-html-begin eyJtZXRhZGF0YSI6eyJjbGFzc2VzIjpbImtuaXRfYXNpcyJdLCJzaXppbmdQb2xpY3kiOltdfX0= -->
+```{=html}
 
-<table>
-<thead>
-<tr class="header">
-<th align="left">term</th>
-<th align="right">estimate</th>
-<th align="right">std.error</th>
-<th align="right">statistic</th>
-<th align="right">p.value</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td align="left">(Intercept)</td>
-<td align="right">0.9750</td>
-<td align="right">0.4620</td>
-<td align="right">2.1105</td>
-<td align="right">0.0349</td>
-</tr>
-<tr class="even">
-<td align="left">x1</td>
-<td align="right">0.5605</td>
-<td align="right">0.0687</td>
-<td align="right">8.1525</td>
-<td align="right">0.0000</td>
-</tr>
-<tr class="odd">
-<td align="left">x2</td>
-<td align="right">1.9477</td>
-<td align="right">0.1559</td>
-<td align="right">12.4929</td>
-<td align="right">0.0000</td>
-</tr>
-<tr class="even">
-<td align="left">p</td>
-<td align="right">-1.0360</td>
-<td align="right">0.2455</td>
-<td align="right">-4.2190</td>
-<td align="right">0.0000</td>
-</tr>
-</tbody>
-</table>
+&lt;!-- rnb-html-begin eyJtZXRhZGF0YSI6eyJtZXRhZGF0YSI6eyJjbGFzc2VzIjoia25pdF9hc2lzIiwic2l6aW5nUG9saWN5IjpbXX19fQ== --&gt;
 
 
-<!-- rnb-html-end -->
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr class=&quot;header&quot;&gt;
+&lt;th align=&quot;left&quot;&gt;term&lt;/th&gt;
+&lt;th align=&quot;right&quot;&gt;estimate&lt;/th&gt;
+&lt;th align=&quot;right&quot;&gt;std.error&lt;/th&gt;
+&lt;th align=&quot;right&quot;&gt;statistic&lt;/th&gt;
+&lt;th align=&quot;right&quot;&gt;p.value&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr class=&quot;odd&quot;&gt;
+&lt;td align=&quot;left&quot;&gt;(Intercept)&lt;/td&gt;
+&lt;td align=&quot;right&quot;&gt;0.9750&lt;/td&gt;
+&lt;td align=&quot;right&quot;&gt;0.4620&lt;/td&gt;
+&lt;td align=&quot;right&quot;&gt;2.1105&lt;/td&gt;
+&lt;td align=&quot;right&quot;&gt;0.0349&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&quot;even&quot;&gt;
+&lt;td align=&quot;left&quot;&gt;x1&lt;/td&gt;
+&lt;td align=&quot;right&quot;&gt;0.5605&lt;/td&gt;
+&lt;td align=&quot;right&quot;&gt;0.0687&lt;/td&gt;
+&lt;td align=&quot;right&quot;&gt;8.1525&lt;/td&gt;
+&lt;td align=&quot;right&quot;&gt;0.0000&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&quot;odd&quot;&gt;
+&lt;td align=&quot;left&quot;&gt;x2&lt;/td&gt;
+&lt;td align=&quot;right&quot;&gt;1.9477&lt;/td&gt;
+&lt;td align=&quot;right&quot;&gt;0.1559&lt;/td&gt;
+&lt;td align=&quot;right&quot;&gt;12.4929&lt;/td&gt;
+&lt;td align=&quot;right&quot;&gt;0.0000&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&quot;even&quot;&gt;
+&lt;td align=&quot;left&quot;&gt;p&lt;/td&gt;
+&lt;td align=&quot;right&quot;&gt;-1.0360&lt;/td&gt;
+&lt;td align=&quot;right&quot;&gt;0.2455&lt;/td&gt;
+&lt;td align=&quot;right&quot;&gt;-4.2190&lt;/td&gt;
+&lt;td align=&quot;right&quot;&gt;0.0000&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
 
+
+
+
+&lt;!-- rnb-html-end --&gt;
+</code></pre>
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <p>Now the estimate of <span class="math inline">\(\alpha\)</span> is negative and significant.</p>
@@ -744,21 +979,25 @@ kable(tidy(fm_costiv), digits=4)</code></pre>
 <p>Second set of instruments: <strong>product characteristics of other firms in the same market</strong>.</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZm1fYmxwaXYgPC0gaXZyZWcoeSB+IHgxICsgeDIgKyBwIHwgeDEgKyB4MiArIHoxICsgejIsIGRhdGE9ZGYpXG5rYWJsZSh0aWR5KGZtX2JscGl2KSwgZGlnaXRzPTQpXG5gYGAifQ== -->
-<pre class="r"><code>fm_blpiv &lt;- ivreg(y ~ x1 + x2 + p | x1 + x2 + z1 + z2, data=df)
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuZm1fYmxwaXYgPC0gaXZyZWcoeSB+IHgxICsgeDIgKyBwIHwgeDEgKyB4MiArIHoxICsgejIsIGRhdGE9ZGYpXG5rYWJsZSh0aWR5KGZtX2JscGl2KSwgZGlnaXRzPTQpXG5gYGBcbmBgYCJ9 -->
+<pre class="r"><code>```r
+fm_blpiv &lt;- ivreg(y ~ x1 + x2 + p | x1 + x2 + z1 + z2, data=df)
 kable(tidy(fm_blpiv), digits=4)</code></pre>
+<p>```</p>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <p>Also the BLP instruments deliver an estimate of <span class="math inline">\(\alpha\)</span> is negative and significant.</p>
 </div>
-<div id="references" class="section level2">
-<h2>References</h2>
-<hr />
+<div id="appendix" class="section level2">
+<h2>Appendix</h2>
+<div id="references" class="section level3">
+<h3>References</h3>
 <!-- rnb-text-end -->
 </div>
+</div>
 
-<div id="rmd-source-code">LS0tCnRpdGxlOiAiQ29kaW5nOiBMb2dpdCBEZW1hbmQiCmF1dGhvcjogIk1hdHRlbyBDb3VydGhvdWQiCnR5cGU6IGJvb2sKd2VpZ2h0OiAxMQpkYXRlOiAyMDIxLTExLTEwCmJpYmxpb2dyYXBoeTogcmVmZXJlbmNlcy5iaWIKbGluay1jaXRhdGlvbnM6IHRydWUKb3V0cHV0OiAKICBodG1sX25vdGVib29rOiAKICAgIHRvYzogdHJ1ZQogICAgdG9jX2RlcHRoOiAyCiAgaW9zbGlkZXNfcHJlc2VudGF0aW9uOgogICAgd2lkZXNjcmVlbjogdHJ1ZQogICAgc21hbGxlcjogdHJ1ZQogICAgdHJhbnNpdGlvbjogMAogICAgc2xpZGVfbGV2ZWw6IDMKICAgIGNzczogY3VzdG9tLmNzcwogIG1kX2RvY3VtZW50OgogICAgdmFyaWFudDogbWFya2Rvd25fbW1kCiAgICBwcmVzZXJ2ZV95YW1sOiB0cnVlCi0tLQoKYGBge3IsIGluY2x1ZGU9RkFMU0UsIGVjaG89RkFMU0V9CiMgSW1wb3J0IHBhY2thZ2VzCmxpYnJhcnkodGlkeXZlcnNlKSAgICAjIEZ1ciBhbGxlcwpsaWJyYXJ5KGRhdGEudGFibGUpICAgIyBGb3IgZnJlYWRyCmxpYnJhcnkoa25pdHIpICAgICAgICAjIEZvciBrYWJsZQpsaWJyYXJ5KGJyb29tKSAgICAgICAgIyBGb3IgdGlkeQpsaWJyYXJ5KEFFUikgICAgICAgICAgIyBGb3IgaXZyZWcKYGBgCgpgYGB7ciBsb2FkIGp1bGlhIGlmIG5vdCBhbHJlYWR5IGxvYWRlZCwgaW5jbHVkZT1GQUxTRSwgZWNobz1GQUxTRX0KaWYgKCEoIkp1bGlhQ2FsbCIgJWluJSAoLnBhY2thZ2VzKCkpKSkgewogIGxpYnJhcnkoSnVsaWFDYWxsKQogIGp1bGlhIDwtIGp1bGlhX3NldHVwKCIvVXNlcnMvbWNvdXJ0L0RvY3VtZW50cy9KdWxpYS0xLjUuYXBwL0NvbnRlbnRzL1Jlc291cmNlcy9qdWxpYS9iaW4iKQp9CmBgYAoKYGBge2p1bGlhLCBpbmNsdWRlPUZBTFNFLCBlY2hvPUZBTFNFfQojaW1wb3J0IFBrZwojUGtnLmFkZCgiT3B0aW0iKQojUGtnLmFkZCgiRGlzdHJpYnV0aW9ucyIpCiNQa2cuYWRkKCJEYXRhRnJhbWVzIikKI1BrZy5hZGQoIkNTViIpCgp1c2luZyBPcHRpbQp1c2luZyBEaXN0cmlidXRpb25zCnVzaW5nIERhdGFGcmFtZXMKdXNpbmcgQ1NWCmBgYAoKIyMjIEludHJvCgpJbiB0aGlzIHNlc3Npb24sIEkgYW0gZ29pbmcgdG8gY292ZXIgZGVtYW5kIGVzdGltYXRpb24uCgotIENvbXB1dGUgZXF1aWxpYnJpdW0gb3V0Y29tZXMgd2l0aCBMb2dpdCBkZW1hbmQKLSBTaW11bGF0ZSBhIGRhdGFzZXQgCi0gRXN0aW1hdGUgTG9naXQgZGVtYW5kCi0gQ29tcGFyZSBkaWZmZXJlbnQgaW5zdHJ1bWVudHMKLSBJbmNsdWRlIHN1cHBseQoKCgojIyMgTW9kZWwKCkluIHRoaXMgZmlyc3QgcGFydCwgd2UgYXJlIGdvaW5nIHRvIGFzc3VtZSB0aGF0IGNvbnN1bWVyICRpIFxpbiBcbGJyYWNlMSwuLi4sSVxyYnJhY2UkIHV0aWxpdHkgZnJvbSBnb29kICRqIFxpbiBcbGJyYWNlMSwuLi4sSlxyYnJhY2UkIGluIG1hcmtldCAkdCBcaW4gXGxicmFjZTEsLi4uLFRccmJyYWNlJCB0YWtlcyB0aGUgZm9ybQoKJCQKdV97aWp0fSA9IFxib2xkc3ltYm9sIHhfe2p0fSBcYm9sZHN5bWJvbCBcYmV0YV97aXR9IC0gXGFscGhhIHBfe2p0fSArIFx4aV97anR9ICsgXGVwc2lsb25fe2lqdH0KJCQKCndoZXJlCgotICRceGlfe2p0fSQgaXMgdHlwZS0xIGV4dHJlbWUgdmFsdWUgZGlzdHJpYnV0ZWQKLSAkXGJvbGRzeW1ib2wgXGJldGEkIGhhcyBkaW1lbnNpb24gJEskCiAgLSBpLmUuIGdvb2RzIGhhdmUgJEskIGNoYXJhY3RlcmlzdGljcwoKIyMjIFNldHVwCgpXZSBoYXZlICRKJCBmaXJtcyBhbmQgZWFjaCBwcm9kdWN0IGhhcyAkSyQgY2hhcmFjdGVyaXN0aWNzCgpgYGB7anVsaWEsIHJlc3VsdHM9ImhpZGUifQpKID0gMzsgICAgICAgICAgICAgICAgICAgICAgICAgICAgIyAzIGZpcm1zID09IHByb2R1Y3RzCksgPSAyOyAgICAgICAgICAgICAgICAgICAgICAgICAgICAjIDIgcHJvZHVjdCBjaGFyYWN0ZXJpc3RpY3MKYyA9IHJhbmQoVW5pZm9ybSgwLCAxKSwgSik7ICAgICAgICMgUmFuZG9tIHVuaWZvcm0gbWFyZ2luYWwgY29zdHMKzr4gPSByYW5kKE5vcm1hbCgwLCAxKSwgSisxKTsgICAgICAjIFJhbmRvbSBub3JtYWwgaW5kaXZpZHVhbCBzaG9ja3MKWCA9IHJhbmQoRXhwb25lbnRpYWwoMSksIEosIEspOyAgICMgUmFuZG9tIGV4cG9uZW50aWFsIHByb2R1Y3QgY2hhcmFjdGVyaXN0aWNzCs6yID0gWy41LCAyLCAtMV07ICAgICAgICAgICAgICAgICAgIyBQcmVmZXJlbmNlcyAobGFzdCBvbmUgaXMgZm9yIHByaWNlcywgaS5lLiBhbHBoYSkKYGBgCgoKIyMjIENvZGUgRGVtYW5kCgpgYGB7anVsaWF9CmZ1bmN0aW9uIGRlbWFuZChwOjpWZWN0b3IsIFg6Ok1hdHJpeCwgzrI6OlZlY3Rvciwgzr46OlZlY3Rvcik6OlR1cGxle1ZlY3RvciwgTnVtYmVyfQogICAgIiIiQ29tcHV0ZSBkZW1hbmQiIiIKICAgIM60ID0gMSAuKyBbWCBwXSAqIM6yICAgICAgICAgICAgICAjIE1lYW4gdmFsdWUKICAgIHUgPSBbzrQ7IDBdICsgzr4gICAgICAgICAgICAgICAgICAjIFV0aWxpdHkKICAgIGUgPSBleHAuKHUpICAgICAgICAgICAgICAgICAgICAgIyBUYWtlIGV4cG9uZW50aWFsCiAgICBxID0gZSAuLyBzdW0oZSkgICAgICAgICAgICAgICAgICMgQ29tcHV0ZSBkZW1hbmQKICAgIHJldHVybiBxWzE6ZW5kLTFdLCBxW2VuZF0KZW5kOwpgYGAKCldlIGNhbiB0cnkgd2l0aCBhbiBleGFtcGxlLgoKYGBge2p1bGlhfQpwID0gMiAuKiBjOwpkZW1hbmQocCwgWCwgzrIsIM6+KQpgYGAKCiMjIyBDb2RlIFN1cHBseQoKYGBge2p1bGlhfQpmdW5jdGlvbiBwcm9maXRzKHA6OlZlY3RvciwgYzo6VmVjdG9yLCBYOjpNYXRyaXgsIM6yOjpWZWN0b3IsIM6+OjpWZWN0b3IpOjpWZWN0b3IKICAgICIiIkNvbXB1dGUgcHJvZml0cyIiIgogICAgcSwgXyA9IGRlbWFuZChwLCBYLCDOsiwgzr4pICAgICAgICMgQ29tcHV0ZSBkZW1hbmQKICAgIHByID0gKHAgLSBjKSAuKiBxICAgICAgICAgICAgICAgIyBDb21wdXRlIHByb2ZpdHMKICAgIHJldHVybiBwcgplbmQ7CmBgYAoKV2UgY2FuIHRyeSB3aXRoIGFuIGV4YW1wbGUuCgpgYGB7anVsaWF9CnByb2ZpdHMocCwgYywgWCwgzrIsIM6+KQpgYGAKCgoKIyMjIENvZGUgQmVzdCBSZXBseQoKV2UgZmlyc3QgY29kZSB0aGUgYmVzdCByZXBseSBvZiBmaXJtICRqJAoKYGBge2p1bGlhfQpmdW5jdGlvbiBwcm9maXRzX2oocGo6Ok51bWJlciwgajo6SW50LCBwOjpWZWN0b3IsIGM6OlZlY3RvciwgWDo6TWF0cml4LCDOsjo6VmVjdG9yLCDOvjo6VmVjdG9yKTo6TnVtYmVyCiAgICAiIiJDb21wdXRlIHByb2ZpdHMgb2YgZmlybSBqIiIiCiAgICBwW2pdID0gcGogICAgICAgICAgICAgICAgICAgICAgICMgSW5zZXJ0IHByaWNlIG9mIGZpcm0gagogICAgcHIgPSBwcm9maXRzKHAsIGMsIFgsIM6yLCDOvikgICAgICMgQ29tcHV0ZSBwcm9maXRzCiAgICByZXR1cm4gcHJbal0KZW5kOwpgYGAKCkxldCdzIHRlc3QgaXQuCgpgYGB7anVsaWF9CmogPSAxOwpvYmpfZnVuKHBqKSA9IC0gcHJvZml0c19qKHBqWzFdLCBqLCBjb3B5KHApLCBjLCBYLCDOsiwgzr4pOwpwaiA9IG9wdGltaXplKHggLT4gb2JqX2Z1bih4KSwgWzEuMF0sIExCRkdTKCkpLm1pbmltaXplclsxXQpgYGAKCldoYXQgYXJlIHRoZSBpbXBsaWVkIHByb2ZpdHMgbm93PwoKYGBge2p1bGlhfQpwcmludCgiUHJvZml0cyBvbGQ6ICIsICByb3VuZC4ocHJvZml0cyhwLCBjLCBYLCDOsiwgzr4pLCBkaWdpdHM9NCkpCnBfbmV3ID0gY29weShwKTsKcF9uZXdbal0gPSBwajsKcHJpbnQoIlByb2ZpdHMgbmV3OiAiLCAgcm91bmQuKHByb2ZpdHMocF9uZXcsIGMsIFgsIM6yLCDOviksIGRpZ2l0cz00KSkKYGBgCgpJbmRlZWQgZmlybSAxIGhhcyBpbmNyZWFzZWQgaXRzIHByb2ZpdHMuCgojIyMgQ29kZSBFcXVpbGlicml1bQoKV2UgY2FuIG5vdyBjb21wdXRlIGVxdWlsaWJyaXVtIHByaWNlcwoKYGBge2p1bGlhfQpmdW5jdGlvbiBlcXVpbGlicml1bShjOjpWZWN0b3IsIFg6Ok1hdHJpeCwgzrI6OlZlY3Rvciwgzr46OlZlY3Rvcik6OlZlY3RvcgogICAgIiIiQ29tcHV0ZSBlcXVpbGlicml1bSBwcmljZXMgYW5kIHByb2ZpdHMiIiIKICAgIHAgPSAyIC4qIGM7CiAgICBkaXN0ID0gMTsKICAgIGl0ZXIgPSAwOwoKICAgICMgVW50aWwgY29udmVyZ2VuY2UKICAgIHdoaWxlIChkaXN0ID4gMWUtOCkgJiYgKGl0ZXI8MTAwMCkKCiAgICAgICAgIyBDb21wdXRlIGJlc3QgcmVwbHkgZm9yIGVhY2ggZmlybQogICAgICAgIHAxID0gY29weShwKTsKICAgICAgICBmb3Igaj0xOmxlbmd0aChwKQogICAgICAgICAgICBvYmpfZnVuKHBqKSA9IC0gcHJvZml0c19qKHBqWzFdLCBqLCBwLCBjLCBYLCDOsiwgzr4pOwogICAgICAgICAgICBvcHRpbWl6ZSh4IC0+IG9ial9mdW4oeCksIFsxLjBdLCBMQkZHUygpKS5taW5pbWl6ZXJbMV07CiAgICAgICAgZW5kCgogICAgICAgICMgVXBkYXRlIGRpc3RhbmNlCiAgICAgICAgZGlzdCA9IG1heChhYnMuKHAgLSBwMSkuLi4pOwogICAgICAgIGl0ZXIgKz0gMTsKICAgIGVuZAogICAgcmV0dXJuIHAKZW5kOwpgYGAKCiMjIyBDb2RlIEVxdWlsaWJyaXVtCgpMZXQncyB0ZXN0IGl0CmBgYHtqdWxpYX0KIyBDb21wdXRlIGVxdWlsaWJyaXVtIHByaWNlcwpwX2VxID0gZXF1aWxpYnJpdW0oYywgWCwgzrIsIM6+KTsKcHJpbnQoIkVxdWlsaWJyaXVtIHByaWNlczogIiwgIHJvdW5kLihwX2VxLCBkaWdpdHM9NCkpCgojIEFuZCBwcm9maXRzCnBpX2VxID0gcHJvZml0cyhwX2VxLCBjLCBYLCDOsiwgzr4pOwpwcmludCgiRXF1aWxpYnJpdW0gcHJvZml0czogIiwgIHJvdW5kLihwaV9lcSwgZGlnaXRzPTQpKQpgYGAKCkFzIGV4cGVjdGVkIHRoZSBwcmljZXMgb2YgdGhlIGZpcnN0IDIgZmlybXMgYXJlIGxvd2VyIGFuZCB0aGVpciBwcm9maXRzIGFyZSBoaWdoZXIuCgojIyMgREdQCgpMZXQncyBnZW5lcmF0ZSBvdXIgRGF0YSBHZW5lcmF0aW5nIFByb2Nlc3MgKERHUCkuCgotICRcYm9sZHN5bWJvbCB4IFxzaW0gZXhwKFZfe3h9KSQKLSAkXHhpIFxzaW0gTigwLCBWX3tceGl9KSQKLSAkdyBcc2ltIE4oMCwgMSkkCi0gJFxvbWVnYSBcc2ltIE4oMCwgMSkkCgpgYGB7anVsaWF9CmZ1bmN0aW9uIGRyYXdfZGF0YShKOjpJbnQsIEs6OkludCwgcmFuZ2VKOjpWZWN0b3IsIHZhclg6Ok51bWJlciwgdmFyzr46Ok51bWJlcik6OlR1cGxlCiAgICAiIiJEcmF3IGRhdGEgZm9yIG9uZSBtYXJrZXQiIiIKICAgIEpfID0gcmFuZChyYW5nZUpbMV06cmFuZ2VKWzJdKSAgICAgICAgICAgICAgIyBOdW1iZXIgb2YgZmlybXMgKHByb2R1Y3RzKQogICAgWF8gPSByYW5kKEV4cG9uZW50aWFsKHZhclgpLCBKXywgSykgICAgICAgICAjIFByb2R1Y3QgY2hhcmFjdGVyaXN0aWNzCiAgICDOvl8gPSByYW5kKE5vcm1hbCgwLCB2YXLOviksIEpfKzEpICAgICAgICAgICAgIyBQcm9kdWN0LWxldmVsIHV0aWxpdHkgc2hvY2tzCiAgICB3XyA9IHJhbmQoVW5pZm9ybSgwLCAxKSwgSl8pICAgICAgICAgICAgICAgICMgQ29zdCBzaGlmdGVycwogICAgz4lfID0gcmFuZChVbmlmb3JtKDAsIDEpLCBKXykgICAgICAgICAgICAgICAgIyBDb3N0IHNob2NrcwogICAgY18gPSB3XyArIM+JXyAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIyBDb3N0CiAgICBqXyA9IHNvcnQoc2FtcGxlKDE6SiwgSl8sIHJlcGxhY2U9ZmFsc2UpKSAgICMgU3Vic2V0IG9mIGZpcm1zCiAgICByZXR1cm4gWF8sIM6+Xywgd18sIGNfLCBqXwplbmQ7CmBgYAoKCiMjIyBFcXVpbGlicml1bQoKV2UgZmlyc3QgY29tcHV0ZSB0aGUgZXF1aWxpYnJpdW0gaW4gb25lIG1hcmtldC4KCmBgYHtqdWxpYX0KZnVuY3Rpb24gY29tcHV0ZV9ta3RfZXEoSjo6SW50LCBiOjpWZWN0b3IsIHJhbmdlSjo6VmVjdG9yLCB2YXJYOjpOdW1iZXIsIHZhcs6+OjpOdW1iZXIpOjpEYXRhRnJhbWUKICAgICIiIkNvbXB1dGUgZXF1aWxpYnJpdW0gb25lIG1hcmtldCIiIgoKICAgICMgSW5pdGlhbGl6ZSB2YXJpYWJsZXMKICAgIEsgPSBzaXplKM6yLCAxKSAtIDEKICAgIFhfLCDOvl8sIHdfLCBjXywgal8gPSBkcmF3X2RhdGEoSiwgSywgcmFuZ2VKLCB2YXJYLCB2YXLOvikKCiAgICAjIENvbXB1dGUgZXF1aWxpYnJpdW0KICAgIHBfID0gZXF1aWxpYnJpdW0oY18sIFhfLCDOsiwgzr5fKSAgICAgICMgRXF1aWxpYnJpdW0gcHJpY2VzCiAgICBxXywgcTAgPSBkZW1hbmQocF8sIFhfLCDOsiwgzr5fKSAgICAgICAjIERlbWFuZCB3aXRoIHNob2NrcwogICAgcHJfID0gKHBfIC0gY18pIC4qIHFfICAgICAgICAgICAgICAgIyBQcm9maXRzCgogICAgIyBTYXZlIHRvIGRhdGEKICAgIHEwXyA9IG9uZXMobGVuZ3RoKGpfKSkgLiogcTAKICAgIGRmID0gRGF0YUZyYW1lKGo9al8sIHc9d18sIHA9cF8sIHE9cV8sIHEwPXEwXywgcHI9cHJfKQogICAgZm9yIGs9MTpLCiAgICAgIGRmWyEsIngkayJdID0gWF9bOixrXQogICAgICBkZlshLCJ6JGsiXSA9IHN1bShYX1s6LGtdKSAuLSBYX1s6LGtdCiAgICBlbmQKICAgIHJldHVybiBkZgplbmQ7CmBgYAoKIyMjIFNpbXVsYXRlIERhdGFzZXQKCldlIGNhbiBub3cgd3JpdGUgdGhlIGNvZGUgdG8gc2ltdWxhdGUgdGhlIHdob2xlIGRhdGFzZXQuCgpgYGB7anVsaWF9CmZ1bmN0aW9uIHNpbXVsYXRlX2RhdGEoSjo6SW50LCBiOjpWZWN0b3IsIFQ6OkludCwgcmFuZ2VKOjpWZWN0b3IsIHZhclg6Ok51bWJlciwgdmFyzr46Ok51bWJlcikKICAgICIiIlNpbXVsYXRlIGZ1bGwgZGF0YXNldCIiIgogICAgZGYgPSBjb21wdXRlX21rdF9lcShKLCDOsiwgcmFuZ2VKLCB2YXJYLCB2YXLOvikKICAgIGRmWyEsICJ0Il0gPSBvbmVzKG5yb3coZGYpKSAqIDEKICAgIGZvciB0PTI6VAogICAgICAgIGRmX3RlbXAgPSBjb21wdXRlX21rdF9lcShKLCDOsiwgcmFuZ2VKLCB2YXJYLCB2YXLOvikKICAgICAgICBkZl90ZW1wWyEsICJ0Il0gPSBvbmVzKG5yb3coZGZfdGVtcCkpICogdAogICAgICAgIGFwcGVuZCEoZGYsIGRmX3RlbXApCiAgICBlbmQKICAgIENTVi53cml0ZSgiLi4vZGF0YS9sb2dpdC5jc3YiLCBkZikKZW5kOwpgYGAKCiMjIyBTaW11bGF0ZSBEYXRhc2V0ICgyKQoKV2UgZ2VuZXJhdGUgdGhlIGRhdGFzZXQgYnkgc2ltdWxhdGluZyBtYW55IG1hcmtldHMgdGhhdCBkaWZmZXIgYnkKCi0gbnVtYmVyIG9mIGZpcm1zIChhbmQgdGhlaXIgaWRlbnRpdHkpCi0gdGhlaXIgbWFyZ2luYWwgY29zdHMKLSB0aGVpciBwcm9kdWN0IGNoYXJhY3RlcmlzdGljcwoKYGBge2p1bGlhLCByZXN1bHRzPSJoaWRlIn0KIyBTZXQgcGFyYW1ldGVycwpKID0gMTA7ICAgICAgICAgICAgICAgICAjIE51bWJlciBvZiBmaXJtcwpLID0gMjsgICAgICAgICAgICAgICAgICAjIFByb2R1Y3QgY2FyYWN0ZXJpc3RpY3MKVCA9IDUwMDsgICAgICAgICAgICAgICAgIyBNYXJrZXRzCs6yID0gWy41LCAyLCAtMV07ICAgICAgICAjIFByZWZlcmVuY2VzCnJhbmdlSiA9IFsyLCA2XTsgICAgICAgICMgTWluIGFuZCBtYXggZmlybXMgcGVyIG1hcmtldAp2YXJYID0gMTsgICAgICAgICAgICAgICAjIFZhcmlhbmNlIG9mIFgKdmFyzr4gPSAyOyAgICAgICAgICAgICAgICMgVmFyaWFuY2Ugb2YgeGkKCiMgU2ltdWxhdGUKZGYgPSBzaW11bGF0ZV9kYXRhKEosIM6yLCBULCByYW5nZUosIHZhclgsIHZhcs6+KTsKYGBgCgoKIyMjIFRoZSBEYXRhCgpXaGF0IGRvZXMgdGhlIGRhdGEgbG9vayBsaWtlPyBMZXQncyBzd2l0Y2ggdG8gUiEKCmBgYHtyfQojIFJlYWQgZGF0YQpkZiA9IGZyZWFkKCIuLi9kYXRhL2xvZ2l0LmNzdiIpCmthYmxlKGRmWzE6NSxdLCBkaWdpdHM9NCkKYGBgCgoKCiMjIyBFc3RpbWF0aW9uCgpGaXJzdCB3ZSBuZWVkIHRvIGNvbXB1dGUgdGhlIGRlcGVuZGVudCB2YXJpYWJsZQoKYGBge3J9CmRmJHkgPSBsb2coZGYkcSkgLSBsb2coZGYkcTApCmBgYAoKTm93IHdlIGNhbiBlc3RpbWF0ZSB0aGUgbG9naXQgbW9kZWwuIFRoZSB0cnVlIHZhbHVlcyBhcmUgJGFscGhhPTEkLgoKYGBge3J9Cm9scyA8LSBsbSh5IH4geDEgKyB4MiArIHAsIGRhdGE9ZGYpCmthYmxlKHRpZHkob2xzKSwgZGlnaXRzPTQpCmBgYAoKVGhlIGVzdGltYXRlIG9mICRcYWxwaGEgPSAxJCBpcyBiaWFzZWQgKHBvc2l0aXZlIGFuZCBzaWduaWZpY2FudCkgc2luY2UgJHAkIGlzIGVuZG9nZW5vdXMuIFdlIG5lZWQgaW5zdHJ1bWVudHMuCgoKCiMjIyBJViAxOiBDb3N0IFNoaWZ0ZXJzCgpGaXJzdCBzZXQgb2YgaW5zdHJ1bWVudHM6ICoqY29zdCBzaGlmdGVycyoqLgoKYGBge3IsIHdhcm5pbmc9RkFMU0V9CmZtX2Nvc3RpdiA8LSBpdnJlZyh5IH4geDEgKyB4MiArIHAgfCB4MSArIHgyICsgdywgZGF0YT1kZikKa2FibGUodGlkeShmbV9jb3N0aXYpLCBkaWdpdHM9NCkKYGBgCgpOb3cgdGhlIGVzdGltYXRlIG9mICRcYWxwaGEkIGlzIG5lZ2F0aXZlIGFuZCBzaWduaWZpY2FudC4KCgoKIyMjIElWIDI6IEJMUCBJbnN0cnVtZW50cwoKU2Vjb25kIHNldCBvZiBpbnN0cnVtZW50czogKipwcm9kdWN0IGNoYXJhY3RlcmlzdGljcyBvZiBvdGhlciBmaXJtcyBpbiB0aGUgc2FtZSBtYXJrZXQqKi4KCmBgYHtyLCB3YXJuaW5nPUZBTFNFfQpmbV9ibHBpdiA8LSBpdnJlZyh5IH4geDEgKyB4MiArIHAgfCB4MSArIHgyICsgejEgKyB6MiwgZGF0YT1kZikKa2FibGUodGlkeShmbV9ibHBpdiksIGRpZ2l0cz00KQpgYGAKCkFsc28gdGhlIEJMUCBpbnN0cnVtZW50cyBkZWxpdmVyIGFuIGVzdGltYXRlIG9mICRcYWxwaGEkIGlzIG5lZ2F0aXZlIGFuZCBzaWduaWZpY2FudC4KCgoKIyMgUmVmZXJlbmNlcwoKLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tCg==</div>
+<div id="rmd-source-code">LS0tCnRpdGxlOiAiQ29kaW5nOiBMb2dpdCBEZW1hbmQiCmF1dGhvcjogIk1hdHRlbyBDb3VydGhvdWQiCnR5cGU6IGJvb2sKd2VpZ2h0OiAxMQpkYXRlOiAyMDIxLTExLTEwCmJpYmxpb2dyYXBoeTogcmVmZXJlbmNlcy5iaWIKbGluay1jaXRhdGlvbnM6IHRydWUKb3V0cHV0OiAKICBodG1sX25vdGVib29rOiAKICAgIHRvYzogdHJ1ZQogICAgdG9jX2RlcHRoOiAyCiAgaW9zbGlkZXNfcHJlc2VudGF0aW9uOgogICAgd2lkZXNjcmVlbjogdHJ1ZQogICAgc21hbGxlcjogdHJ1ZQogICAgdHJhbnNpdGlvbjogMAogICAgc2xpZGVfbGV2ZWw6IDMKICAgIGNzczogY3VzdG9tLmNzcwogIG1kX2RvY3VtZW50OgogICAgdmFyaWFudDogbWFya2Rvd25fbW1kCiAgICBwcmVzZXJ2ZV95YW1sOiB0cnVlCi0tLQoKYGBge3IsIGluY2x1ZGU9RkFMU0UsIGVjaG89RkFMU0V9CiMgSW1wb3J0IHBhY2thZ2VzCmxpYnJhcnkodGlkeXZlcnNlKSAgICAjIEZ1ciBhbGxlcwpsaWJyYXJ5KGRhdGEudGFibGUpICAgIyBGb3IgZnJlYWRyCmxpYnJhcnkoa25pdHIpICAgICAgICAjIEZvciBrYWJsZQpsaWJyYXJ5KGJyb29tKSAgICAgICAgIyBGb3IgdGlkeQpsaWJyYXJ5KEFFUikgICAgICAgICAgIyBGb3IgaXZyZWcKYGBgCgpgYGB7ciBsb2FkIGp1bGlhIGlmIG5vdCBhbHJlYWR5IGxvYWRlZCwgaW5jbHVkZT1GQUxTRSwgZWNobz1GQUxTRX0KaWYgKCEoIkp1bGlhQ2FsbCIgJWluJSAoLnBhY2thZ2VzKCkpKSkgewogIGxpYnJhcnkoSnVsaWFDYWxsKQogIGp1bGlhIDwtIGp1bGlhX3NldHVwKCIvVXNlcnMvbWNvdXJ0L0RvY3VtZW50cy9KdWxpYS0xLjUuYXBwL0NvbnRlbnRzL1Jlc291cmNlcy9qdWxpYS9iaW4iKQp9CmBgYAoKYGBge2p1bGlhLCBpbmNsdWRlPUZBTFNFLCBlY2hvPUZBTFNFfQojaW1wb3J0IFBrZwojUGtnLmFkZCgiT3B0aW0iKQojUGtnLmFkZCgiRGlzdHJpYnV0aW9ucyIpCiNQa2cuYWRkKCJEYXRhRnJhbWVzIikKI1BrZy5hZGQoIkNTViIpCgp1c2luZyBPcHRpbQp1c2luZyBEaXN0cmlidXRpb25zCnVzaW5nIERhdGFGcmFtZXMKdXNpbmcgQ1NWCmBgYAoKIyMjIEludHJvCgpJbiB0aGlzIHNlc3Npb24sIEkgYW0gZ29pbmcgdG8gY292ZXIgZGVtYW5kIGVzdGltYXRpb24uCgotIENvbXB1dGUgZXF1aWxpYnJpdW0gb3V0Y29tZXMgd2l0aCBMb2dpdCBkZW1hbmQKLSBTaW11bGF0ZSBhIGRhdGFzZXQgCi0gRXN0aW1hdGUgTG9naXQgZGVtYW5kCi0gQ29tcGFyZSBkaWZmZXJlbnQgaW5zdHJ1bWVudHMKLSBJbmNsdWRlIHN1cHBseQoKCgojIyMgTW9kZWwKCkluIHRoaXMgZmlyc3QgcGFydCwgd2UgYXJlIGdvaW5nIHRvIGFzc3VtZSB0aGF0IGNvbnN1bWVyICRpIFxpbiBcbGJyYWNlMSwuLi4sSVxyYnJhY2UkIHV0aWxpdHkgZnJvbSBnb29kICRqIFxpbiBcbGJyYWNlMSwuLi4sSlxyYnJhY2UkIGluIG1hcmtldCAkdCBcaW4gXGxicmFjZTEsLi4uLFRccmJyYWNlJCB0YWtlcyB0aGUgZm9ybQoKJCQKdV97aWp0fSA9IFxib2xkc3ltYm9sIHhfe2p0fSBcYm9sZHN5bWJvbCBcYmV0YV97aXR9IC0gXGFscGhhIHBfe2p0fSArIFx4aV97anR9ICsgXGVwc2lsb25fe2lqdH0KJCQKCndoZXJlCgotICRceGlfe2p0fSQgaXMgdHlwZS0xIGV4dHJlbWUgdmFsdWUgZGlzdHJpYnV0ZWQKLSAkXGJvbGRzeW1ib2wgXGJldGEkIGhhcyBkaW1lbnNpb24gJEskCiAgLSBpLmUuIGdvb2RzIGhhdmUgJEskIGNoYXJhY3RlcmlzdGljcwoKIyMjIFNldHVwCgpXZSBoYXZlICRKJCBmaXJtcyBhbmQgZWFjaCBwcm9kdWN0IGhhcyAkSyQgY2hhcmFjdGVyaXN0aWNzCgpgYGB7anVsaWEsIHJlc3VsdHM9ImhpZGUifQpKID0gMzsgICAgICAgICAgICAgICAgICAgICAgICAgICAgIyAzIGZpcm1zID09IHByb2R1Y3RzCksgPSAyOyAgICAgICAgICAgICAgICAgICAgICAgICAgICAjIDIgcHJvZHVjdCBjaGFyYWN0ZXJpc3RpY3MKYyA9IHJhbmQoVW5pZm9ybSgwLCAxKSwgSik7ICAgICAgICMgUmFuZG9tIHVuaWZvcm0gbWFyZ2luYWwgY29zdHMKzr4gPSByYW5kKE5vcm1hbCgwLCAxKSwgSisxKTsgICAgICAjIFJhbmRvbSBub3JtYWwgaW5kaXZpZHVhbCBzaG9ja3MKWCA9IHJhbmQoRXhwb25lbnRpYWwoMSksIEosIEspOyAgICMgUmFuZG9tIGV4cG9uZW50aWFsIHByb2R1Y3QgY2hhcmFjdGVyaXN0aWNzCs6yID0gWy41LCAyLCAtMV07ICAgICAgICAgICAgICAgICAgIyBQcmVmZXJlbmNlcyAobGFzdCBvbmUgaXMgZm9yIHByaWNlcywgaS5lLiBhbHBoYSkKYGBgCgoKIyMjIENvZGUgRGVtYW5kCgpgYGB7anVsaWF9CmZ1bmN0aW9uIGRlbWFuZChwOjpWZWN0b3IsIFg6Ok1hdHJpeCwgzrI6OlZlY3Rvciwgzr46OlZlY3Rvcik6OlR1cGxle1ZlY3RvciwgTnVtYmVyfQogICAgIiIiQ29tcHV0ZSBkZW1hbmQiIiIKICAgIM60ID0gMSAuKyBbWCBwXSAqIM6yICAgICAgICAgICAgICAjIE1lYW4gdmFsdWUKICAgIHUgPSBbzrQ7IDBdICsgzr4gICAgICAgICAgICAgICAgICAjIFV0aWxpdHkKICAgIGUgPSBleHAuKHUpICAgICAgICAgICAgICAgICAgICAgIyBUYWtlIGV4cG9uZW50aWFsCiAgICBxID0gZSAuLyBzdW0oZSkgICAgICAgICAgICAgICAgICMgQ29tcHV0ZSBkZW1hbmQKICAgIHJldHVybiBxWzE6ZW5kLTFdLCBxW2VuZF0KZW5kOwpgYGAKCldlIGNhbiB0cnkgd2l0aCBhbiBleGFtcGxlLgoKYGBge2p1bGlhfQpwID0gMiAuKiBjOwpkZW1hbmQocCwgWCwgzrIsIM6+KQpgYGAKCiMjIyBDb2RlIFN1cHBseQoKYGBge2p1bGlhfQpmdW5jdGlvbiBwcm9maXRzKHA6OlZlY3RvciwgYzo6VmVjdG9yLCBYOjpNYXRyaXgsIM6yOjpWZWN0b3IsIM6+OjpWZWN0b3IpOjpWZWN0b3IKICAgICIiIkNvbXB1dGUgcHJvZml0cyIiIgogICAgcSwgXyA9IGRlbWFuZChwLCBYLCDOsiwgzr4pICAgICAgICMgQ29tcHV0ZSBkZW1hbmQKICAgIHByID0gKHAgLSBjKSAuKiBxICAgICAgICAgICAgICAgIyBDb21wdXRlIHByb2ZpdHMKICAgIHJldHVybiBwcgplbmQ7CmBgYAoKV2UgY2FuIHRyeSB3aXRoIGFuIGV4YW1wbGUuCgpgYGB7anVsaWF9CnByb2ZpdHMocCwgYywgWCwgzrIsIM6+KQpgYGAKCgoKIyMjIENvZGUgQmVzdCBSZXBseQoKV2UgZmlyc3QgY29kZSB0aGUgYmVzdCByZXBseSBvZiBmaXJtICRqJAoKYGBge2p1bGlhfQpmdW5jdGlvbiBwcm9maXRzX2oocGo6Ok51bWJlciwgajo6SW50LCBwOjpWZWN0b3IsIGM6OlZlY3RvciwgWDo6TWF0cml4LCDOsjo6VmVjdG9yLCDOvjo6VmVjdG9yKTo6TnVtYmVyCiAgICAiIiJDb21wdXRlIHByb2ZpdHMgb2YgZmlybSBqIiIiCiAgICBwW2pdID0gcGogICAgICAgICAgICAgICAgICAgICAgICMgSW5zZXJ0IHByaWNlIG9mIGZpcm0gagogICAgcHIgPSBwcm9maXRzKHAsIGMsIFgsIM6yLCDOvikgICAgICMgQ29tcHV0ZSBwcm9maXRzCiAgICByZXR1cm4gcHJbal0KZW5kOwpgYGAKCkxldCdzIHRlc3QgaXQuCgpgYGB7anVsaWF9CmogPSAxOwpvYmpfZnVuKHBqKSA9IC0gcHJvZml0c19qKHBqWzFdLCBqLCBjb3B5KHApLCBjLCBYLCDOsiwgzr4pOwpwaiA9IG9wdGltaXplKHggLT4gb2JqX2Z1bih4KSwgWzEuMF0sIExCRkdTKCkpLm1pbmltaXplclsxXQpgYGAKCldoYXQgYXJlIHRoZSBpbXBsaWVkIHByb2ZpdHMgbm93PwoKYGBge2p1bGlhfQpwcmludCgiUHJvZml0cyBvbGQ6ICIsICByb3VuZC4ocHJvZml0cyhwLCBjLCBYLCDOsiwgzr4pLCBkaWdpdHM9NCkpCnBfbmV3ID0gY29weShwKTsKcF9uZXdbal0gPSBwajsKcHJpbnQoIlByb2ZpdHMgbmV3OiAiLCAgcm91bmQuKHByb2ZpdHMocF9uZXcsIGMsIFgsIM6yLCDOviksIGRpZ2l0cz00KSkKYGBgCgpJbmRlZWQgZmlybSAxIGhhcyBpbmNyZWFzZWQgaXRzIHByb2ZpdHMuCgojIyMgQ29kZSBFcXVpbGlicml1bQoKV2UgY2FuIG5vdyBjb21wdXRlIGVxdWlsaWJyaXVtIHByaWNlcwoKYGBge2p1bGlhfQpmdW5jdGlvbiBlcXVpbGlicml1bShjOjpWZWN0b3IsIFg6Ok1hdHJpeCwgzrI6OlZlY3Rvciwgzr46OlZlY3Rvcik6OlZlY3RvcgogICAgIiIiQ29tcHV0ZSBlcXVpbGlicml1bSBwcmljZXMgYW5kIHByb2ZpdHMiIiIKICAgIHAgPSAyIC4qIGM7CiAgICBkaXN0ID0gMTsKICAgIGl0ZXIgPSAwOwoKICAgICMgVW50aWwgY29udmVyZ2VuY2UKICAgIHdoaWxlIChkaXN0ID4gMWUtOCkgJiYgKGl0ZXI8MTAwMCkKCiAgICAgICAgIyBDb21wdXRlIGJlc3QgcmVwbHkgZm9yIGVhY2ggZmlybQogICAgICAgIHAxID0gY29weShwKTsKICAgICAgICBmb3Igaj0xOmxlbmd0aChwKQogICAgICAgICAgICBvYmpfZnVuKHBqKSA9IC0gcHJvZml0c19qKHBqWzFdLCBqLCBwLCBjLCBYLCDOsiwgzr4pOwogICAgICAgICAgICBvcHRpbWl6ZSh4IC0+IG9ial9mdW4oeCksIFsxLjBdLCBMQkZHUygpKS5taW5pbWl6ZXJbMV07CiAgICAgICAgZW5kCgogICAgICAgICMgVXBkYXRlIGRpc3RhbmNlCiAgICAgICAgZGlzdCA9IG1heChhYnMuKHAgLSBwMSkuLi4pOwogICAgICAgIGl0ZXIgKz0gMTsKICAgIGVuZAogICAgcmV0dXJuIHAKZW5kOwpgYGAKCiMjIyBDb2RlIEVxdWlsaWJyaXVtCgpMZXQncyB0ZXN0IGl0CmBgYHtqdWxpYX0KIyBDb21wdXRlIGVxdWlsaWJyaXVtIHByaWNlcwpwX2VxID0gZXF1aWxpYnJpdW0oYywgWCwgzrIsIM6+KTsKcHJpbnQoIkVxdWlsaWJyaXVtIHByaWNlczogIiwgIHJvdW5kLihwX2VxLCBkaWdpdHM9NCkpCgojIEFuZCBwcm9maXRzCnBpX2VxID0gcHJvZml0cyhwX2VxLCBjLCBYLCDOsiwgzr4pOwpwcmludCgiRXF1aWxpYnJpdW0gcHJvZml0czogIiwgIHJvdW5kLihwaV9lcSwgZGlnaXRzPTQpKQpgYGAKCkFzIGV4cGVjdGVkIHRoZSBwcmljZXMgb2YgdGhlIGZpcnN0IDIgZmlybXMgYXJlIGxvd2VyIGFuZCB0aGVpciBwcm9maXRzIGFyZSBoaWdoZXIuCgojIyMgREdQCgpMZXQncyBnZW5lcmF0ZSBvdXIgRGF0YSBHZW5lcmF0aW5nIFByb2Nlc3MgKERHUCkuCgotICRcYm9sZHN5bWJvbCB4IFxzaW0gZXhwKFZfe3h9KSQKLSAkXHhpIFxzaW0gTigwLCBWX3tceGl9KSQKLSAkdyBcc2ltIE4oMCwgMSkkCi0gJFxvbWVnYSBcc2ltIE4oMCwgMSkkCgpgYGB7anVsaWF9CmZ1bmN0aW9uIGRyYXdfZGF0YShKOjpJbnQsIEs6OkludCwgcmFuZ2VKOjpWZWN0b3IsIHZhclg6Ok51bWJlciwgdmFyzr46Ok51bWJlcik6OlR1cGxlCiAgICAiIiJEcmF3IGRhdGEgZm9yIG9uZSBtYXJrZXQiIiIKICAgIEpfID0gcmFuZChyYW5nZUpbMV06cmFuZ2VKWzJdKSAgICAgICAgICAgICAgIyBOdW1iZXIgb2YgZmlybXMgKHByb2R1Y3RzKQogICAgWF8gPSByYW5kKEV4cG9uZW50aWFsKHZhclgpLCBKXywgSykgICAgICAgICAjIFByb2R1Y3QgY2hhcmFjdGVyaXN0aWNzCiAgICDOvl8gPSByYW5kKE5vcm1hbCgwLCB2YXLOviksIEpfKzEpICAgICAgICAgICAgIyBQcm9kdWN0LWxldmVsIHV0aWxpdHkgc2hvY2tzCiAgICB3XyA9IHJhbmQoVW5pZm9ybSgwLCAxKSwgSl8pICAgICAgICAgICAgICAgICMgQ29zdCBzaGlmdGVycwogICAgz4lfID0gcmFuZChVbmlmb3JtKDAsIDEpLCBKXykgICAgICAgICAgICAgICAgIyBDb3N0IHNob2NrcwogICAgY18gPSB3XyArIM+JXyAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIyBDb3N0CiAgICBqXyA9IHNvcnQoc2FtcGxlKDE6SiwgSl8sIHJlcGxhY2U9ZmFsc2UpKSAgICMgU3Vic2V0IG9mIGZpcm1zCiAgICByZXR1cm4gWF8sIM6+Xywgd18sIGNfLCBqXwplbmQ7CmBgYAoKCiMjIyBFcXVpbGlicml1bQoKV2UgZmlyc3QgY29tcHV0ZSB0aGUgZXF1aWxpYnJpdW0gaW4gb25lIG1hcmtldC4KCmBgYHtqdWxpYX0KZnVuY3Rpb24gY29tcHV0ZV9ta3RfZXEoSjo6SW50LCBiOjpWZWN0b3IsIHJhbmdlSjo6VmVjdG9yLCB2YXJYOjpOdW1iZXIsIHZhcs6+OjpOdW1iZXIpOjpEYXRhRnJhbWUKICAgICIiIkNvbXB1dGUgZXF1aWxpYnJpdW0gb25lIG1hcmtldCIiIgoKICAgICMgSW5pdGlhbGl6ZSB2YXJpYWJsZXMKICAgIEsgPSBzaXplKM6yLCAxKSAtIDEKICAgIFhfLCDOvl8sIHdfLCBjXywgal8gPSBkcmF3X2RhdGEoSiwgSywgcmFuZ2VKLCB2YXJYLCB2YXLOvikKCiAgICAjIENvbXB1dGUgZXF1aWxpYnJpdW0KICAgIHBfID0gZXF1aWxpYnJpdW0oY18sIFhfLCDOsiwgzr5fKSAgICAgICMgRXF1aWxpYnJpdW0gcHJpY2VzCiAgICBxXywgcTAgPSBkZW1hbmQocF8sIFhfLCDOsiwgzr5fKSAgICAgICAjIERlbWFuZCB3aXRoIHNob2NrcwogICAgcHJfID0gKHBfIC0gY18pIC4qIHFfICAgICAgICAgICAgICAgIyBQcm9maXRzCgogICAgIyBTYXZlIHRvIGRhdGEKICAgIHEwXyA9IG9uZXMobGVuZ3RoKGpfKSkgLiogcTAKICAgIGRmID0gRGF0YUZyYW1lKGo9al8sIHc9d18sIHA9cF8sIHE9cV8sIHEwPXEwXywgcHI9cHJfKQogICAgZm9yIGs9MTpLCiAgICAgIGRmWyEsIngkayJdID0gWF9bOixrXQogICAgICBkZlshLCJ6JGsiXSA9IHN1bShYX1s6LGtdKSAuLSBYX1s6LGtdCiAgICBlbmQKICAgIHJldHVybiBkZgplbmQ7CmBgYAoKIyMjIFNpbXVsYXRlIERhdGFzZXQKCldlIGNhbiBub3cgd3JpdGUgdGhlIGNvZGUgdG8gc2ltdWxhdGUgdGhlIHdob2xlIGRhdGFzZXQuCgpgYGB7anVsaWF9CmZ1bmN0aW9uIHNpbXVsYXRlX2RhdGEoSjo6SW50LCBiOjpWZWN0b3IsIFQ6OkludCwgcmFuZ2VKOjpWZWN0b3IsIHZhclg6Ok51bWJlciwgdmFyzr46Ok51bWJlcikKICAgICIiIlNpbXVsYXRlIGZ1bGwgZGF0YXNldCIiIgogICAgZGYgPSBjb21wdXRlX21rdF9lcShKLCDOsiwgcmFuZ2VKLCB2YXJYLCB2YXLOvikKICAgIGRmWyEsICJ0Il0gPSBvbmVzKG5yb3coZGYpKSAqIDEKICAgIGZvciB0PTI6VAogICAgICAgIGRmX3RlbXAgPSBjb21wdXRlX21rdF9lcShKLCDOsiwgcmFuZ2VKLCB2YXJYLCB2YXLOvikKICAgICAgICBkZl90ZW1wWyEsICJ0Il0gPSBvbmVzKG5yb3coZGZfdGVtcCkpICogdAogICAgICAgIGFwcGVuZCEoZGYsIGRmX3RlbXApCiAgICBlbmQKICAgIENTVi53cml0ZSgiLi4vZGF0YS9sb2dpdC5jc3YiLCBkZikKZW5kOwpgYGAKCiMjIyBTaW11bGF0ZSBEYXRhc2V0ICgyKQoKV2UgZ2VuZXJhdGUgdGhlIGRhdGFzZXQgYnkgc2ltdWxhdGluZyBtYW55IG1hcmtldHMgdGhhdCBkaWZmZXIgYnkKCi0gbnVtYmVyIG9mIGZpcm1zIChhbmQgdGhlaXIgaWRlbnRpdHkpCi0gdGhlaXIgbWFyZ2luYWwgY29zdHMKLSB0aGVpciBwcm9kdWN0IGNoYXJhY3RlcmlzdGljcwoKYGBge2p1bGlhLCByZXN1bHRzPSJoaWRlIn0KIyBTZXQgcGFyYW1ldGVycwpKID0gMTA7ICAgICAgICAgICAgICAgICAjIE51bWJlciBvZiBmaXJtcwpLID0gMjsgICAgICAgICAgICAgICAgICAjIFByb2R1Y3QgY2FyYWN0ZXJpc3RpY3MKVCA9IDUwMDsgICAgICAgICAgICAgICAgIyBNYXJrZXRzCs6yID0gWy41LCAyLCAtMV07ICAgICAgICAjIFByZWZlcmVuY2VzCnJhbmdlSiA9IFsyLCA2XTsgICAgICAgICMgTWluIGFuZCBtYXggZmlybXMgcGVyIG1hcmtldAp2YXJYID0gMTsgICAgICAgICAgICAgICAjIFZhcmlhbmNlIG9mIFgKdmFyzr4gPSAyOyAgICAgICAgICAgICAgICMgVmFyaWFuY2Ugb2YgeGkKCiMgU2ltdWxhdGUKZGYgPSBzaW11bGF0ZV9kYXRhKEosIM6yLCBULCByYW5nZUosIHZhclgsIHZhcs6+KTsKYGBgCgoKIyMjIFRoZSBEYXRhCgpXaGF0IGRvZXMgdGhlIGRhdGEgbG9vayBsaWtlPyBMZXQncyBzd2l0Y2ggdG8gUiEKCmBgYHtyfQojIFJlYWQgZGF0YQpkZiA9IGZyZWFkKCIuLi9kYXRhL2xvZ2l0LmNzdiIpCmthYmxlKGRmWzE6NixdLCBkaWdpdHM9NCkKYGBgCgoKCiMjIyBFc3RpbWF0aW9uCgpGaXJzdCB3ZSBuZWVkIHRvIGNvbXB1dGUgdGhlIGRlcGVuZGVudCB2YXJpYWJsZQoKYGBge3J9CmRmJHkgPSBsb2coZGYkcSkgLSBsb2coZGYkcTApCmBgYAoKTm93IHdlIGNhbiBlc3RpbWF0ZSB0aGUgbG9naXQgbW9kZWwuIFRoZSB0cnVlIHZhbHVlcyBhcmUgJGFscGhhPTEkLgoKYGBge3J9Cm9scyA8LSBsbSh5IH4geDEgKyB4MiArIHAsIGRhdGE9ZGYpCmthYmxlKHRpZHkob2xzKSwgZGlnaXRzPTQpCmBgYAoKVGhlIGVzdGltYXRlIG9mICRcYWxwaGEgPSAxJCBpcyBiaWFzZWQgKHBvc2l0aXZlIGFuZCBzaWduaWZpY2FudCkgc2luY2UgJHAkIGlzIGVuZG9nZW5vdXMuIFdlIG5lZWQgaW5zdHJ1bWVudHMuCgoKCiMjIyBJViAxOiBDb3N0IFNoaWZ0ZXJzCgpGaXJzdCBzZXQgb2YgaW5zdHJ1bWVudHM6ICoqY29zdCBzaGlmdGVycyoqLgoKYGBge3IsIHdhcm5pbmc9RkFMU0V9CmZtX2Nvc3RpdiA8LSBpdnJlZyh5IH4geDEgKyB4MiArIHAgfCB4MSArIHgyICsgdywgZGF0YT1kZikKa2FibGUodGlkeShmbV9jb3N0aXYpLCBkaWdpdHM9NCkKYGBgCgpOb3cgdGhlIGVzdGltYXRlIG9mICRcYWxwaGEkIGlzIG5lZ2F0aXZlIGFuZCBzaWduaWZpY2FudC4KCgoKIyMjIElWIDI6IEJMUCBJbnN0cnVtZW50cwoKU2Vjb25kIHNldCBvZiBpbnN0cnVtZW50czogKipwcm9kdWN0IGNoYXJhY3RlcmlzdGljcyBvZiBvdGhlciBmaXJtcyBpbiB0aGUgc2FtZSBtYXJrZXQqKi4KCmBgYHtyLCB3YXJuaW5nPUZBTFNFfQpmbV9ibHBpdiA8LSBpdnJlZyh5IH4geDEgKyB4MiArIHAgfCB4MSArIHgyICsgejEgKyB6MiwgZGF0YT1kZikKa2FibGUodGlkeShmbV9ibHBpdiksIGRpZ2l0cz00KQpgYGAKCkFsc28gdGhlIEJMUCBpbnN0cnVtZW50cyBkZWxpdmVyIGFuIGVzdGltYXRlIG9mICRcYWxwaGEkIGlzIG5lZ2F0aXZlIGFuZCBzaWduaWZpY2FudC4KCgoKIyMgQXBwZW5kaXgKCiMjIyBSZWZlcmVuY2VzCg==</div>
 
 
 

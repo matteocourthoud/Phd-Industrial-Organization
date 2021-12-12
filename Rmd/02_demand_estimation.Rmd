@@ -7,6 +7,12 @@ date: 2021-10-29
 bibliography: references.bib
 link-citations: true
 output: 
+  ioslides_presentation:
+    widescreen: true
+    smaller: true
+    transition: 0
+    slide_level: 3
+    css: custom.css
   ml_notebook: 
     toc: true
     toc_depth: 2
@@ -15,12 +21,6 @@ output:
     toc_depth: 3
     toc_float: true
     toc_collapsed: true
-  ioslides_presentation:
-    widescreen: true
-    smaller: true
-    transition: 0
-    slide_level: 3
-    css: custom.css
   md_document:
     variant: markdown_mmd
     preserve_yaml: true
@@ -526,6 +526,6 @@ The GMM estimator is $(\hat \alpha, \boldsymbol{\hat{\beta}_0}, \boldsymbol{\hat
 
 
 
-## References
+## Appendix
 
-------------------------------------------------------------------------
+### References

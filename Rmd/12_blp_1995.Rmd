@@ -247,7 +247,7 @@ What does the data look like? Let's switch to R!
 ```{r}
 # Read data
 df = fread("../data/blp.csv")
-kable(df[1:5,], digits=4)
+kable(df[1:6,], digits=4)
 ```
 
 ### Estimation
@@ -383,7 +383,6 @@ print("Estimated BLP coefficients: $β_blp")
 
 
 
+## Appendix
 
-## References
-
-------------------------------------------------------------------------
+### References

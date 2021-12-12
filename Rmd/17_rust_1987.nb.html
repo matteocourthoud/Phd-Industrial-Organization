@@ -241,10 +241,13 @@ pre code {
 
 <div id="TOC">
 <ul>
-<li><a href="#references">References</a></li>
+<li><a href="#hotz-miller">Hotz &amp; Miller</a></li>
+<li><a href="#appendix">Appendix</a></li>
 </ul>
 </div>
 
+<!-- rnb-text-begin -->
+<!-- rnb-text-end -->
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
 <!-- rnb-text-begin -->
@@ -276,12 +279,12 @@ pre code {
 <h3>State</h3>
 <ul>
 <li><p><strong>State</strong>: mileage of the bus</p>
-<p><span class="math display">\[x_t \in \lbrace 1, ..., 10 \rbrace \]</span></p></li>
+<p><span class="math display">\[s_t \in \lbrace 1, ..., 10 \rbrace \]</span></p></li>
 <li><p><strong>State transitions</strong>: with probability <span class="math inline">\(\lambda\)</span> the mileage of the bus increases</p>
 <p><span class="math display">\[
-  x_{t+1} = \begin{cases}
-  \min \lbrace x_t + 1,10 \rbrace  &amp; \text { with probability } \lambda \newline 
-  x_t &amp; \text { with probability } 1 - \lambda
+s_{t+1} = \begin{cases}
+  \min \lbrace s_t + 1,10 \rbrace  &amp; \text { with probability } \lambda \newline 
+  s_t &amp; \text { with probability } 1 - \lambda
   \end{cases}
 \]</span></p>
 <p>Note that <span class="math inline">\(\lambda\)</span> does not depend on the value of the state</p></li>
@@ -291,34 +294,33 @@ pre code {
 <h3>Actions</h3>
 <ul>
 <li><p><strong>Action</strong>: replacement decision <span class="math display">\[
-  i_t \in \lbrace 0, 1 \rbrace
-  \]</span></p></li>
+a_t \in \lbrace 0, 1 \rbrace
+\]</span></p></li>
 <li><p><strong>Payoffs</strong></p>
 <ul>
 <li><p>Per-period maintenance cost</p></li>
 <li><p>Cost of replacement <span class="math display">\[
- u\left(x_{t}, i_{t}, \epsilon_{1 t}, \epsilon_{2 t} ; \theta\right)= 
+u\left(s_{t}, a_{t}, \epsilon_{1 t}, \epsilon_{2 t} ; \theta\right)= 
  \begin{cases}
- -\theta_{1} x_{t}-\theta_{2} x_{t}^{2}+\epsilon_{0 t}, &amp; \text { if } i_{t}=0 \newline 
- -\theta_{3}+\epsilon_{1 t}, &amp; \text { if } i_{t}=1
+ -\theta_{1} s_{t}-\theta_{2} s_{t}^{2}+\epsilon_{0 t}, &amp; \text { if } a_{t}=0 \newline 
+ -\theta_{3} + \epsilon_{1t}, &amp; \text { if } a_{t}=1
  \end{cases}
- \]</span></p></li>
+\]</span></p></li>
 </ul></li>
 </ul>
 </div>
-<div id="simulation" class="section level3">
-<h3>Simulation</h3>
+<div id="solving-the-model" class="section level3">
+<h3>Solving the Model</h3>
 <ul>
-<li><p>Start with an initial value function <span class="math inline">\(V(x_t)=0\)</span></p></li>
-<li><p>Compute expected value w.r.t. <span class="math inline">\(\lambda\)</span></p>
-<p><span class="math display">\[
-W(x_t) = \begin{cases}
--\theta_1 x_t - \theta_2 x_t^2 + \beta \Big[(1-\lambda) V(x_t) + \lambda V(\min \lbrace x_t+1,10 \rbrace ) \Big] , &amp; \text { if } i_t=0 \newline
--\theta_3 + \beta \Big[(1-\lambda) V(0) + \lambda V(1) \Big] , &amp; \text { if } i_t=1
+<li><p>Start with an initial expected value function <span class="math inline">\(V(s_t)=0\)</span></p></li>
+<li><p>Compute the alternative-specific value function <span class="math display">\[
+\bar V(s_t) = \begin{cases}
+-\theta_1 s_t - \theta_2 s_t^2 + \beta \Big[(1-\lambda) V(s_t) + \lambda V(\min \lbrace s_t+1,10 \rbrace ) \Big] , &amp; \text { if } a_t=0 \newline
+-\theta_3 + \beta \Big[(1-\lambda) V(0) + \lambda V(1) \Big] , &amp; \text { if } a_t=1
 \end{cases}
 \]</span></p></li>
-<li><p>Compute the new value of V <span class="math display">\[
-V&#39;(x_t) = \log \Big( e^{W(x_t|i_t=0)} + e^{W(x_t|i_t=1)} \Big)
+<li><p>Compute the new expected value function <span class="math display">\[
+V&#39;(a_t) = \log \Big( e^{\bar V(a_t|s_t=0)} + e^{\bar V(a_t|s_t=1)} \Big)
 \]</span></p></li>
 <li><p>Repeat until convergence</p></li>
 </ul>
@@ -339,23 +341,30 @@ V&#39;(x_t) = \log \Big( e^{W(x_t|i_t=0)} + e^{W(x_t|i_t=1)} \Big)
 <p>Then we set the state space.</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBganVsaWFcbiMgU3RhdGUgc3BhY2VcbnggPSBWZWN0b3IoMDoxMCk7XG5gYGAifQ== -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBganVsaWFcbiMgU3RhdGUgc3BhY2VcbmsgPSAxMDtcbnMgPSBWZWN0b3IoMTprKTtcbmBgYCJ9 -->
 <pre class="julia"><code># State space
-x = Vector(0:10);</code></pre>
+k = 10;
+s = Vector(1:k);</code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 </div>
 <div id="static-utility" class="section level3">
-<h3>Static utility</h3>
-<p>First, we can compute static utility.</p>
+<h3>Static Utility</h3>
+<p>First, we can compute static utility. <span class="math display">\[
+u\left(s_{t}, a_{t}, \epsilon_{1 t}, \epsilon_{2 t} ; \theta\right)= 
+ \begin{cases}
+ -\theta_{1} s_{t}-\theta_{2} s_{t}^{2}+\epsilon_{0 t}, &amp; \text { if } a_{t}=0 \newline 
+ -\theta_{3} + \epsilon_{1 t}, &amp; \text { if } a_{t}=1
+ \end{cases}
+\]</span></p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBganVsaWFcbmZ1bmN0aW9uIGNvbXB1dGVfVSjOuDo6VmVjdG9yLCB4OjpWZWN0b3IpOjpNYXRyaXhcbiAgICBcIlwiXCJDb21wdXRlIHN0YXRpYyB1dGlsaXR5XCJcIlwiXG4gICAgdTEgPSAtIM64WzFdKnggLSDOuFsyXSp4Ll4yICAgICAgICMgVXRpbGl0eSBvZiBub3QgaW52ZXN0aW5nXG4gICAgdTIgPSAtIM64WzNdKm9uZXMoc2l6ZSh4KSkgICAgICAgIyBVdGlsaXR5IG9mIGludmVzdGluZ1xuICAgIFUgPSBbdTEgdTJdICAgICAgICAgICAgICAgICAgICAgIyBDb21iaW5lIGluIGEgbWF0cml4XG4gICAgcmV0dXJuIFVcbmVuZDtcbmBgYCJ9 -->
-<pre class="julia"><code>function compute_U(θ::Vector, x::Vector)::Matrix
+<!-- rnb-source-begin eyJkYXRhIjoiYGBganVsaWFcbmZ1bmN0aW9uIGNvbXB1dGVfVSjOuDo6VmVjdG9yLCBzOjpWZWN0b3IpOjpNYXRyaXhcbiAgICBcIlwiXCJDb21wdXRlIHN0YXRpYyB1dGlsaXR5XCJcIlwiXG4gICAgdTEgPSAtIM64WzFdKnMgLSDOuFsyXSpzLl4yICAgICAgICMgVXRpbGl0eSBvZiBub3QgaW52ZXN0aW5nXG4gICAgdTIgPSAtIM64WzNdKm9uZXMoc2l6ZShzKSkgICAgICAgIyBVdGlsaXR5IG9mIGludmVzdGluZ1xuICAgIFUgPSBbdTEgdTJdICAgICAgICAgICAgICAgICAgICAgIyBDb21iaW5lIGluIGEgbWF0cml4XG4gICAgcmV0dXJuIFVcbmVuZDtcbmBgYCJ9 -->
+<pre class="julia"><code>function compute_U(θ::Vector, s::Vector)::Matrix
     &quot;&quot;&quot;Compute static utility&quot;&quot;&quot;
-    u1 = - θ[1]*x - θ[2]*x.^2       # Utility of not investing
-    u2 = - θ[3]*ones(size(x))       # Utility of investing
+    u1 = - θ[1]*s - θ[2]*s.^2       # Utility of not investing
+    u2 = - θ[3]*ones(size(s))       # Utility of investing
     U = [u1 u2]                     # Combine in a matrix
     return U
 end;</code></pre>
@@ -368,41 +377,42 @@ end;</code></pre>
 <p>We can now set up the value function iteration</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBganVsaWFcbmZ1bmN0aW9uIGNvbXB1dGVfVijOuDo6VmVjdG9yLCDOuzo6TnVtYmVyLCDOsjo6TnVtYmVyLCB4OjpWZWN0b3IpOjpNYXRyaXhcbiAgICBcIlwiXCJDb21wdXRlIHZhbHVlIGZ1bmN0aW9uIGJ5IEJlbGxtYW4gaXRlcmF0aW9uXCJcIlwiXG4gICAgSyA9IGxlbmd0aCh4KSAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICMgRGltZW5zaW9uIG9mIHRoZSBzdGF0ZSBzcGFjZVxuICAgIFUgPSBjb21wdXRlX1UozrgsIHgpICAgICAgICAgICAgICAgICAgICAgICAgICAgIyBTdGF0aWMgdXRpbGl0eVxuICAgIGluZGV4X867ID0gSW50WzE6SyBbMjpLOyBLXV07ICAgICAgICAgICAgICAgICAgIyBNaWxlYWdlIGluZGV4XG4gICAgaW5kZXhfSSA9IEludFsxOksgb25lcyhLLDEpXTsgICAgICAgICAgICAgICAgICMgSW52ZXN0bWVudCBpbmRleFxuXG4gICAgIyBJdGVyYXRlIHRoZSBCZWxsbWFuIGVxdWF0aW9uIHVudGlsIGNvbnZlcmdlbmNlXG4gICAgVl9iYXIgPSB6ZXJvcyhLLCAyKTtcbiAgICBWX2JhcjEgPSBWX2JhcjtcbiAgICBkaXN0ID0gMTtcbiAgICBpdGVyID0gMDtcbiAgICB3aGlsZSBkaXN0PjFlLThcbiAgICAgICAgViA9IGxvZy4oc3VtKGV4cC4oVl9iYXIpLCBkaW1zPTIpKSAgICAgICAgICAjIENvbXB1dGUgdmFsdWVcbiAgICAgICAgRXhwX1YgPSBWW2luZGV4X867XSAqIFsxLc67OyDOu10gICAgICAgICAgICAgICAjIENvbXB1dGUgZXhwb25lbnRpYWwgdmFsdWVcbiAgICAgICAgVl9iYXIxID0gzrIgKiAoVSArIEV4cF9WW2luZGV4X0ldKSAgICAgICAgICAgIyBDb21wdXRlIHYtc3BlY2lmaWNcbiAgICAgICAgZGlzdCA9IG1heChhYnMuKFZfYmFyMSAtIFZfYmFyKS4uLik7ICAgICAgICAjIENoZWNrIGRpc3RhbmNlXG4gICAgICAgIGl0ZXIgKz0gMTtcbiAgICAgICAgVl9iYXIgPSBWX2JhcjEgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAjIFVwZGF0ZSB2YWx1ZSBmdW5jdGlvblxuICAgIGVuZFxuICAgIHJldHVybiBWX2JhclxuZW5kO1xuYGBgIn0= -->
-<pre class="julia"><code>function compute_V(θ::Vector, λ::Number, β::Number, x::Vector)::Matrix
+<!-- rnb-source-begin eyJkYXRhIjoiYGBganVsaWFcbmZ1bmN0aW9uIGNvbXB1dGVfVmJhcijOuDo6VmVjdG9yLCDOuzo6TnVtYmVyLCDOsjo6TnVtYmVyLCBzOjpWZWN0b3IpOjpNYXRyaXhcbiAgICBcIlwiXCJDb21wdXRlIHZhbHVlIGZ1bmN0aW9uIGJ5IEJlbGxtYW4gaXRlcmF0aW9uXCJcIlwiXG4gICAgayA9IGxlbmd0aChzKSAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICMgRGltZW5zaW9uIG9mIHRoZSBzdGF0ZSBzcGFjZVxuICAgIFUgPSBjb21wdXRlX1UozrgsIHMpICAgICAgICAgICAgICAgICAgICAgICAgICAgIyBTdGF0aWMgdXRpbGl0eVxuICAgIGluZGV4X867ID0gSW50WzE6ayBbMjprOyBrXV07ICAgICAgICAgICAgICAgICAgIyBNaWxlYWdlIGluZGV4XG4gICAgaW5kZXhfQSA9IEludFsxOmsgb25lcyhrLDEpXTsgICAgICAgICAgICAgICAgICMgSW52ZXN0bWVudCBpbmRleFxuICAgIM6zID0gQmFzZS5NYXRoQ29uc3RhbnRzLmV1bGVyZ2FtbWEgICAgICAgICAgICAgIyBFdWxlcidzIGdhbW1hXG5cbiAgICAjIEl0ZXJhdGUgdGhlIEJlbGxtYW4gZXF1YXRpb24gdW50aWwgY29udmVyZ2VuY2VcbiAgICBWYmFyID0gemVyb3MoaywgMik7XG4gICAgVmJhcjEgPSBWYmFyO1xuICAgIGRpc3QgPSAxO1xuICAgIGl0ZXIgPSAwO1xuICAgIHdoaWxlIGRpc3Q+MWUtOFxuICAgICAgICBWID0gzrMgLisgbG9nLihzdW0oZXhwLihWYmFyKSwgZGltcz0yKSkgICAgICMgQ29tcHV0ZSB2YWx1ZVxuICAgICAgICBleHBWID0gVltpbmRleF/Ou10gKiBbMS3OuzsgzrtdICAgICAgICAgICAgICAgIyBDb21wdXRlIGV4cGVjdGVkIHZhbHVlXG4gICAgICAgIFZiYXIxID0gIFUgKyDOsiAqIGV4cFZbaW5kZXhfQV0gICAgICAgICAgICAgIyBDb21wdXRlIHYtc3BlY2lmaWNcbiAgICAgICAgZGlzdCA9IG1heChhYnMuKFZiYXIxIC0gVmJhcikuLi4pOyAgICAgICAgICMgQ2hlY2sgZGlzdGFuY2VcbiAgICAgICAgaXRlciArPSAxO1xuICAgICAgICBWYmFyID0gVmJhcjEgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIyBVcGRhdGUgdmFsdWUgZnVuY3Rpb25cbiAgICBlbmRcbiAgICByZXR1cm4gVmJhclxuZW5kO1xuYGBgIn0= -->
+<pre class="julia"><code>function compute_Vbar(θ::Vector, λ::Number, β::Number, s::Vector)::Matrix
     &quot;&quot;&quot;Compute value function by Bellman iteration&quot;&quot;&quot;
-    K = length(x)                                 # Dimension of the state space
-    U = compute_U(θ, x)                           # Static utility
-    index_λ = Int[1:K [2:K; K]];                  # Mileage index
-    index_I = Int[1:K ones(K,1)];                 # Investment index
+    k = length(s)                                 # Dimension of the state space
+    U = compute_U(θ, s)                           # Static utility
+    index_λ = Int[1:k [2:k; k]];                  # Mileage index
+    index_A = Int[1:k ones(k,1)];                 # Investment index
+    γ = Base.MathConstants.eulergamma             # Euler&#39;s gamma
 
     # Iterate the Bellman equation until convergence
-    V_bar = zeros(K, 2);
-    V_bar1 = V_bar;
+    Vbar = zeros(k, 2);
+    Vbar1 = Vbar;
     dist = 1;
     iter = 0;
     while dist&gt;1e-8
-        V = log.(sum(exp.(V_bar), dims=2))          # Compute value
-        Exp_V = V[index_λ] * [1-λ; λ]               # Compute exponential value
-        V_bar1 = β * (U + Exp_V[index_I])           # Compute v-specific
-        dist = max(abs.(V_bar1 - V_bar)...);        # Check distance
+        V = γ .+ log.(sum(exp.(Vbar), dims=2))     # Compute value
+        expV = V[index_λ] * [1-λ; λ]               # Compute expected value
+        Vbar1 =  U + β * expV[index_A]             # Compute v-specific
+        dist = max(abs.(Vbar1 - Vbar)...);         # Check distance
         iter += 1;
-        V_bar = V_bar1                              # Update value function
+        Vbar = Vbar1                               # Update value function
     end
-    return V_bar
+    return Vbar
 end;</code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 </div>
-<div id="solving-the-model" class="section level3">
+<div id="solving-the-model-1" class="section level3">
 <h3>Solving the Model</h3>
 <p>We can now solve for the value function.</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBganVsaWFcbiMgQ29tcHV0ZSB2YWx1ZSBmdW5jdGlvblxuVl9iYXIgPSBjb21wdXRlX1YozrgsIM67LCDOsiwgeCk7XG5gYGAifQ== -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBganVsaWFcbiMgQ29tcHV0ZSB2YWx1ZSBmdW5jdGlvblxuVl9iYXIgPSBjb21wdXRlX1ZiYXIozrgsIM67LCDOsiwgcyk7XG5gYGAifQ== -->
 <pre class="julia"><code># Compute value function
-V_bar = compute_V(θ, λ, β, x);</code></pre>
+V_bar = compute_Vbar(θ, λ, β, s);</code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
@@ -412,46 +422,119 @@ V_bar = compute_V(θ, λ, β, x);</code></pre>
 <p>Now that we know how to compute the equilibrium, we can simulate the data.</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBganVsaWFcbmZ1bmN0aW9uIGdlbmVyYXRlX2RhdGEozrg6OlZlY3Rvciwgzrs6Ok51bWJlciwgzrI6Ok51bWJlciwgeDo6VmVjdG9yLCBOOjpJbnQpOjpUdXBsZVxuICAgIFwiXCJcIkdlbmVyYXRlIGRhdGEgZnJvbSBwcmltaXRpdmVzXCJcIlwiXG4gICAgVl9iYXIgPSBjb21wdXRlX1YozrgsIM67LCDOsiwgeCkgICAgICAgICAgICAgICAjIFNvbHZlIG1vZGVsXG4gICAgzrUgPSByYW5kKEd1bWJlbCgwLDEpLCBOLCAyKSAgICAgICAgICAgICAgICAgIyBEcmF3IHNob2Nrc1xuICAgIFh0ID0gcmFuZCh4LisxLCBOKSAgICAgICAgICAgICAgICAgICAgICAgICAgIyBEcmF3IHN0YXRlc1xuICAgIEl2ID0gKCgoVl9iYXJbWHQsOl0gKyDOtSkgKiBbLTE7MV0pIC4+IDApICAgICMgQ29tcHV0ZSBpbnZlc3RtZW50IGRlY2lzaW9uc1xuICAgIM60ID0gKHJhbmQoVW5pZm9ybSgwLDEpLCBOKSAuPCDOuykgICAgICAgICAgICAjIENvbXB1dGUgbWlsZWFnZSBzaG9ja1xuICAgIFh0MSA9IG1pbi4oWHQgLiogKEl2Lj09MCkgKyDOtCwgbWF4KHguLi4pKSAgICMgQ29tcHV0ZSBuZXh0IHN0YXRlXG4gICAgZGYgPSBEYXRhRnJhbWUoWHQ9WHQsIEl2PUl2LCBYdDE9WHQxKVxuICAgIENTVi53cml0ZShcIi4uL2RhdGEvcnVzdC5jc3ZcIiwgZGYpXG4gICAgcmV0dXJuIFh0LCBJdiwgWHQxXG5lbmQ7XG5gYGAifQ== -->
-<pre class="julia"><code>function generate_data(θ::Vector, λ::Number, β::Number, x::Vector, N::Int)::Tuple
+<!-- rnb-source-begin eyJkYXRhIjoiYGBganVsaWFcbmZ1bmN0aW9uIGdlbmVyYXRlX2RhdGEozrg6OlZlY3Rvciwgzrs6Ok51bWJlciwgzrI6Ok51bWJlciwgczo6VmVjdG9yLCBOOjpJbnQpOjpUdXBsZVxuICAgIFwiXCJcIkdlbmVyYXRlIGRhdGEgZnJvbSBwcmltaXRpdmVzXCJcIlwiXG4gICAgVmJhciA9IGNvbXB1dGVfVmJhcijOuCwgzrssIM6yLCBzKSAgICAgICAgICAgICAjIFNvbHZlIG1vZGVsXG4gICAgzrUgPSByYW5kKEd1bWJlbCgwLDEpLCBOLCAyKSAgICAgICAgICAgICAgICAgIyBEcmF3IHNob2Nrc1xuICAgIFN0ID0gcmFuZChzLCBOKSAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIyBEcmF3IHN0YXRlc1xuICAgIEEgPSAoKChWYmFyW1N0LDpdICsgzrUpICogWy0xOzFdKSAuPiAwKSAgICAgICMgQ29tcHV0ZSBpbnZlc3RtZW50IGRlY2lzaW9uc1xuICAgIM60ID0gKHJhbmQoVW5pZm9ybSgwLDEpLCBOKSAuPCDOuykgICAgICAgICAgICAjIENvbXB1dGUgbWlsZWFnZSBzaG9ja1xuICAgIFN0MSA9IG1pbi4oU3QgLiogKEEuPT0wKSArIM60LCBtYXgocy4uLikpICAgICMgQ29tcHV0ZSBuZVNyIHN0YXRlXG4gICAgZGYgPSBEYXRhRnJhbWUoU3Q9U3QsIEE9QSwgU3QxPVN0MSkgICAgICAgICAjIERhdGFmcmFtZVxuICAgIENTVi53cml0ZShcIi4uL2RhdGEvcnVzdC5jc3ZcIiwgZGYpXG4gICAgcmV0dXJuIFN0LCBBLCBTdDFcbmVuZDtcbmBgYCJ9 -->
+<pre class="julia"><code>function generate_data(θ::Vector, λ::Number, β::Number, s::Vector, N::Int)::Tuple
     &quot;&quot;&quot;Generate data from primitives&quot;&quot;&quot;
-    V_bar = compute_V(θ, λ, β, x)               # Solve model
+    Vbar = compute_Vbar(θ, λ, β, s)             # Solve model
     ε = rand(Gumbel(0,1), N, 2)                 # Draw shocks
-    Xt = rand(x.+1, N)                          # Draw states
-    Iv = (((V_bar[Xt,:] + ε) * [-1;1]) .&gt; 0)    # Compute investment decisions
+    St = rand(s, N)                             # Draw states
+    A = (((Vbar[St,:] + ε) * [-1;1]) .&gt; 0)      # Compute investment decisions
     δ = (rand(Uniform(0,1), N) .&lt; λ)            # Compute mileage shock
-    Xt1 = min.(Xt .* (Iv.==0) + δ, max(x...))   # Compute next state
-    df = DataFrame(Xt=Xt, Iv=Iv, Xt1=Xt1)
+    St1 = min.(St .* (A.==0) + δ, max(s...))    # Compute neSr state
+    df = DataFrame(St=St, A=A, St1=St1)         # Dataframe
     CSV.write(&quot;../data/rust.csv&quot;, df)
-    return Xt, Iv, Xt1
+    return St, A, St1
 end;</code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 </div>
-<div id="the-data" class="section level3">
-<h3>The Data</h3>
+<div id="generate-the-data" class="section level3">
+<h3>Generate the DAta</h3>
+<p>We can now generate the data</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBganVsaWFcbiMgR2VuZXJhdGUgZGF0YVxuTiA9IEludCgxZTUpO1xuU3QsIEEsIFN0MSA9IGdlbmVyYXRlX2RhdGEozrgsIM67LCDOsiwgcywgTik7XG5gYGAifQ== -->
+<pre class="julia"><code># Generate data
+N = Int(1e5);
+St, A, St1 = generate_data(θ, λ, β, s, N);</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
 <p>How many investment decisions do we observe?</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-output-begin eyJkYXRhIjoid2Ugb2JzZXJ2ZSAyMjE4NSBpbnZlc3RtZW50IGRlY2lzaW9ucyBpbiAxMDAwMDAgb2JzZXJ2YXRpb25zXG4ifQ== -->
-<pre><code>we observe 22185 investment decisions in 100000 observations</code></pre>
+<!-- rnb-output-begin eyJkYXRhIjoid2Ugb2JzZXJ2ZSAxOTQzMSBpbnZlc3RtZW50IGRlY2lzaW9ucyBpbiAxMDAwMDAgb2JzZXJ2YXRpb25zXG4ifQ== -->
+<pre><code>we observe 19431 investment decisions in 100000 observations</code></pre>
 <!-- rnb-output-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
+<div id="the-data" class="section level3">
+<h3>The Data</h3>
+<p>What does the data look like?</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBSZWFkIGRhdGFcbmRmID0gZnJlYWQoXCIuLi9kYXRhL3J1c3QuY3N2XCIpXG5rYWJsZShkZlsxOjYsXSwgZGlnaXRzPTQpXG5gYGAifQ== -->
+<pre class="r"><code># Read data
+df = fread(&quot;../data/rust.csv&quot;)
+kable(df[1:6,], digits=4)</code></pre>
+<!-- rnb-source-end -->
+
+<!-- rnb-html-begin eyJtZXRhZGF0YSI6eyJjbGFzc2VzIjpbImtuaXRfYXNpcyJdLCJzaXppbmdQb2xpY3kiOltdfX0= -->
+
+<table>
+<thead>
+<tr class="header">
+<th align="right">St</th>
+<th align="left">A</th>
+<th align="right">St1</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">5</td>
+<td align="left">FALSE</td>
+<td align="right">6</td>
+</tr>
+<tr class="even">
+<td align="right">4</td>
+<td align="left">TRUE</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="right">8</td>
+<td align="left">TRUE</td>
+<td align="right">1</td>
+</tr>
+<tr class="even">
+<td align="right">1</td>
+<td align="left">FALSE</td>
+<td align="right">2</td>
+</tr>
+<tr class="odd">
+<td align="right">5</td>
+<td align="left">FALSE</td>
+<td align="right">6</td>
+</tr>
+<tr class="even">
+<td align="right">7</td>
+<td align="left">FALSE</td>
+<td align="right">8</td>
+</tr>
+</tbody>
+</table>
+
+
+<!-- rnb-html-end -->
+
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 </div>
 <div id="estimation---lambda" class="section level3">
 <h3>Estimation - Lambda</h3>
 <ul>
-<li><p>First we can estimate the value of lambda as the mean</p>
+<li><p>First we can estimate the value of lambda as the probability of mileage increase</p></li>
+<li><p>Conditional on not investing</p></li>
+<li><p>And not being in the last state (mileage cannot increase any more)</p>
 <p><span class="math display">\[
-\hat \lambda = \mathbb E_n \Big[ (x_{t+1}-x_t) \mid i_{t}=0 \wedge x_{t}&lt;10 \Big]
+\hat \lambda = \mathbb E_n \Big[ (s_{t+1}-s_t) \mid a_{t}=0 \wedge s_{t}&lt;10 \Big]
 \]</span></p></li>
 </ul>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-output-begin eyJkYXRhIjoiRXN0aW1hdGVkIGxhbWJkYTogMC44MTkyOTc4NzQyNzA1MDg5ICh0cnVlID0gMC44MilcbiJ9 -->
-<pre><code>Estimated lambda: 0.8192978742705089 (true = 0.82)</code></pre>
+<!-- rnb-output-begin eyJkYXRhIjoiRXN0aW1hdGVkIGxhbWJkYTogMC44MjExNTE2NTY0NTUwMjM2ICh0cnVlID0gMC44MilcbiJ9 -->
+<pre><code>Estimated lambda: 0.8211516564550236 (true = 0.82)</code></pre>
 <!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
@@ -460,30 +543,29 @@ end;</code></pre>
 <h3>Estimation - Theta</h3>
 <ul>
 <li><p>Take a parameter guess <span class="math inline">\(\theta_0\)</span></p></li>
-<li><p>Compute the corresponding value function <span class="math inline">\(V(x_t | \hat \lambda, \theta_0)\)</span></p></li>
+<li><p>Compute the alternative-specific value function <span class="math inline">\(\bar V(s_t ; \hat \lambda, \theta_0)\)</span> by iteration</p></li>
 <li><p>Compute the implied choice probabilities</p></li>
-<li><p>Compute the likelihood</p>
-<p><span class="math display">\[
-\mathcal{L}(\theta)=\prod_{t=1}^{T}\left(\hat{\operatorname{Pr}}\left(i=1 \mid x_{t}, \theta\right) \mathbb{1}\left(i_{t}=1\right)+\left(1-\hat{\operatorname{Pr}}\left(i=0 \mid x_{t}, \theta\right)\right) \mathbb{1}\left(i_{t}=0\right)\right)
+<li><p>Compute the likelihood <span class="math display">\[
+\mathcal{L}(\theta) = \prod_{t=1}^{T}\left(\hat{\operatorname{Pr}}\left(a=1 \mid s_{t}, \theta\right) \mathbb{1}\left(a_{t}=1\right)+\left(1-\hat{\operatorname{Pr}}\left(a=0 \mid s_{t}, \theta\right)\right) \mathbb{1}\left(a_{t}=0\right)\right)
 \]</span></p></li>
 <li><p>Repeat the above to find a minimum of the likelihood function</p></li>
 </ul>
 </div>
-<div id="code-1" class="section level3">
-<h3>Code</h3>
+<div id="likelihood-function" class="section level3">
+<h3>Likelihood Function</h3>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBganVsaWFcbmZ1bmN0aW9uIGxvZ0wozrgwOjpWZWN0b3IpOjpOdW1iZXJcbiAgICBcIlwiXCJDb21wdXRlIGxvZy1saWtlbGlob29kIGZ1bmN0aW9uXCJcIlwiXG4gICAgIyBDb21wdXRlIHZhbHVlXG4gICAgVl9iYXIgPSBjb21wdXRlX1YozrgwLCDOu18sIM6yLCB4KVxuXG4gICAgIyBJbXBsaWVkIGNob2ljZSBwcm9iYWJpbGl0aWVzXG4gICAgcHJfSSA9IGV4cC4oVl9iYXJbOiwyXSkgLi8gKGV4cC4oVl9iYXJbOiwxXSkgKyBleHAuKFZfYmFyWzosMl0pKVxuXG4gICAgIyBMaWtlbGlob29kXG4gICAgbG9nTCA9IHN1bShsb2cuKHByX0lbeF90W0l2Lj09MV1dKSkgKyBzdW0obG9nLigxIC4tIHByX0lbeF90W0l2Lj09MF1dKSlcbiAgICByZXR1cm4gLWxvZ0xcbmVuZDtcbmBgYCJ9 -->
-<pre class="julia"><code>function logL(θ0::Vector)::Number
-    &quot;&quot;&quot;Compute log-likelihood function&quot;&quot;&quot;
+<!-- rnb-source-begin eyJkYXRhIjoiYGBganVsaWFcbmZ1bmN0aW9uIGxvZ0xfUnVzdCjOuDA6OlZlY3Rvciwgzrs6Ok51bWJlciwgzrI6Ok51bWJlciwgczo6VmVjdG9yLCBTdDo6VmVjdG9yLCBBOjpCaXRWZWN0b3IpOjpOdW1iZXJcbiAgICBcIlwiXCJDb21wdXRlIGxvZy1saWtlbGlob29kIGZ1bmN0aW9uZm9yIFJ1c3QgcHJvYmxlbVwiXCJcIlxuICAgICMgQ29tcHV0ZSB2YWx1ZVxuICAgIFZiYXIgPSBjb21wdXRlX1ZiYXIozrgwLCDOu18sIM6yLCBzKVxuXG4gICAgIyBFeHBlY3RlZCBjaG9pY2UgcHJvYmFiaWxpdGllc1xuICAgIEVQID0gZXhwLihWYmFyWzosMl0pIC4vIChleHAuKFZiYXJbOiwxXSkgKyBleHAuKFZiYXJbOiwyXSkpXG5cbiAgICAjIExpa2VsaWhvb2RcbiAgICBsb2dMID0gc3VtKGxvZy4oRVBbU3RbQS49PTFdXSkpICsgc3VtKGxvZy4oMSAuLSBFUFtTdFtBLj09MF1dKSlcbiAgICByZXR1cm4gLWxvZ0xcbmVuZDtcbmBgYCJ9 -->
+<pre class="julia"><code>function logL_Rust(θ0::Vector, λ::Number, β::Number, s::Vector, St::Vector, A::BitVector)::Number
+    &quot;&quot;&quot;Compute log-likelihood functionfor Rust problem&quot;&quot;&quot;
     # Compute value
-    V_bar = compute_V(θ0, λ_, β, x)
+    Vbar = compute_Vbar(θ0, λ_, β, s)
 
-    # Implied choice probabilities
-    pr_I = exp.(V_bar[:,2]) ./ (exp.(V_bar[:,1]) + exp.(V_bar[:,2]))
+    # Expected choice probabilities
+    EP = exp.(Vbar[:,2]) ./ (exp.(Vbar[:,1]) + exp.(Vbar[:,2]))
 
     # Likelihood
-    logL = sum(log.(pr_I[x_t[Iv.==1]])) + sum(log.(1 .- pr_I[x_t[Iv.==0]]))
+    logL = sum(log.(EP[St[A.==1]])) + sum(log.(1 .- EP[St[A.==0]]))
     return -logL
 end;</code></pre>
 <!-- rnb-source-end -->
@@ -492,8 +574,8 @@ end;</code></pre>
 <p>We can check the likelihood at the true value:</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-output-begin eyJkYXRhIjoiVGhlIGxpa2VsaWhvb2QgYXQgdGhlIHRydWUgdmFsdWVzIGlzIDQ5MzM1Ljg3Nzc2NDAyNjMyXG4ifQ== -->
-<pre><code>The likelihood at the true values is 49335.87776402632</code></pre>
+<!-- rnb-output-begin eyJkYXRhIjoiVGhlIGxpa2VsaWhvb2QgYXQgdGhlIHRydWUgcGFyYW1ldGVyIGlzIDQ2MTk0LjE2MTE3NDY3NzAxNFxuIn0= -->
+<pre><code>The likelihood at the true parameter is 46194.161174677014</code></pre>
 <!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
@@ -502,8 +584,8 @@ end;</code></pre>
 <h3>Estimating Theta</h3>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-output-begin eyJkYXRhIjoiVHJ1ZSB0aGV0YXM6IFswLjEzLCAtMC4wMDQsIDMuMV1cbiJ9 -->
-<pre><code>True thetas: [0.13, -0.004, 3.1]</code></pre>
+<!-- rnb-output-begin eyJkYXRhIjoiRXN0aW1hdGVkIHRoZXRhczogWzAuMTM3MjY0NTExMTM2MzAyNTMsIC0wLjAwNDQyMjI5OTk1Mzc4NDIwMiwgMy4xNTUxMTgwNDUxODIxNjJdICh0cnVlID0gWzAuMTMsIC0wLjAwNCwgMy4xXSlcbiJ9 -->
+<pre><code>Estimated thetas: [0.13726451113630253, -0.004422299953784202, 3.155118045182162] (true = [0.13, -0.004, 3.1])</code></pre>
 <!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
@@ -513,24 +595,288 @@ end;</code></pre>
 <p>Starting values are important!</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-output-begin eyJkYXRhIjoiVHJ1ZSB0aGV0YXM6ICAgICAgWzAuMTMsIC0wLjAwNCwgMy4xXVxuIn0= -->
-<pre><code>True thetas:      [0.13, -0.004, 3.1]</code></pre>
+<!-- rnb-output-begin eyJkYXRhIjoiRXN0aW1hdGVkIHRoZXRhczogWzEuMCwgMS4wLCAxLjBdICh0cnVlID0gWzAuMTMsIC0wLjAwNCwgMy4xXSlcbiJ9 -->
+<pre><code>Estimated thetas: [1.0, 1.0, 1.0] (true = [0.13, -0.004, 3.1])</code></pre>
 <!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 </div>
-<div id="references" class="section level2">
-<h2>References</h2>
-<hr />
+<div id="hotz-miller" class="section level2">
+<h2>Hotz &amp; Miller</h2>
+<div id="recap" class="section level3">
+<h3>Recap</h3>
+<p>Hotz &amp; Miller estimation procedure works as follows</p>
+<ol style="list-style-type: decimal">
+<li><p>Estimate the CCPs from the data</p></li>
+<li><p>Hotz &amp; Miller inversion <span class="math display">\[
+  \hat V = \Big[I - \beta \ \sum_a P_a .* T_a \Big]^{-1} \ * \ \left( \sum_a P_a \ .* \ \bigg[ u_a + \mathbb E [\epsilon_a] \bigg] \right) 
+\]</span></p></li>
+<li><p>Compute EP from EV <span class="math display">\[
+\hat \Pr(a=1 ; \theta) = \frac{\exp (u_1 +\beta T_1 \hat V )}{\sum_{a} \exp (u_a +\beta T_a \hat V )}
+\]</span></p></li>
+<li><p>Compute the objective function: the (log)likelihood <span class="math display">\[
+\mathcal{L}(\theta) = \prod_{t=1}^{T}\left(\hat{\operatorname{Pr}}\left(a=1 \mid s_{t}; \theta\right) \mathbb{1}\left(a_{t}=1\right)+\left(1-\hat{\operatorname{Pr}}\left(a=0 \mid s_{t}; \theta\right)\right) \mathbb{1}\left(a_{t}=0\right)\right)
+\]</span></p></li>
+</ol>
+</div>
+<div id="ccps" class="section level3">
+<h3>CCPs</h3>
+<p>First, we need to estimate the <strong>Conditional Choice Proabilities (CCP)</strong></p>
+<ul>
+<li>can be done non-parametrically</li>
+<li>i.e. just look at the frequency of investment in each state</li>
+</ul>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-output-begin eyJkYXRhIjoiMTDDlzIgQXJyYXl7RmxvYXQ2NCwyfTpcbiAwLjk1MzQzNyAgMC4wNDY1NjNcbiAwLjkyNDQxMyAgMC4wNzU1ODY1XG4gMC44OTQzNzcgIDAuMTA1NjIzXG4gMC44NTUwNzcgIDAuMTQ0OTIzXG4gMC44MjAzNyAgIDAuMTc5NjNcbiAwLjc3ODA4OSAgMC4yMjE5MTFcbiAwLjczODc2MiAgMC4yNjEyMzhcbiAwLjcxMjk2NiAgMC4yODcwMzRcbiAwLjcwMDQ4MSAgMC4yOTk1MTlcbiAwLjY3ODU0NiAgMC4zMjE0NTRcbiJ9 -->
+<pre><code>10×2 Array{Float64,2}:
+ 0.953437  0.046563
+ 0.924413  0.0755865
+ 0.894377  0.105623
+ 0.855077  0.144923
+ 0.82037   0.17963
+ 0.778089  0.221911
+ 0.738762  0.261238
+ 0.712966  0.287034
+ 0.700481  0.299519
+ 0.678546  0.321454</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
+<div id="transition-probabilities" class="section level3">
+<h3>Transition Probabilities</h3>
+<p>NeSr, we need <span class="math inline">\(T\)</span>, the matrices of transition probabilities, conditional on the investment choice.</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBganVsaWFcbmZ1bmN0aW9uIGNvbXB1dGVfVChrOjpJbnQsIM67Xzo6TnVtYmVyKTo6QXJyYXlcbiAgICBcIlwiXCJDb21wdXRlIHRyYW5zaXRpb24gbWF0cml4XCJcIlwiXG4gICAgVCA9IHplcm9zKGssIGssIDIpO1xuXG4gICAgIyBDb25kaXRpb25hbCBvbiBub3QgaW52ZXN0aW5nXG4gICAgVFtrLGssMV0gPSAxO1xuICAgIGZvciBpPTE6ay0xXG4gICAgICAgIFRbaSxpLDFdID0gMS3Ou19cbiAgICAgICAgVFtpLGkrMSwxXSA9IM67X1xuICAgIGVuZFxuXG4gICAgIyBDb25kaXRpb25hbCBvbiBpbnZlc3RpbmdcbiAgICBUWzosMSwyXSAuPSAxLc67XztcbiAgICBUWzosMiwyXSAuPSDOu187XG5cbiAgICByZXR1cm4oVClcbmVuZDtcbmBgYCJ9 -->
+<pre class="julia"><code>function compute_T(k::Int, λ_::Number)::Array
+    &quot;&quot;&quot;Compute transition matrix&quot;&quot;&quot;
+    T = zeros(k, k, 2);
+
+    # Conditional on not investing
+    T[k,k,1] = 1;
+    for i=1:k-1
+        T[i,i,1] = 1-λ_
+        T[i,i+1,1] = λ_
+    end
+
+    # Conditional on investing
+    T[:,1,2] .= 1-λ_;
+    T[:,2,2] .= λ_;
+
+    return(T)
+end;</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
+<div id="t" class="section level3">
+<h3>T</h3>
+<p>What form does the transition matrix <span class="math inline">\(T\)</span> take?</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-output-begin eyJkYXRhIjoiMTDDlzEwIEFycmF5e0Zsb2F0NjQsMn06XG4gMC4xNzg4NDggIDAuODIxMTUyICAwLjAgICAgICAgMC4wICAgICAgIOKApiAgMC4wICAgICAgIDAuMCAgICAgICAwLjBcbiAwLjAgICAgICAgMC4xNzg4NDggIDAuODIxMTUyICAwLjAgICAgICAgICAgMC4wICAgICAgIDAuMCAgICAgICAwLjBcbiAwLjAgICAgICAgMC4wICAgICAgIDAuMTc4ODQ4ICAwLjgyMTE1MiAgICAgMC4wICAgICAgIDAuMCAgICAgICAwLjBcbiAwLjAgICAgICAgMC4wICAgICAgIDAuMCAgICAgICAwLjE3ODg0OCAgICAgMC4wICAgICAgIDAuMCAgICAgICAwLjBcbiAwLjAgICAgICAgMC4wICAgICAgIDAuMCAgICAgICAwLjAgICAgICAgICAgMC4wICAgICAgIDAuMCAgICAgICAwLjBcbiAwLjAgICAgICAgMC4wICAgICAgIDAuMCAgICAgICAwLjAgICAgICAg4oCmICAwLjAgICAgICAgMC4wICAgICAgIDAuMFxuIDAuMCAgICAgICAwLjAgICAgICAgMC4wICAgICAgIDAuMCAgICAgICAgICAwLjgyMTE1MiAgMC4wICAgICAgIDAuMFxuIDAuMCAgICAgICAwLjAgICAgICAgMC4wICAgICAgIDAuMCAgICAgICAgICAwLjE3ODg0OCAgMC44MjExNTIgIDAuMFxuIDAuMCAgICAgICAwLjAgICAgICAgMC4wICAgICAgIDAuMCAgICAgICAgICAwLjAgICAgICAgMC4xNzg4NDggIDAuODIxMTUyXG4gMC4wICAgICAgIDAuMCAgICAgICAwLjAgICAgICAgMC4wICAgICAgICAgIDAuMCAgICAgICAwLjAgICAgICAgMS4wXG4ifQ== -->
+<pre><code>10×10 Array{Float64,2}:
+ 0.178848  0.821152  0.0       0.0       …  0.0       0.0       0.0
+ 0.0       0.178848  0.821152  0.0          0.0       0.0       0.0
+ 0.0       0.0       0.178848  0.821152     0.0       0.0       0.0
+ 0.0       0.0       0.0       0.178848     0.0       0.0       0.0
+ 0.0       0.0       0.0       0.0          0.0       0.0       0.0
+ 0.0       0.0       0.0       0.0       …  0.0       0.0       0.0
+ 0.0       0.0       0.0       0.0          0.821152  0.0       0.0
+ 0.0       0.0       0.0       0.0          0.178848  0.821152  0.0
+ 0.0       0.0       0.0       0.0          0.0       0.178848  0.821152
+ 0.0       0.0       0.0       0.0          0.0       0.0       1.0</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
+<div id="t-2" class="section level3">
+<h3>T (2)</h3>
+<p>Instead, the transitions conditional on investing are</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-output-begin eyJkYXRhIjoiMTDDlzEwIEFycmF5e0Zsb2F0NjQsMn06XG4gMC4xNzg4NDggIDAuODIxMTUyICAwLjAgIDAuMCAgMC4wICAwLjAgIDAuMCAgMC4wICAwLjAgIDAuMFxuIDAuMTc4ODQ4ICAwLjgyMTE1MiAgMC4wICAwLjAgIDAuMCAgMC4wICAwLjAgIDAuMCAgMC4wICAwLjBcbiAwLjE3ODg0OCAgMC44MjExNTIgIDAuMCAgMC4wICAwLjAgIDAuMCAgMC4wICAwLjAgIDAuMCAgMC4wXG4gMC4xNzg4NDggIDAuODIxMTUyICAwLjAgIDAuMCAgMC4wICAwLjAgIDAuMCAgMC4wICAwLjAgIDAuMFxuIDAuMTc4ODQ4ICAwLjgyMTE1MiAgMC4wICAwLjAgIDAuMCAgMC4wICAwLjAgIDAuMCAgMC4wICAwLjBcbiAwLjE3ODg0OCAgMC44MjExNTIgIDAuMCAgMC4wICAwLjAgIDAuMCAgMC4wICAwLjAgIDAuMCAgMC4wXG4gMC4xNzg4NDggIDAuODIxMTUyICAwLjAgIDAuMCAgMC4wICAwLjAgIDAuMCAgMC4wICAwLjAgIDAuMFxuIDAuMTc4ODQ4ICAwLjgyMTE1MiAgMC4wICAwLjAgIDAuMCAgMC4wICAwLjAgIDAuMCAgMC4wICAwLjBcbiAwLjE3ODg0OCAgMC44MjExNTIgIDAuMCAgMC4wICAwLjAgIDAuMCAgMC4wICAwLjAgIDAuMCAgMC4wXG4gMC4xNzg4NDggIDAuODIxMTUyICAwLjAgIDAuMCAgMC4wICAwLjAgIDAuMCAgMC4wICAwLjAgIDAuMFxuIn0= -->
+<pre><code>10×10 Array{Float64,2}:
+ 0.178848  0.821152  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0
+ 0.178848  0.821152  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0
+ 0.178848  0.821152  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0
+ 0.178848  0.821152  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0
+ 0.178848  0.821152  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0
+ 0.178848  0.821152  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0
+ 0.178848  0.821152  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0
+ 0.178848  0.821152  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0
+ 0.178848  0.821152  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0
+ 0.178848  0.821152  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
+<div id="hotz-miller-inversion" class="section level3">
+<h3>Hotz &amp; Miller Inversion</h3>
+<p>We now have all the pieces to compute the <strong>expected value function</strong> <span class="math inline">\(V\)</span> through the Hotz &amp; Miller <strong>inversion</strong>. <span class="math display">\[
+\hat V = \left[I - \beta \ \sum_a P_a .* T_a \right]^{-1} \ * \ \left( \sum_a P_a \ .* \ \bigg[ u_a + \mathbb E [\epsilon_a] \bigg] \right)
+\]</span></p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBganVsaWFcbmZ1bmN0aW9uIEhNX2ludmVyc2lvbihDQ1A6Ok1hdHJpeCwgVDo6QXJyYXksIFU6Ok1hdHJpeCwgzrI6Ok51bWJlcik6OlZlY3RvclxuICAgIFwiXCJcIlBlcmZvcm0gSE0gaW52ZXJzaW9uXCJcIlwiXG5cbiAgICAjIENvbXB1dGUgTEhTICh0byBiZSBpbnZlcnRlZClcbiAgICDOsyA9IEJhc2UuTWF0aENvbnN0YW50cy5ldWxlcmdhbW1hXG4gICAgTEVGVCA9IEkgLSDOsiAuKiAoQ0NQWzosMV0gLiogVFs6LDosMV0gKyBDQ1BbOiwyXSAuKiBUWzosOiwyXSlcblxuICAgICMgQ29tcHV0ZSBMSFMgKG5vdCB0byBiZSBpbnZlcnRlZClcbiAgICBSSUdIVCA9IM6zIC4rIHN1bShDQ1AgLiogKFUgLi0gbG9nLihDQ1ApKSAsIGRpbXM9MilcblxuICAgICMgQ29tcHV0ZSBWXG4gICAgRVZfID0gaW52KExFRlQpICogUklHSFRcbiAgICByZXR1cm4gdmVjKEVWXylcbmVuZDtcbmBgYCJ9 -->
+<pre class="julia"><code>function HM_inversion(CCP::Matrix, T::Array, U::Matrix, β::Number)::Vector
+    &quot;&quot;&quot;Perform HM inversion&quot;&quot;&quot;
+
+    # Compute LHS (to be inverted)
+    γ = Base.MathConstants.eulergamma
+    LEFT = I - β .* (CCP[:,1] .* T[:,:,1] + CCP[:,2] .* T[:,:,2])
+
+    # Compute LHS (not to be inverted)
+    RIGHT = γ .+ sum(CCP .* (U .- log.(CCP)) , dims=2)
+
+    # Compute V
+    EV_ = inv(LEFT) * RIGHT
+    return vec(EV_)
+end;</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
+<div id="from-ev-to-ep" class="section level3">
+<h3>From EV to EP</h3>
+<p>We can now compute the expected policy function from the expected value function <span class="math display">\[
+  \hat \Pr(a=1 ; \theta) = \frac{\exp (u_1 +\beta T_1 \hat V )}{\sum_{a} \exp (u_a +\beta T_a \hat V )}
+\]</span></p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBganVsaWFcbmZ1bmN0aW9uIGZyb21fRVZfdG9fRVAoRVZfOjpWZWN0b3IsIFQ6OkFycmF5LCBVOjpNYXRyaXgsIM6yOjpOdW1iZXIpOjpWZWN0b3JcbiAgICBcIlwiXCJDb21wdXRlIGV4cGVjdGVkIHBvbGljeSBmcm9tIGV4cGVjdGVkIHZhbHVlXCJcIlwiXG4gICAgRSA9IGV4cC4oIFUgKyDOsiAuKiBbKFRbOiw6LDFdICogRVZfKSAoVFs6LDosMl0gKiBFVl8pXSApXG4gICAgRVBfID0gRVs6LDJdIC4vIHN1bShFLCBkaW1zPTIpXG4gICAgcmV0dXJuIHZlYyhFUF8pXG5lbmQ7XG5gYGAifQ== -->
+<pre class="julia"><code>function from_EV_to_EP(EV_::Vector, T::Array, U::Matrix, β::Number)::Vector
+    &quot;&quot;&quot;Compute expected policy from expected value&quot;&quot;&quot;
+    E = exp.( U + β .* [(T[:,:,1] * EV_) (T[:,:,2] * EV_)] )
+    EP_ = E[:,2] ./ sum(E, dims=2)
+    return vec(EP_)
+end;</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
+<div id="likelihood" class="section level3">
+<h3>Likelihood</h3>
+<p>We now have all the pieces to build the likelihood function <span class="math display">\[
+  \mathcal{L}(\theta) = \prod_{t=1}^{T} \left(\hat \Pr \left(a=1 \mid s_{t}; \theta\right) \mathbb{1} \left(a_{t}=1\right) + \left(1-\hat \Pr \left(a=0 \mid s_{t}; \theta\right)\right) \mathbb{1} \left(a_{t}=0\right)\right)
+\]</span></p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBganVsaWFcbmZ1bmN0aW9uIGxvZ0xfSE0ozrgwOjpWZWN0b3IsIM67OjpOdW1iZXIsIM6yOjpOdW1iZXIsIHM6OlZlY3RvciwgU3Q6OlZlY3RvciwgQTo6Qml0VmVjdG9yLCBUOjpBcnJheSwgQ0NQOjpNYXRyaXgpOjpOdW1iZXJcbiAgICBcIlwiXCJDb21wdXRlIGxvZy1saWtlbGlob29kIGZ1bmN0aW9uIGZvciBITSBwcm9ibGVtXCJcIlwiXG4gICAgIyBDb21wdXRlIHN0YXRpYyB1dGlsaXR5XG4gICAgVSA9IGNvbXB1dGVfVSjOuDAsIHMpXG5cbiAgICAjIEVzcGVjdGVkIHZhbHVlIGJ5IGludmVyc2lvblxuICAgIEVWXyA9IEhNX2ludmVyc2lvbihDQ1AsIFQsIFUsIM6yKVxuXG4gICAgIyBJbXBsaWVzIGNob2ljZSBwcm9iYWJpbGl0aWVzXG4gICAgRVBfID0gZnJvbV9FVl90b19FUChFVl8sIFQsIFUsIM6yKVxuXG4gICAgIyBMaWtlbGlob29kXG4gICAgbG9nTCA9IHN1bShsb2cuKEVQX1tTdFtBLj09MV1dKSkgKyBzdW0obG9nLigxIC4tIEVQX1tTdFtBLj09MF1dKSlcbiAgICByZXR1cm4gLWxvZ0xcbmVuZDtcbmBgYCJ9 -->
+<pre class="julia"><code>function logL_HM(θ0::Vector, λ::Number, β::Number, s::Vector, St::Vector, A::BitVector, T::Array, CCP::Matrix)::Number
+    &quot;&quot;&quot;Compute log-likelihood function for HM problem&quot;&quot;&quot;
+    # Compute static utility
+    U = compute_U(θ0, s)
+
+    # Espected value by inversion
+    EV_ = HM_inversion(CCP, T, U, β)
+
+    # Implies choice probabilities
+    EP_ = from_EV_to_EP(EV_, T, U, β)
+
+    # Likelihood
+    logL = sum(log.(EP_[St[A.==1]])) + sum(log.(1 .- EP_[St[A.==0]]))
+    return -logL
+end;</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
+<div id="estimation" class="section level3">
+<h3>Estimation</h3>
+<p>We can now estimate the parameters</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-output-begin eyJkYXRhIjoiRXN0aW1hdGVkIHRoZXRhczogWzAuMTM3MjEyOTU2NzYxMDkwMjcsIC0wLjAwNDQxODAyMjM5ODU4NDUzMTQsIDMuMTU0OTk2NjAwNzYzOTQ4NV0gKHRydWUgPSBbMC4xMywgLTAuMDA0LCAzLjFdKVxuIn0= -->
+<pre><code>Estimated thetas: [0.13721295676109027, -0.0044180223985845314, 3.1549966007639485] (true = [0.13, -0.004, 3.1])</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
+<div id="aguirregabiria-mira-2002" class="section level3">
+<h3>Aguirregabiria, Mira (2002)</h3>
+<p>With Hotz and Miller, we have generated a mapping of the form</p>
+<p><span class="math display">\[
+\bar P(\cdot ; \theta) = g(h(\hat P(\cdot) ; \theta); \theta)
+\]</span></p>
+<p><span class="citation"><a href="#ref-aguirregabiria2002swapping" role="doc-biblioref">Aguirregabiria and Mira</a> (<a href="#ref-aguirregabiria2002swapping" role="doc-biblioref">2002</a>)</span>: why don’t we iterate it?</p>
+</div>
+<div id="am-likelihood-function" class="section level3">
+<h3>AM Likelihood Function</h3>
+<p>The likelihood function in <span class="citation"><a href="#ref-aguirregabiria2002swapping" role="doc-biblioref">Aguirregabiria and Mira</a> (<a href="#ref-aguirregabiria2002swapping" role="doc-biblioref">2002</a>)</span> is extremely similar to <span class="citation"><a href="#ref-hotz1993conditional" role="doc-biblioref">Hotz and Miller</a> (<a href="#ref-hotz1993conditional" role="doc-biblioref">1993</a>)</span></p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBganVsaWFcbmZ1bmN0aW9uIGxvZ0xfQU0ozrgwOjpWZWN0b3IsIM67OjpOdW1iZXIsIM6yOjpOdW1iZXIsIHM6OlZlY3RvciwgU3Q6OlZlY3RvciwgQTo6Qml0VmVjdG9yLCBUOjpBcnJheSwgQ0NQOjpNYXRyaXgsIEs6OkludCk6Ok51bWJlclxuICAgIFwiXCJcIkNvbXB1dGUgbG9nLWxpa2VsaWhvb2QgZnVuY3Rpb24gZm9yIEFNIHByb2JsZW1cIlwiXCJcbiAgICAjIENvbXB1dGUgc3RhdGljIHV0aWxpdHlcbiAgICBVID0gY29tcHV0ZV9VKM64MCwgcylcbiAgICBFUF8gPSBDQ1BbOiwyXVxuXG4gICAgIyBJdGVyYXRlIEhNIG1hcHBpbmdcbiAgICBmb3IgXz0xOktcbiAgICAgICAgRVZfID0gSE1faW52ZXJzaW9uKENDUCwgVCwgVSwgzrIpICAgICMgRXhwZWN0ZWQgdmFsdWUgYnkgaW52ZXJzaW9uXG4gICAgICAgIEVQXyA9IGZyb21fRVZfdG9fRVAoRVZfLCBULCBVLCDOsikgICAjIEltcGxpZXMgY2hvaWNlIHByb2JhYmlsaXRpZXNcbiAgICAgICAgQ0NQID0gWygxIC4tIEVQXykgRVBfXVxuICAgIGVuZFxuXG4gICAgIyBMaWtlbGlob29kXG4gICAgbG9nTCA9IHN1bShsb2cuKEVQX1tTdFtBLj09MV1dKSkgKyBzdW0obG9nLigxIC4tIEVQX1tTdFtBLj09MF1dKSlcbiAgICByZXR1cm4gLWxvZ0xcbmVuZDtcbmBgYCJ9 -->
+<pre class="julia"><code>function logL_AM(θ0::Vector, λ::Number, β::Number, s::Vector, St::Vector, A::BitVector, T::Array, CCP::Matrix, K::Int)::Number
+    &quot;&quot;&quot;Compute log-likelihood function for AM problem&quot;&quot;&quot;
+    # Compute static utility
+    U = compute_U(θ0, s)
+    EP_ = CCP[:,2]
+
+    # Iterate HM mapping
+    for _=1:K
+        EV_ = HM_inversion(CCP, T, U, β)    # Expected value by inversion
+        EP_ = from_EV_to_EP(EV_, T, U, β)   # Implies choice probabilities
+        CCP = [(1 .- EP_) EP_]
+    end
+
+    # Likelihood
+    logL = sum(log.(EP_[St[A.==1]])) + sum(log.(1 .- EP_[St[A.==0]]))
+    return -logL
+end;</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
+<div id="estimation-1" class="section level3">
+<h3>Estimation</h3>
+<p>We can now estimate the parameters</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-output-begin eyJkYXRhIjoiRXN0aW1hdGVkIHRoZXRhczogWzAuMTM3MjY0OTcxMDM1NzU5NywgLTAuMDA0NDIyMzQ1NzY1NzI5Nzk1LCAzLjE1NTExNzQzMDM3MjQ0MV0gKHRydWUgPSBbMC4xMywgLTAuMDA0LCAzLjFdKVxuIn0= -->
+<pre><code>Estimated thetas: [0.1372649710357597, -0.004422345765729795, 3.155117430372441] (true = [0.13, -0.004, 3.1])</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>Not much changes in our case.</p>
+</div>
+<div id="speed" class="section level3">
+<h3>Speed</h3>
+<p>We can compare the methods in terms of speed.</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-output-begin eyJkYXRhIjoiVGltZSBSdXN0OiAwLjUzNDA3NTAyMTc0Mzc3NDRcblRpbWUgSE06IDAuMjg4NTA2OTg0NzEwNjkzMzZcblRpbWUgQU06IDAuMzIwNTA4OTU2OTA5MTc5N1xuIn0= -->
+<pre><code>Time Rust: 0.5340750217437744
+Time HM: 0.28850698471069336
+Time AM: 0.3205089569091797</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>Even in this simple example with a very small state space, the difference is significant.</p>
+</div>
+</div>
+<div id="appendix" class="section level2">
+<h2>Appendix</h2>
+<div id="references" class="section level3">
+<h3>References</h3>
 <!-- rnb-text-end -->
 <div id="refs" class="references csl-bib-body hanging-indent">
+<div id="ref-aguirregabiria2002swapping" class="csl-entry">
+Aguirregabiria, Victor, and Pedro Mira. 2002. <span>“Swapping the Nested Fixed Point Algorithm: A Class of Estimators for Discrete Markov Decision Models.”</span> <em>Econometrica</em> 70 (4): 1519–43.
+</div>
+<div id="ref-hotz1993conditional" class="csl-entry">
+Hotz, V Joseph, and Robert A Miller. 1993. <span>“Conditional Choice Probabilities and the Estimation of Dynamic Models.”</span> <em>The Review of Economic Studies</em> 60 (3): 497–529.
+</div>
 <div id="ref-rust1988maximum" class="csl-entry">
 Rust, John. 1988. <span>“Maximum Likelihood Estimation of Discrete Control Processes.”</span> <em>SIAM Journal on Control and Optimization</em> 26 (5): 1006–24.
 </div>
 </div>
 </div>
+</div>
 
-<div id="rmd-source-code">LS0tCnRpdGxlOiAiQ29kaW5nOiBSdXN0ICgxOTg3KSIKYXV0aG9yOiAiTWF0dGVvIENvdXJ0aG91ZCIKdHlwZTogYm9vawp3ZWlnaHQ6IDE3CmRhdGU6IDIwMjEtMTAtMjkKYmlibGlvZ3JhcGh5OiByZWZlcmVuY2VzLmJpYgpsaW5rLWNpdGF0aW9uczogdHJ1ZQpvdXRwdXQ6IAogIGh0bWxfbm90ZWJvb2s6IAogICAgdG9jOiB0cnVlCiAgICB0b2NfZGVwdGg6IDIKICBodG1sX2RvY3VtZW50OgogICAgdG9jOiB0cnVlCiAgICB0b2NfZGVwdGg6IDMKICAgIHRvY19mbG9hdDogdHJ1ZQogICAgdG9jX2NvbGxhcHNlZDogdHJ1ZQogIGlvc2xpZGVzX3ByZXNlbnRhdGlvbjoKICAgIHdpZGVzY3JlZW46IHRydWUKICAgIHNtYWxsZXI6IHRydWUKICAgIHRyYW5zaXRpb246IDAKICAgIHNsaWRlX2xldmVsOiAzCiAgICBjc3M6IGN1c3RvbS5jc3MKICBtZF9kb2N1bWVudDoKICAgIHZhcmlhbnQ6IG1hcmtkb3duX21tZAogICAgcHJlc2VydmVfeWFtbDogdHJ1ZQotLS0KCmBgYHtyIGxvYWQganVsaWEgaWYgbm90IGxvYWRlZCwgaW5jbHVkZT1GQUxTRSwgZWNobz1GQUxTRX0KaWYgKCEoIkp1bGlhQ2FsbCIgJWluJSAoLnBhY2thZ2VzKCkpKSkgewogIGxpYnJhcnkoSnVsaWFDYWxsKQogIGp1bGlhIDwtIGp1bGlhX3NldHVwKCIvVXNlcnMvbWNvdXJ0L0RvY3VtZW50cy9KdWxpYS0xLjUuYXBwL0NvbnRlbnRzL1Jlc291cmNlcy9qdWxpYS9iaW4iKQp9CmBgYAoKYGBge2p1bGlhLCBpbmNsdWRlPUZBTFNFLCBlY2hvPUZBTFNFfQojaW1wb3J0IFBrZwojUGtnLmFkZCgiT3B0aW0iKQojUGtnLmFkZCgiU3RhdGlzdGljcyIpCiNQa2cuYWRkKCJEaXN0cmlidXRpb25zIikKI1BrZy5hZGQoIkRhdGFGcmFtZXMiKQojUGtnLmFkZCgiQ1NWIikKCnVzaW5nIE9wdGltCnVzaW5nIERpc3RyaWJ1dGlvbnMKdXNpbmcgU3RhdGlzdGljcwp1c2luZyBEYXRhRnJhbWVzCnVzaW5nIENTVgpgYGAKCiMjIyBTZXR0aW5nCgpGcm9tIEBydXN0MTk4OG1heGltdW0KCi0gICBBbiBhZ2VudCBvd25zIGEgZmxlZXQgdG8gYnVzZXMKCi0gICBCdXNlcyBnZXQgb2xkIG92ZXIgdGltZQoKLSAgIFRoZSBvbGRlciB0aGUgYnVzIGlzLCB0aGUgbW9zdCBjb3N0bHkgaXQgaXMgdG8gbWFpbnRhaW4KCi0gICBUaGUgYWdlbnQgY2FuIGRlY2lkZSB0byByZXBsYWNlIHRoZSBidXMgZW5naW5lIHdpdGggYSBuZXcgb25lLCBhdCBhIGNvc3QKCi0gICAqKkR5bmFtaWMgdHJhZGUtb2ZmKioKCiAgICAtICAgV2hhdCBpcyB0aGUgYmVzdCBtb21lbnQgdG8gcmVwbGFjZSB0aGUgZW5naW5lPwoKICAgIC0gICBZb3UgZG9uJ3Qgd2FudCB0byByZXBsYWNlIGFuIGVuZ2luZSB0b28gZWFybHkKCiAgICAgICAgLSAgIGRvZXNuJ3QgY2hhbmdlIG11Y2gKCiAgICAtICAgWW91IGRvbid0IHdhbnQgdG8gcmVwbGFjZSBhbiBlbmdpbmUgdG9vIGxhdGUKCiAgICAgICAgLSAgIGF2b2lkIHVubmVjZXNzYXJ5IG1haW50ZW5hbmNlIGNvc3RzCgojIyMgU3RhdGUKCi0gICAqKlN0YXRlKio6IG1pbGVhZ2Ugb2YgdGhlIGJ1cwoKICAgICQkeF90IFxpbiBcbGJyYWNlIDEsIC4uLiwgMTAgXHJicmFjZSAkJAoKLSAgICoqU3RhdGUgdHJhbnNpdGlvbnMqKjogd2l0aCBwcm9iYWJpbGl0eSAkXGxhbWJkYSQgdGhlIG1pbGVhZ2Ugb2YgdGhlIGJ1cyBpbmNyZWFzZXMKCiAgICAkJAogICAgICB4X3t0KzF9ID0gXGJlZ2lue2Nhc2VzfQogICAgICBcbWluIFxsYnJhY2UgeF90ICsgMSwxMCBccmJyYWNlICAmIFx0ZXh0IHsgd2l0aCBwcm9iYWJpbGl0eSB9IFxsYW1iZGEgXG5ld2xpbmUgCiAgICAgIHhfdCAmIFx0ZXh0IHsgd2l0aCBwcm9iYWJpbGl0eSB9IDEgLSBcbGFtYmRhCiAgICAgIFxlbmR7Y2FzZXN9CiAgICAkJAoKICAgIE5vdGUgdGhhdCAkXGxhbWJkYSQgZG9lcyBub3QgZGVwZW5kIG9uIHRoZSB2YWx1ZSBvZiB0aGUgc3RhdGUKCiMjIyBBY3Rpb25zCgotICAgKipBY3Rpb24qKjogcmVwbGFjZW1lbnQgZGVjaXNpb24gJCQKICAgICAgaV90IFxpbiBcbGJyYWNlIDAsIDEgXHJicmFjZQogICAgICAkJAoKLSAgICoqUGF5b2ZmcyoqCgogICAgLSAgIFBlci1wZXJpb2QgbWFpbnRlbmFuY2UgY29zdAoKICAgIC0gICBDb3N0IG9mIHJlcGxhY2VtZW50ICQkCiAgICAgICAgIHVcbGVmdCh4X3t0fSwgaV97dH0sIFxlcHNpbG9uX3sxIHR9LCBcZXBzaWxvbl97MiB0fSA7IFx0aGV0YVxyaWdodCk9IAogICAgICAgICBcYmVnaW57Y2FzZXN9CiAgICAgICAgIC1cdGhldGFfezF9IHhfe3R9LVx0aGV0YV97Mn0geF97dH1eezJ9K1xlcHNpbG9uX3swIHR9LCAmIFx0ZXh0IHsgaWYgfSBpX3t0fT0wIFxuZXdsaW5lIAogICAgICAgICAtXHRoZXRhX3szfStcZXBzaWxvbl97MSB0fSwgJiBcdGV4dCB7IGlmIH0gaV97dH09MQogICAgICAgICBcZW5ke2Nhc2VzfQogICAgICAgICAkJAoKIyMjIFNpbXVsYXRpb24KCi0gICBTdGFydCB3aXRoIGFuIGluaXRpYWwgdmFsdWUgZnVuY3Rpb24gJFYoeF90KT0wJAoKLSAgIENvbXB1dGUgZXhwZWN0ZWQgdmFsdWUgdy5yLnQuICRcbGFtYmRhJAoKICAgICQkCiAgICBXKHhfdCkgPSBcYmVnaW57Y2FzZXN9CiAgICAtXHRoZXRhXzEgeF90IC0gXHRoZXRhXzIgeF90XjIgKyBcYmV0YSBcQmlnWygxLVxsYW1iZGEpIFYoeF90KSArIFxsYW1iZGEgVihcbWluIFxsYnJhY2UgeF90KzEsMTAgXHJicmFjZSApIFxCaWddICwgJiBcdGV4dCB7IGlmIH0gaV90PTAgXG5ld2xpbmUKICAgIC1cdGhldGFfMyArIFxiZXRhIFxCaWdbKDEtXGxhbWJkYSkgVigwKSArIFxsYW1iZGEgVigxKSBcQmlnXSAsICYgXHRleHQgeyBpZiB9IGlfdD0xCiAgICBcZW5ke2Nhc2VzfQogICAgJCQKCi0gICBDb21wdXRlIHRoZSBuZXcgdmFsdWUgb2YgViAkJAogICAgVicoeF90KSA9IFxsb2cgXEJpZyggZV57Vyh4X3R8aV90PTApfSArIGVee1coeF90fGlfdD0xKX0gXEJpZykKICAgICQkCgotICAgUmVwZWF0IHVudGlsIGNvbnZlcmdlbmNlCgojIyMgQ29kZQoKRmlyc3Qgd2Ugc2V0IHRoZSBwYXJhbWV0ZXIgdmFsdWVzLgoKYGBge2p1bGlhfQojIFNldCBwYXJhbWV0ZXJzCs64ID0gWzAuMTM7IC0wLjAwNDsgMy4xXTsKzrsgPSAwLjgyOwrOsiA9IDAuOTU7CmBgYAoKVGhlbiB3ZSBzZXQgdGhlIHN0YXRlIHNwYWNlLgoKYGBge2p1bGlhfQojIFN0YXRlIHNwYWNlCnggPSBWZWN0b3IoMDoxMCk7CmBgYAoKIyMjIFN0YXRpYyB1dGlsaXR5CgpGaXJzdCwgd2UgY2FuIGNvbXB1dGUgc3RhdGljIHV0aWxpdHkuCgpgYGB7anVsaWF9CmZ1bmN0aW9uIGNvbXB1dGVfVSjOuDo6VmVjdG9yLCB4OjpWZWN0b3IpOjpNYXRyaXgKICAgICIiIkNvbXB1dGUgc3RhdGljIHV0aWxpdHkiIiIKICAgIHUxID0gLSDOuFsxXSp4IC0gzrhbMl0qeC5eMiAgICAgICAjIFV0aWxpdHkgb2Ygbm90IGludmVzdGluZwogICAgdTIgPSAtIM64WzNdKm9uZXMoc2l6ZSh4KSkgICAgICAgIyBVdGlsaXR5IG9mIGludmVzdGluZwogICAgVSA9IFt1MSB1Ml0gICAgICAgICAgICAgICAgICAgICAjIENvbWJpbmUgaW4gYSBtYXRyaXgKICAgIHJldHVybiBVCmVuZDsKYGBgCgoKIyMjIFZhbHVlIEZ1bmN0aW9uCgpXZSBjYW4gbm93IHNldCB1cCB0aGUgdmFsdWUgZnVuY3Rpb24gaXRlcmF0aW9uCgpgYGB7anVsaWF9CmZ1bmN0aW9uIGNvbXB1dGVfVijOuDo6VmVjdG9yLCDOuzo6TnVtYmVyLCDOsjo6TnVtYmVyLCB4OjpWZWN0b3IpOjpNYXRyaXgKICAgICIiIkNvbXB1dGUgdmFsdWUgZnVuY3Rpb24gYnkgQmVsbG1hbiBpdGVyYXRpb24iIiIKICAgIEsgPSBsZW5ndGgoeCkgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAjIERpbWVuc2lvbiBvZiB0aGUgc3RhdGUgc3BhY2UKICAgIFUgPSBjb21wdXRlX1UozrgsIHgpICAgICAgICAgICAgICAgICAgICAgICAgICAgIyBTdGF0aWMgdXRpbGl0eQogICAgaW5kZXhfzrsgPSBJbnRbMTpLIFsyOks7IEtdXTsgICAgICAgICAgICAgICAgICAjIE1pbGVhZ2UgaW5kZXgKICAgIGluZGV4X0kgPSBJbnRbMTpLIG9uZXMoSywxKV07ICAgICAgICAgICAgICAgICAjIEludmVzdG1lbnQgaW5kZXgKCiAgICAjIEl0ZXJhdGUgdGhlIEJlbGxtYW4gZXF1YXRpb24gdW50aWwgY29udmVyZ2VuY2UKICAgIFZfYmFyID0gemVyb3MoSywgMik7CiAgICBWX2JhcjEgPSBWX2JhcjsKICAgIGRpc3QgPSAxOwogICAgaXRlciA9IDA7CiAgICB3aGlsZSBkaXN0PjFlLTgKICAgICAgICBWID0gbG9nLihzdW0oZXhwLihWX2JhciksIGRpbXM9MikpICAgICAgICAgICMgQ29tcHV0ZSB2YWx1ZQogICAgICAgIEV4cF9WID0gVltpbmRleF/Ou10gKiBbMS3OuzsgzrtdICAgICAgICAgICAgICAgIyBDb21wdXRlIGV4cG9uZW50aWFsIHZhbHVlCiAgICAgICAgVl9iYXIxID0gzrIgKiAoVSArIEV4cF9WW2luZGV4X0ldKSAgICAgICAgICAgIyBDb21wdXRlIHYtc3BlY2lmaWMKICAgICAgICBkaXN0ID0gbWF4KGFicy4oVl9iYXIxIC0gVl9iYXIpLi4uKTsgICAgICAgICMgQ2hlY2sgZGlzdGFuY2UKICAgICAgICBpdGVyICs9IDE7CiAgICAgICAgVl9iYXIgPSBWX2JhcjEgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAjIFVwZGF0ZSB2YWx1ZSBmdW5jdGlvbgogICAgZW5kCiAgICByZXR1cm4gVl9iYXIKZW5kOwpgYGAKCiMjIyBTb2x2aW5nIHRoZSBNb2RlbAoKV2UgY2FuIG5vdyBzb2x2ZSBmb3IgdGhlIHZhbHVlIGZ1bmN0aW9uLgoKYGBge2p1bGlhfQojIENvbXB1dGUgdmFsdWUgZnVuY3Rpb24KVl9iYXIgPSBjb21wdXRlX1YozrgsIM67LCDOsiwgeCk7CmBgYAoKIyMjIERHUAoKTm93IHRoYXQgd2Uga25vdyBob3cgdG8gY29tcHV0ZSB0aGUgZXF1aWxpYnJpdW0sIHdlIGNhbiBzaW11bGF0ZSB0aGUgZGF0YS4KCmBgYHtqdWxpYX0KZnVuY3Rpb24gZ2VuZXJhdGVfZGF0YSjOuDo6VmVjdG9yLCDOuzo6TnVtYmVyLCDOsjo6TnVtYmVyLCB4OjpWZWN0b3IsIE46OkludCk6OlR1cGxlCiAgICAiIiJHZW5lcmF0ZSBkYXRhIGZyb20gcHJpbWl0aXZlcyIiIgogICAgVl9iYXIgPSBjb21wdXRlX1YozrgsIM67LCDOsiwgeCkgICAgICAgICAgICAgICAjIFNvbHZlIG1vZGVsCiAgICDOtSA9IHJhbmQoR3VtYmVsKDAsMSksIE4sIDIpICAgICAgICAgICAgICAgICAjIERyYXcgc2hvY2tzCiAgICBYdCA9IHJhbmQoeC4rMSwgTikgICAgICAgICAgICAgICAgICAgICAgICAgICMgRHJhdyBzdGF0ZXMKICAgIEl2ID0gKCgoVl9iYXJbWHQsOl0gKyDOtSkgKiBbLTE7MV0pIC4+IDApICAgICMgQ29tcHV0ZSBpbnZlc3RtZW50IGRlY2lzaW9ucwogICAgzrQgPSAocmFuZChVbmlmb3JtKDAsMSksIE4pIC48IM67KSAgICAgICAgICAgICMgQ29tcHV0ZSBtaWxlYWdlIHNob2NrCiAgICBYdDEgPSBtaW4uKFh0IC4qIChJdi49PTApICsgzrQsIG1heCh4Li4uKSkgICAjIENvbXB1dGUgbmV4dCBzdGF0ZQogICAgZGYgPSBEYXRhRnJhbWUoWHQ9WHQsIEl2PUl2LCBYdDE9WHQxKQogICAgQ1NWLndyaXRlKCIuLi9kYXRhL3J1c3QuY3N2IiwgZGYpCiAgICByZXR1cm4gWHQsIEl2LCBYdDEKZW5kOwpgYGAKCiMjIyBUaGUgRGF0YQoKSG93IG1hbnkgaW52ZXN0bWVudCBkZWNpc2lvbnMgZG8gd2Ugb2JzZXJ2ZT8KCmBgYHtqdWxpYX0KIyBHZW5lcmF0ZSBkYXRhCk4gPSBJbnQoMWU1KTsKeF90LCBJdiwgeF90MSA9IGdlbmVyYXRlX2RhdGEozrgsIM67LCDOsiwgeCwgTik7CnByaW50KCJ3ZSBvYnNlcnZlICIsIHN1bShJdiksICIgaW52ZXN0bWVudCBkZWNpc2lvbnMgaW4gIiwgTiwgIiBvYnNlcnZhdGlvbnMiKQpgYGAKCiMjIyBFc3RpbWF0aW9uIC0gTGFtYmRhCgotICAgRmlyc3Qgd2UgY2FuIGVzdGltYXRlIHRoZSB2YWx1ZSBvZiBsYW1iZGEgYXMgdGhlIG1lYW4KCiAgICAkJAogICAgXGhhdCBcbGFtYmRhID0gXG1hdGhiYiBFX24gXEJpZ1sgKHhfe3QrMX0teF90KSBcbWlkIGlfe3R9PTAgXHdlZGdlIHhfe3R9PDEwIFxCaWddCiAgICAkJAoKYGBge2p1bGlhfQojIEVzdGltYXRlIGxhbWJkYQrOlCA9IHhfdDEgLSB4X3Q7Cs67XyA9IG1lYW4ozpRbKEl2Lj09MCkgLiYgKHhfdC48MTApXSk7CgpwcmludCgiRXN0aW1hdGVkIGxhbWJkYTogJM67XyAodHJ1ZSA9ICTOuykiKQpgYGAKCiMjIyBFc3RpbWF0aW9uIC0gVGhldGEKCi0gICBUYWtlIGEgcGFyYW1ldGVyIGd1ZXNzICRcdGhldGFfMCQKCi0gICBDb21wdXRlIHRoZSBjb3JyZXNwb25kaW5nIHZhbHVlIGZ1bmN0aW9uICRWKHhfdCB8IFxoYXQgXGxhbWJkYSwgXHRoZXRhXzApJAoKLSAgIENvbXB1dGUgdGhlIGltcGxpZWQgY2hvaWNlIHByb2JhYmlsaXRpZXMKCi0gICBDb21wdXRlIHRoZSBsaWtlbGlob29kCgogICAgJCQKICAgIFxtYXRoY2Fse0x9KFx0aGV0YSk9XHByb2Rfe3Q9MX1ee1R9XGxlZnQoXGhhdHtcb3BlcmF0b3JuYW1le1ByfX1cbGVmdChpPTEgXG1pZCB4X3t0fSwgXHRoZXRhXHJpZ2h0KSBcbWF0aGJiezF9XGxlZnQoaV97dH09MVxyaWdodCkrXGxlZnQoMS1caGF0e1xvcGVyYXRvcm5hbWV7UHJ9fVxsZWZ0KGk9MCBcbWlkIHhfe3R9LCBcdGhldGFccmlnaHQpXHJpZ2h0KSBcbWF0aGJiezF9XGxlZnQoaV97dH09MFxyaWdodClccmlnaHQpCiAgICAkJAoKLSAgIFJlcGVhdCB0aGUgYWJvdmUgdG8gZmluZCBhIG1pbmltdW0gb2YgdGhlIGxpa2VsaWhvb2QgZnVuY3Rpb24KCiMjIyBDb2RlCgpgYGB7anVsaWF9CmZ1bmN0aW9uIGxvZ0wozrgwOjpWZWN0b3IpOjpOdW1iZXIKICAgICIiIkNvbXB1dGUgbG9nLWxpa2VsaWhvb2QgZnVuY3Rpb24iIiIKICAgICMgQ29tcHV0ZSB2YWx1ZQogICAgVl9iYXIgPSBjb21wdXRlX1YozrgwLCDOu18sIM6yLCB4KQoKICAgICMgSW1wbGllZCBjaG9pY2UgcHJvYmFiaWxpdGllcwogICAgcHJfSSA9IGV4cC4oVl9iYXJbOiwyXSkgLi8gKGV4cC4oVl9iYXJbOiwxXSkgKyBleHAuKFZfYmFyWzosMl0pKQoKICAgICMgTGlrZWxpaG9vZAogICAgbG9nTCA9IHN1bShsb2cuKHByX0lbeF90W0l2Lj09MV1dKSkgKyBzdW0obG9nLigxIC4tIHByX0lbeF90W0l2Lj09MF1dKSkKICAgIHJldHVybiAtbG9nTAplbmQ7CmBgYAoKV2UgY2FuIGNoZWNrIHRoZSBsaWtlbGlob29kIGF0IHRoZSB0cnVlIHZhbHVlOgoKYGBge2p1bGlhfQojIFRydWUgbGlrZWxpaG9vZCB2YWx1ZQpwcmludCgiVGhlIGxpa2VsaWhvb2QgYXQgdGhlIHRydWUgdmFsdWVzIGlzICIsIGxvZ0wozrgpKQpgYGAKCiMjIyBFc3RpbWF0aW5nIFRoZXRhCgpgYGB7anVsaWF9CiMgU2VsZWN0IHN0YXJ0aW5nIHZhbHVlcwrOuDAgPSBGbG9hdDY0WzAsMCwwXTsKCiMgT3B0aW1pemUKzrhfID0gb3B0aW1pemUobG9nTCwgzrgwKS5taW5pbWl6ZXI7CnByaW50KCJFc3RpbWF0ZWQgdGhldGFzOiAkzrhfICh0cnVlID0gJM64KSIpCmBgYAoKIyMjIFN0YXJ0aW5nIFZhbHVlcwoKU3RhcnRpbmcgdmFsdWVzIGFyZSBpbXBvcnRhbnQhCgpgYGB7anVsaWF9CiMgQWx0ZXJuYXRpdmUgc3RhcnRpbmcgdmFsdWVzCs64MCA9IEZsb2F0NjRbMSwxLDFdOwoKIyBPcHRpbWl6ZQrOuF8gPSBvcHRpbWl6ZShsb2dMLCDOuDApLm1pbmltaXplcjsKcHJpbnQoIkVzdGltYXRlZCB0aGV0YXM6ICTOuF8gKHRydWUgPSAkzrgpIikKYGBgCgojIyBSZWZlcmVuY2VzCgotLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0K</div>
+<div id="rmd-source-code">LS0tCnRpdGxlOiAiQ29kaW5nOiBSdXN0ICgxOTg3KSIKYXV0aG9yOiAiTWF0dGVvIENvdXJ0aG91ZCIKdHlwZTogYm9vawp3ZWlnaHQ6IDE3CmRhdGU6IDIwMjEtMTAtMjkKYmlibGlvZ3JhcGh5OiByZWZlcmVuY2VzLmJpYgpsaW5rLWNpdGF0aW9uczogdHJ1ZQpvdXRwdXQ6IAogIGh0bWxfbm90ZWJvb2s6IAogICAgdG9jOiB0cnVlCiAgICB0b2NfZGVwdGg6IDIKICBodG1sX2RvY3VtZW50OgogICAgdG9jOiB0cnVlCiAgICB0b2NfZGVwdGg6IDMKICAgIHRvY19mbG9hdDogdHJ1ZQogICAgdG9jX2NvbGxhcHNlZDogdHJ1ZQogIGlvc2xpZGVzX3ByZXNlbnRhdGlvbjoKICAgIHdpZGVzY3JlZW46IHRydWUKICAgIHNtYWxsZXI6IHRydWUKICAgIHRyYW5zaXRpb246IDAKICAgIHNsaWRlX2xldmVsOiAzCiAgICBjc3M6IGN1c3RvbS5jc3MKICBtZF9kb2N1bWVudDoKICAgIHZhcmlhbnQ6IG1hcmtkb3duX21tZAogICAgcHJlc2VydmVfeWFtbDogdHJ1ZQotLS0KCmBgYHtyLCBpbmNsdWRlPUZBTFNFLCBlY2hvPUZBTFNFfQojIEltcG9ydCBwYWNrYWdlcwpsaWJyYXJ5KHRpZHl2ZXJzZSkgICAgIyBGdXIgYWxsZXMKbGlicmFyeShkYXRhLnRhYmxlKSAgICMgRm9yIGZyZWFkcgpsaWJyYXJ5KGtuaXRyKSAgICAgICAgIyBGb3Iga2FibGUKbGlicmFyeShicm9vbSkgICAgICAgICMgRm9yIHRpZHkKbGlicmFyeShBRVIpICAgICAgICAgICMgRm9yIGl2cmVnCmBgYAoKYGBge3IgbG9hZCBqdWxpYSBpZiBub3QgbG9hZGVkLCBpbmNsdWRlPUZBTFNFLCBlY2hvPUZBTFNFfQppZiAoISgiSnVsaWFDYWxsIiAlaW4lICgucGFja2FnZXMoKSkpKSB7CiAgbGlicmFyeShKdWxpYUNhbGwpCiAganVsaWEgPC0ganVsaWFfc2V0dXAoIi9Vc2Vycy9tY291cnQvRG9jdW1lbnRzL0p1bGlhLTEuNS5hcHAvQ29udGVudHMvUmVzb3VyY2VzL2p1bGlhL2JpbiIpCn0KYGBgCgpgYGB7anVsaWEsIGluY2x1ZGU9RkFMU0UsIGVjaG89RkFMU0V9CiNpbXBvcnQgUGtnCiNQa2cuYWRkKCJPcHRpbSIpCiNQa2cuYWRkKCJTdGF0aXN0aWNzIikKI1BrZy5hZGQoIkRpc3RyaWJ1dGlvbnMiKQojUGtnLmFkZCgiRGF0YUZyYW1lcyIpCiNQa2cuYWRkKCJDU1YiKQoKdXNpbmcgT3B0aW0KdXNpbmcgRGlzdHJpYnV0aW9ucwp1c2luZyBTdGF0aXN0aWNzCnVzaW5nIERhdGFGcmFtZXMKdXNpbmcgQ1NWCmBgYAoKIyMjIFNldHRpbmcKCkZyb20gQHJ1c3QxOTg4bWF4aW11bQoKLSAgIEFuIGFnZW50IG93bnMgYSBmbGVldCB0byBidXNlcwoKLSAgIEJ1c2VzIGdldCBvbGQgb3ZlciB0aW1lCgotICAgVGhlIG9sZGVyIHRoZSBidXMgaXMsIHRoZSBtb3N0IGNvc3RseSBpdCBpcyB0byBtYWludGFpbgoKLSAgIFRoZSBhZ2VudCBjYW4gZGVjaWRlIHRvIHJlcGxhY2UgdGhlIGJ1cyBlbmdpbmUgd2l0aCBhIG5ldyBvbmUsIGF0IGEgY29zdAoKLSAgICoqRHluYW1pYyB0cmFkZS1vZmYqKgoKICAgIC0gICBXaGF0IGlzIHRoZSBiZXN0IG1vbWVudCB0byByZXBsYWNlIHRoZSBlbmdpbmU/CgogICAgLSAgIFlvdSBkb24ndCB3YW50IHRvIHJlcGxhY2UgYW4gZW5naW5lIHRvbyBlYXJseQoKICAgICAgICAtICAgZG9lc24ndCBjaGFuZ2UgbXVjaAoKICAgIC0gICBZb3UgZG9uJ3Qgd2FudCB0byByZXBsYWNlIGFuIGVuZ2luZSB0b28gbGF0ZQoKICAgICAgICAtICAgYXZvaWQgdW5uZWNlc3NhcnkgbWFpbnRlbmFuY2UgY29zdHMKCiMjIyBTdGF0ZQoKLSAgICoqU3RhdGUqKjogbWlsZWFnZSBvZiB0aGUgYnVzCgogICAgJCRzX3QgXGluIFxsYnJhY2UgMSwgLi4uLCAxMCBccmJyYWNlICQkCgotICAgKipTdGF0ZSB0cmFuc2l0aW9ucyoqOiB3aXRoIHByb2JhYmlsaXR5ICRcbGFtYmRhJCB0aGUgbWlsZWFnZSBvZiB0aGUgYnVzIGluY3JlYXNlcwoKICAgICQkCiAgICBzX3t0KzF9ID0gXGJlZ2lue2Nhc2VzfQogICAgICBcbWluIFxsYnJhY2Ugc190ICsgMSwxMCBccmJyYWNlICAmIFx0ZXh0IHsgd2l0aCBwcm9iYWJpbGl0eSB9IFxsYW1iZGEgXG5ld2xpbmUgCiAgICAgIHNfdCAmIFx0ZXh0IHsgd2l0aCBwcm9iYWJpbGl0eSB9IDEgLSBcbGFtYmRhCiAgICAgIFxlbmR7Y2FzZXN9CiAgICAkJAoKICAgIE5vdGUgdGhhdCAkXGxhbWJkYSQgZG9lcyBub3QgZGVwZW5kIG9uIHRoZSB2YWx1ZSBvZiB0aGUgc3RhdGUKCiMjIyBBY3Rpb25zCgotICAgKipBY3Rpb24qKjogcmVwbGFjZW1lbnQgZGVjaXNpb24gCiAgICAkJAogICAgYV90IFxpbiBcbGJyYWNlIDAsIDEgXHJicmFjZQogICAgJCQKCi0gICAqKlBheW9mZnMqKgoKICAgIC0gICBQZXItcGVyaW9kIG1haW50ZW5hbmNlIGNvc3QKCiAgICAtICAgQ29zdCBvZiByZXBsYWNlbWVudCAKICAgICAgICAkJAogICAgICAgIHVcbGVmdChzX3t0fSwgYV97dH0sIFxlcHNpbG9uX3sxIHR9LCBcZXBzaWxvbl97MiB0fSA7IFx0aGV0YVxyaWdodCk9IAogICAgICAgICBcYmVnaW57Y2FzZXN9CiAgICAgICAgIC1cdGhldGFfezF9IHNfe3R9LVx0aGV0YV97Mn0gc197dH1eezJ9K1xlcHNpbG9uX3swIHR9LCAmIFx0ZXh0IHsgaWYgfSBhX3t0fT0wIFxuZXdsaW5lIAogICAgICAgICAtXHRoZXRhX3szfSArIFxlcHNpbG9uX3sxdH0sICYgXHRleHQgeyBpZiB9IGFfe3R9PTEKICAgICAgICAgXGVuZHtjYXNlc30KICAgICAgICAkJAoKIyMjIFNvbHZpbmcgdGhlIE1vZGVsCgotICAgU3RhcnQgd2l0aCBhbiBpbml0aWFsIGV4cGVjdGVkIHZhbHVlIGZ1bmN0aW9uICRWKHNfdCk9MCQKCi0gICBDb21wdXRlIHRoZSBhbHRlcm5hdGl2ZS1zcGVjaWZpYyB2YWx1ZSBmdW5jdGlvbgogICAgJCQKICAgIFxiYXIgVihzX3QpID0gXGJlZ2lue2Nhc2VzfQogICAgLVx0aGV0YV8xIHNfdCAtIFx0aGV0YV8yIHNfdF4yICsgXGJldGEgXEJpZ1soMS1cbGFtYmRhKSBWKHNfdCkgKyBcbGFtYmRhIFYoXG1pbiBcbGJyYWNlIHNfdCsxLDEwIFxyYnJhY2UgKSBcQmlnXSAsICYgXHRleHQgeyBpZiB9IGFfdD0wIFxuZXdsaW5lCiAgICAtXHRoZXRhXzMgKyBcYmV0YSBcQmlnWygxLVxsYW1iZGEpIFYoMCkgKyBcbGFtYmRhIFYoMSkgXEJpZ10gLCAmIFx0ZXh0IHsgaWYgfSBhX3Q9MQogICAgXGVuZHtjYXNlc30KICAgICQkCgotICAgQ29tcHV0ZSB0aGUgbmV3IGV4cGVjdGVkIHZhbHVlIGZ1bmN0aW9uCiAgICAkJAogICAgVicoYV90KSA9IFxsb2cgXEJpZyggZV57XGJhciBWKGFfdHxzX3Q9MCl9ICsgZV57XGJhciBWKGFfdHxzX3Q9MSl9IFxCaWcpCiAgICAkJAoKLSAgIFJlcGVhdCB1bnRpbCBjb252ZXJnZW5jZQoKIyMjIENvZGUKCkZpcnN0IHdlIHNldCB0aGUgcGFyYW1ldGVyIHZhbHVlcy4KCmBgYHtqdWxpYX0KIyBTZXQgcGFyYW1ldGVycwrOuCA9IFswLjEzOyAtMC4wMDQ7IDMuMV07Cs67ID0gMC44MjsKzrIgPSAwLjk1OwpgYGAKClRoZW4gd2Ugc2V0IHRoZSBzdGF0ZSBzcGFjZS4KCmBgYHtqdWxpYX0KIyBTdGF0ZSBzcGFjZQprID0gMTA7CnMgPSBWZWN0b3IoMTprKTsKYGBgCgojIyMgU3RhdGljIFV0aWxpdHkKCkZpcnN0LCB3ZSBjYW4gY29tcHV0ZSBzdGF0aWMgdXRpbGl0eS4KJCQKdVxsZWZ0KHNfe3R9LCBhX3t0fSwgXGVwc2lsb25fezEgdH0sIFxlcHNpbG9uX3syIHR9IDsgXHRoZXRhXHJpZ2h0KT0gCiBcYmVnaW57Y2FzZXN9CiAtXHRoZXRhX3sxfSBzX3t0fS1cdGhldGFfezJ9IHNfe3R9XnsyfStcZXBzaWxvbl97MCB0fSwgJiBcdGV4dCB7IGlmIH0gYV97dH09MCBcbmV3bGluZSAKIC1cdGhldGFfezN9ICsgXGVwc2lsb25fezEgdH0sICYgXHRleHQgeyBpZiB9IGFfe3R9PTEKIFxlbmR7Y2FzZXN9CiQkCgpgYGB7anVsaWF9CmZ1bmN0aW9uIGNvbXB1dGVfVSjOuDo6VmVjdG9yLCBzOjpWZWN0b3IpOjpNYXRyaXgKICAgICIiIkNvbXB1dGUgc3RhdGljIHV0aWxpdHkiIiIKICAgIHUxID0gLSDOuFsxXSpzIC0gzrhbMl0qcy5eMiAgICAgICAjIFV0aWxpdHkgb2Ygbm90IGludmVzdGluZwogICAgdTIgPSAtIM64WzNdKm9uZXMoc2l6ZShzKSkgICAgICAgIyBVdGlsaXR5IG9mIGludmVzdGluZwogICAgVSA9IFt1MSB1Ml0gICAgICAgICAgICAgICAgICAgICAjIENvbWJpbmUgaW4gYSBtYXRyaXgKICAgIHJldHVybiBVCmVuZDsKYGBgCgoKIyMjIFZhbHVlIEZ1bmN0aW9uCgpXZSBjYW4gbm93IHNldCB1cCB0aGUgdmFsdWUgZnVuY3Rpb24gaXRlcmF0aW9uCgpgYGB7anVsaWF9CmZ1bmN0aW9uIGNvbXB1dGVfVmJhcijOuDo6VmVjdG9yLCDOuzo6TnVtYmVyLCDOsjo6TnVtYmVyLCBzOjpWZWN0b3IpOjpNYXRyaXgKICAgICIiIkNvbXB1dGUgdmFsdWUgZnVuY3Rpb24gYnkgQmVsbG1hbiBpdGVyYXRpb24iIiIKICAgIGsgPSBsZW5ndGgocykgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAjIERpbWVuc2lvbiBvZiB0aGUgc3RhdGUgc3BhY2UKICAgIFUgPSBjb21wdXRlX1UozrgsIHMpICAgICAgICAgICAgICAgICAgICAgICAgICAgIyBTdGF0aWMgdXRpbGl0eQogICAgaW5kZXhfzrsgPSBJbnRbMTprIFsyOms7IGtdXTsgICAgICAgICAgICAgICAgICAjIE1pbGVhZ2UgaW5kZXgKICAgIGluZGV4X0EgPSBJbnRbMTprIG9uZXMoaywxKV07ICAgICAgICAgICAgICAgICAjIEludmVzdG1lbnQgaW5kZXgKICAgIM6zID0gQmFzZS5NYXRoQ29uc3RhbnRzLmV1bGVyZ2FtbWEgICAgICAgICAgICAgIyBFdWxlcidzIGdhbW1hCgogICAgIyBJdGVyYXRlIHRoZSBCZWxsbWFuIGVxdWF0aW9uIHVudGlsIGNvbnZlcmdlbmNlCiAgICBWYmFyID0gemVyb3MoaywgMik7CiAgICBWYmFyMSA9IFZiYXI7CiAgICBkaXN0ID0gMTsKICAgIGl0ZXIgPSAwOwogICAgd2hpbGUgZGlzdD4xZS04CiAgICAgICAgViA9IM6zIC4rIGxvZy4oc3VtKGV4cC4oVmJhciksIGRpbXM9MikpICAgICAjIENvbXB1dGUgdmFsdWUKICAgICAgICBleHBWID0gVltpbmRleF/Ou10gKiBbMS3OuzsgzrtdICAgICAgICAgICAgICAgIyBDb21wdXRlIGV4cGVjdGVkIHZhbHVlCiAgICAgICAgVmJhcjEgPSAgVSArIM6yICogZXhwVltpbmRleF9BXSAgICAgICAgICAgICAjIENvbXB1dGUgdi1zcGVjaWZpYwogICAgICAgIGRpc3QgPSBtYXgoYWJzLihWYmFyMSAtIFZiYXIpLi4uKTsgICAgICAgICAjIENoZWNrIGRpc3RhbmNlCiAgICAgICAgaXRlciArPSAxOwogICAgICAgIFZiYXIgPSBWYmFyMSAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAjIFVwZGF0ZSB2YWx1ZSBmdW5jdGlvbgogICAgZW5kCiAgICByZXR1cm4gVmJhcgplbmQ7CmBgYAoKIyMjIFNvbHZpbmcgdGhlIE1vZGVsCgpXZSBjYW4gbm93IHNvbHZlIGZvciB0aGUgdmFsdWUgZnVuY3Rpb24uCgpgYGB7anVsaWF9CiMgQ29tcHV0ZSB2YWx1ZSBmdW5jdGlvbgpWX2JhciA9IGNvbXB1dGVfVmJhcijOuCwgzrssIM6yLCBzKTsKYGBgCgojIyMgREdQCgpOb3cgdGhhdCB3ZSBrbm93IGhvdyB0byBjb21wdXRlIHRoZSBlcXVpbGlicml1bSwgd2UgY2FuIHNpbXVsYXRlIHRoZSBkYXRhLgoKYGBge2p1bGlhfQpmdW5jdGlvbiBnZW5lcmF0ZV9kYXRhKM64OjpWZWN0b3IsIM67OjpOdW1iZXIsIM6yOjpOdW1iZXIsIHM6OlZlY3RvciwgTjo6SW50KTo6VHVwbGUKICAgICIiIkdlbmVyYXRlIGRhdGEgZnJvbSBwcmltaXRpdmVzIiIiCiAgICBWYmFyID0gY29tcHV0ZV9WYmFyKM64LCDOuywgzrIsIHMpICAgICAgICAgICAgICMgU29sdmUgbW9kZWwKICAgIM61ID0gcmFuZChHdW1iZWwoMCwxKSwgTiwgMikgICAgICAgICAgICAgICAgICMgRHJhdyBzaG9ja3MKICAgIFN0ID0gcmFuZChzLCBOKSAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIyBEcmF3IHN0YXRlcwogICAgQSA9ICgoKFZiYXJbU3QsOl0gKyDOtSkgKiBbLTE7MV0pIC4+IDApICAgICAgIyBDb21wdXRlIGludmVzdG1lbnQgZGVjaXNpb25zCiAgICDOtCA9IChyYW5kKFVuaWZvcm0oMCwxKSwgTikgLjwgzrspICAgICAgICAgICAgIyBDb21wdXRlIG1pbGVhZ2Ugc2hvY2sKICAgIFN0MSA9IG1pbi4oU3QgLiogKEEuPT0wKSArIM60LCBtYXgocy4uLikpICAgICMgQ29tcHV0ZSBuZVNyIHN0YXRlCiAgICBkZiA9IERhdGFGcmFtZShTdD1TdCwgQT1BLCBTdDE9U3QxKSAgICAgICAgICMgRGF0YWZyYW1lCiAgICBDU1Yud3JpdGUoIi4uL2RhdGEvcnVzdC5jc3YiLCBkZikKICAgIHJldHVybiBTdCwgQSwgU3QxCmVuZDsKYGBgCgojIyMgR2VuZXJhdGUgdGhlIERBdGEKCldlIGNhbiBub3cgZ2VuZXJhdGUgdGhlIGRhdGEKCmBgYHtqdWxpYX0KIyBHZW5lcmF0ZSBkYXRhCk4gPSBJbnQoMWU1KTsKU3QsIEEsIFN0MSA9IGdlbmVyYXRlX2RhdGEozrgsIM67LCDOsiwgcywgTik7CmBgYAoKSG93IG1hbnkgaW52ZXN0bWVudCBkZWNpc2lvbnMgZG8gd2Ugb2JzZXJ2ZT8KCmBgYHtqdWxpYX0KcHJpbnQoIndlIG9ic2VydmUgIiwgc3VtKEEpLCAiIGludmVzdG1lbnQgZGVjaXNpb25zIGluICIsIE4sICIgb2JzZXJ2YXRpb25zIikKYGBgCgojIyMgVGhlIERhdGEKCldoYXQgZG9lcyB0aGUgZGF0YSBsb29rIGxpa2U/CgpgYGB7cn0KIyBSZWFkIGRhdGEKZGYgPSBmcmVhZCgiLi4vZGF0YS9ydXN0LmNzdiIpCmthYmxlKGRmWzE6NixdLCBkaWdpdHM9NCkKYGBgCgojIyMgRXN0aW1hdGlvbiAtIExhbWJkYQoKLSAgIEZpcnN0IHdlIGNhbiBlc3RpbWF0ZSB0aGUgdmFsdWUgb2YgbGFtYmRhIGFzIHRoZSBwcm9iYWJpbGl0eSBvZiBtaWxlYWdlIGluY3JlYXNlCgogIC0gQ29uZGl0aW9uYWwgb24gbm90IGludmVzdGluZwogIAogIC0gQW5kIG5vdCBiZWluZyBpbiB0aGUgbGFzdCBzdGF0ZSAobWlsZWFnZSBjYW5ub3QgaW5jcmVhc2UgYW55IG1vcmUpCgogICAgJCQKICAgIFxoYXQgXGxhbWJkYSA9IFxtYXRoYmIgRV9uIFxCaWdbIChzX3t0KzF9LXNfdCkgXG1pZCBhX3t0fT0wIFx3ZWRnZSBzX3t0fTwxMCBcQmlnXQogICAgJCQKCmBgYHtqdWxpYX0KIyBFc3RpbWF0ZSBsYW1iZGEKzpQgPSBTdDEgLSBTdDsKzrtfID0gbWVhbijOlFsoQS49PTApIC4mIChTdC48MTApXSk7CgpwcmludCgiRXN0aW1hdGVkIGxhbWJkYTogJM67XyAodHJ1ZSA9ICTOuykiKQpgYGAKCiMjIyBFc3RpbWF0aW9uIC0gVGhldGEKCi0gICBUYWtlIGEgcGFyYW1ldGVyIGd1ZXNzICRcdGhldGFfMCQKCi0gICBDb21wdXRlIHRoZSBhbHRlcm5hdGl2ZS1zcGVjaWZpYyB2YWx1ZSBmdW5jdGlvbiAkXGJhciBWKHNfdCA7IFxoYXQgXGxhbWJkYSwgXHRoZXRhXzApJCBieSBpdGVyYXRpb24KCi0gICBDb21wdXRlIHRoZSBpbXBsaWVkIGNob2ljZSBwcm9iYWJpbGl0aWVzCgotICAgQ29tcHV0ZSB0aGUgbGlrZWxpaG9vZAogICAgJCQKICAgIFxtYXRoY2Fse0x9KFx0aGV0YSkgPSBccHJvZF97dD0xfV57VH1cbGVmdChcaGF0e1xvcGVyYXRvcm5hbWV7UHJ9fVxsZWZ0KGE9MSBcbWlkIHNfe3R9LCBcdGhldGFccmlnaHQpIFxtYXRoYmJ7MX1cbGVmdChhX3t0fT0xXHJpZ2h0KStcbGVmdCgxLVxoYXR7XG9wZXJhdG9ybmFtZXtQcn19XGxlZnQoYT0wIFxtaWQgc197dH0sIFx0aGV0YVxyaWdodClccmlnaHQpIFxtYXRoYmJ7MX1cbGVmdChhX3t0fT0wXHJpZ2h0KVxyaWdodCkKICAgICQkCgotICAgUmVwZWF0IHRoZSBhYm92ZSB0byBmaW5kIGEgbWluaW11bSBvZiB0aGUgbGlrZWxpaG9vZCBmdW5jdGlvbgoKIyMjIExpa2VsaWhvb2QgRnVuY3Rpb24KCmBgYHtqdWxpYX0KZnVuY3Rpb24gbG9nTF9SdXN0KM64MDo6VmVjdG9yLCDOuzo6TnVtYmVyLCDOsjo6TnVtYmVyLCBzOjpWZWN0b3IsIFN0OjpWZWN0b3IsIEE6OkJpdFZlY3Rvcik6Ok51bWJlcgogICAgIiIiQ29tcHV0ZSBsb2ctbGlrZWxpaG9vZCBmdW5jdGlvbmZvciBSdXN0IHByb2JsZW0iIiIKICAgICMgQ29tcHV0ZSB2YWx1ZQogICAgVmJhciA9IGNvbXB1dGVfVmJhcijOuDAsIM67XywgzrIsIHMpCgogICAgIyBFeHBlY3RlZCBjaG9pY2UgcHJvYmFiaWxpdGllcwogICAgRVAgPSBleHAuKFZiYXJbOiwyXSkgLi8gKGV4cC4oVmJhcls6LDFdKSArIGV4cC4oVmJhcls6LDJdKSkKCiAgICAjIExpa2VsaWhvb2QKICAgIGxvZ0wgPSBzdW0obG9nLihFUFtTdFtBLj09MV1dKSkgKyBzdW0obG9nLigxIC4tIEVQW1N0W0EuPT0wXV0pKQogICAgcmV0dXJuIC1sb2dMCmVuZDsKYGBgCgpXZSBjYW4gY2hlY2sgdGhlIGxpa2VsaWhvb2QgYXQgdGhlIHRydWUgdmFsdWU6CgpgYGB7anVsaWF9CiMgVHJ1ZSBsaWtlbGlob29kIHZhbHVlCmxvZ0xfdHJ1Zc64ID0gbG9nTF9SdXN0KM64LCDOuywgzrIsIHMsIFN0LCBBKTsKcHJpbnQoIlRoZSBsaWtlbGlob29kIGF0IHRoZSB0cnVlIHBhcmFtZXRlciBpcyAkbG9nTF90cnVlzrgiKQpgYGAKCiMjIyBFc3RpbWF0aW5nIFRoZXRhCgpgYGB7anVsaWF9CiMgU2VsZWN0IHN0YXJ0aW5nIHZhbHVlcwrOuDAgPSBGbG9hdDY0WzAsMCwwXTsKCiMgT3B0aW1pemUKzrhfUiA9IG9wdGltaXplKHggLT4gbG9nTF9SdXN0KHgsIM67LCDOsiwgcywgU3QsIEEpLCDOuDApLm1pbmltaXplcjsKcHJpbnQoIkVzdGltYXRlZCB0aGV0YXM6ICTOuF9SICh0cnVlID0gJM64KSIpCmBgYAoKIyMjIFN0YXJ0aW5nIFZhbHVlcwoKU3RhcnRpbmcgdmFsdWVzIGFyZSBpbXBvcnRhbnQhCgpgYGB7anVsaWF9CiMgTm90IGFsbCBpbml0aWFsIHZhbHVlcyBhcmUgZXF1YWxseSBnb29kCs64MCA9IEZsb2F0NjRbMSwxLDFdOwoKIyBPcHRpbWl6ZQrOuF9SMiA9IG9wdGltaXplKHggLT4gbG9nTF9SdXN0KHgsIM67LCDOsiwgcywgU3QsIEEpLCDOuDApLm1pbmltaXplcjsKcHJpbnQoIkVzdGltYXRlZCB0aGV0YXM6ICTOuF9SMiAodHJ1ZSA9ICTOuCkiKQpgYGAKCiMjIEhvdHogJiBNaWxsZXIKCiMjIyBSZWNhcAoKSG90eiAmIE1pbGxlciBlc3RpbWF0aW9uIHByb2NlZHVyZSB3b3JrcyBhcyBmb2xsb3dzCgoxLiBFc3RpbWF0ZSB0aGUgQ0NQcyBmcm9tIHRoZSBkYXRhCgoyLiBIb3R6ICYgTWlsbGVyIGludmVyc2lvbgokJAogIFxoYXQgViA9IFxCaWdbSSAtIFxiZXRhIFwgXHN1bV9hIFBfYSAuKiBUX2EgXEJpZ11eey0xfSBcICogXCBcbGVmdCggXHN1bV9hIFBfYSBcIC4qIFwgXGJpZ2dbIHVfYSArIFxtYXRoYmIgRSBbXGVwc2lsb25fYV0gXGJpZ2ddIFxyaWdodCkgCiQkCgozLiBDb21wdXRlIEVQIGZyb20gRVYKJCQKXGhhdCBcUHIoYT0xIDsgXHRoZXRhKSA9IFxmcmFje1xleHAgKHVfMSArXGJldGEgVF8xIFxoYXQgViApfXtcc3VtX3thfSBcZXhwICh1X2EgK1xiZXRhIFRfYSBcaGF0IFYgKX0KJCQKCjQuIENvbXB1dGUgdGhlIG9iamVjdGl2ZSBmdW5jdGlvbjogdGhlIChsb2cpbGlrZWxpaG9vZCAKJCQKXG1hdGhjYWx7TH0oXHRoZXRhKSA9IFxwcm9kX3t0PTF9XntUfVxsZWZ0KFxoYXR7XG9wZXJhdG9ybmFtZXtQcn19XGxlZnQoYT0xIFxtaWQgc197dH07IFx0aGV0YVxyaWdodCkgXG1hdGhiYnsxfVxsZWZ0KGFfe3R9PTFccmlnaHQpK1xsZWZ0KDEtXGhhdHtcb3BlcmF0b3JuYW1le1ByfX1cbGVmdChhPTAgXG1pZCBzX3t0fTsgXHRoZXRhXHJpZ2h0KVxyaWdodCkgXG1hdGhiYnsxfVxsZWZ0KGFfe3R9PTBccmlnaHQpXHJpZ2h0KQokJAoKCiMjIyBDQ1BzCgpGaXJzdCwgd2UgbmVlZCB0byBlc3RpbWF0ZSB0aGUgKipDb25kaXRpb25hbCBDaG9pY2UgUHJvYWJpbGl0aWVzIChDQ1ApKioKCi0gY2FuIGJlIGRvbmUgbm9uLXBhcmFtZXRyaWNhbGx5Ci0gaS5lLiBqdXN0IGxvb2sgYXQgdGhlIGZyZXF1ZW5jeSBvZiBpbnZlc3RtZW50IGluIGVhY2ggc3RhdGUKCmBgYHtqdWxpYX0KIyBFc3RpbWF0ZSBDQ1AKUCA9IFttZWFuKEFbU3QuPT1pXSkgZm9yIGk9c107CkNDUCA9IFsoMSAuLSBQKSBQXQpgYGAKCiMjIyBUcmFuc2l0aW9uIFByb2JhYmlsaXRpZXMKCk5lU3IsIHdlIG5lZWQgJFQkLCB0aGUgbWF0cmljZXMgb2YgdHJhbnNpdGlvbiBwcm9iYWJpbGl0aWVzLCBjb25kaXRpb25hbCBvbiB0aGUgaW52ZXN0bWVudCBjaG9pY2UuCgpgYGB7anVsaWF9CmZ1bmN0aW9uIGNvbXB1dGVfVChrOjpJbnQsIM67Xzo6TnVtYmVyKTo6QXJyYXkKICAgICIiIkNvbXB1dGUgdHJhbnNpdGlvbiBtYXRyaXgiIiIKICAgIFQgPSB6ZXJvcyhrLCBrLCAyKTsKCiAgICAjIENvbmRpdGlvbmFsIG9uIG5vdCBpbnZlc3RpbmcKICAgIFRbayxrLDFdID0gMTsKICAgIGZvciBpPTE6ay0xCiAgICAgICAgVFtpLGksMV0gPSAxLc67XwogICAgICAgIFRbaSxpKzEsMV0gPSDOu18KICAgIGVuZAoKICAgICMgQ29uZGl0aW9uYWwgb24gaW52ZXN0aW5nCiAgICBUWzosMSwyXSAuPSAxLc67XzsKICAgIFRbOiwyLDJdIC49IM67XzsKCiAgICByZXR1cm4oVCkKZW5kOwpgYGAKCiMjIyBUCgpXaGF0IGZvcm0gZG9lcyB0aGUgdHJhbnNpdGlvbiBtYXRyaXggJFQkIHRha2U/CgpgYGB7anVsaWF9CiMgQ29tcHV0ZSBUClQgPSBjb21wdXRlX1QoaywgzrtfKTsKCiMgQ29uZGl0aW9uYWwgb24gbm90IGludmVzdGluZwpUWzosOiwxXQpgYGAKCiMjIyBUICgyKQoKSW5zdGVhZCwgdGhlIHRyYW5zaXRpb25zIGNvbmRpdGlvbmFsIG9uIGludmVzdGluZyBhcmUKCmBgYHtqdWxpYX0KIyBUIENvbmRpdGlvbmFsIG9uIGludmVzdGluZwpUWzosOiwyXQpgYGAKCgojIyMgSG90eiAmIE1pbGxlciBJbnZlcnNpb24KCldlIG5vdyBoYXZlIGFsbCB0aGUgcGllY2VzIHRvIGNvbXB1dGUgdGhlICoqZXhwZWN0ZWQgdmFsdWUgZnVuY3Rpb24qKiAkViQgdGhyb3VnaCB0aGUgSG90eiAmIE1pbGxlciAqKmludmVyc2lvbioqLgokJApcaGF0IFYgPSBcbGVmdFtJIC0gXGJldGEgXCBcc3VtX2EgUF9hIC4qIFRfYSBccmlnaHRdXnstMX0gXCAqIFwgXGxlZnQoIFxzdW1fYSBQX2EgXCAuKiBcIFxiaWdnWyB1X2EgKyBcbWF0aGJiIEUgW1xlcHNpbG9uX2FdIFxiaWdnXSBccmlnaHQpCiQkCgpgYGB7anVsaWF9CmZ1bmN0aW9uIEhNX2ludmVyc2lvbihDQ1A6Ok1hdHJpeCwgVDo6QXJyYXksIFU6Ok1hdHJpeCwgzrI6Ok51bWJlcik6OlZlY3RvcgogICAgIiIiUGVyZm9ybSBITSBpbnZlcnNpb24iIiIKCiAgICAjIENvbXB1dGUgTEhTICh0byBiZSBpbnZlcnRlZCkKICAgIM6zID0gQmFzZS5NYXRoQ29uc3RhbnRzLmV1bGVyZ2FtbWEKICAgIExFRlQgPSBJIC0gzrIgLiogKENDUFs6LDFdIC4qIFRbOiw6LDFdICsgQ0NQWzosMl0gLiogVFs6LDosMl0pCgogICAgIyBDb21wdXRlIExIUyAobm90IHRvIGJlIGludmVydGVkKQogICAgUklHSFQgPSDOsyAuKyBzdW0oQ0NQIC4qIChVIC4tIGxvZy4oQ0NQKSkgLCBkaW1zPTIpCgogICAgIyBDb21wdXRlIFYKICAgIEVWXyA9IGludihMRUZUKSAqIFJJR0hUCiAgICByZXR1cm4gdmVjKEVWXykKZW5kOwpgYGAKCgojIyMgRnJvbSBFViB0byBFUAoKV2UgY2FuIG5vdyBjb21wdXRlIHRoZSBleHBlY3RlZCBwb2xpY3kgZnVuY3Rpb24gZnJvbSB0aGUgZXhwZWN0ZWQgdmFsdWUgZnVuY3Rpb24KJCQKICBcaGF0IFxQcihhPTEgOyBcdGhldGEpID0gXGZyYWN7XGV4cCAodV8xICtcYmV0YSBUXzEgXGhhdCBWICl9e1xzdW1fe2F9IFxleHAgKHVfYSArXGJldGEgVF9hIFxoYXQgViApfQokJAoKYGBge2p1bGlhfQpmdW5jdGlvbiBmcm9tX0VWX3RvX0VQKEVWXzo6VmVjdG9yLCBUOjpBcnJheSwgVTo6TWF0cml4LCDOsjo6TnVtYmVyKTo6VmVjdG9yCiAgICAiIiJDb21wdXRlIGV4cGVjdGVkIHBvbGljeSBmcm9tIGV4cGVjdGVkIHZhbHVlIiIiCiAgICBFID0gZXhwLiggVSArIM6yIC4qIFsoVFs6LDosMV0gKiBFVl8pIChUWzosOiwyXSAqIEVWXyldICkKICAgIEVQXyA9IEVbOiwyXSAuLyBzdW0oRSwgZGltcz0yKQogICAgcmV0dXJuIHZlYyhFUF8pCmVuZDsKYGBgCgoKIyMjIExpa2VsaWhvb2QKCldlIG5vdyBoYXZlIGFsbCB0aGUgcGllY2VzIHRvIGJ1aWxkIHRoZSBsaWtlbGlob29kIGZ1bmN0aW9uCiQkCiAgXG1hdGhjYWx7TH0oXHRoZXRhKSA9IFxwcm9kX3t0PTF9XntUfSBcbGVmdChcaGF0IFxQciBcbGVmdChhPTEgXG1pZCBzX3t0fTsgXHRoZXRhXHJpZ2h0KSBcbWF0aGJiezF9IFxsZWZ0KGFfe3R9PTFccmlnaHQpICsgXGxlZnQoMS1caGF0IFxQciBcbGVmdChhPTAgXG1pZCBzX3t0fTsgXHRoZXRhXHJpZ2h0KVxyaWdodCkgXG1hdGhiYnsxfSBcbGVmdChhX3t0fT0wXHJpZ2h0KVxyaWdodCkKJCQKCmBgYHtqdWxpYX0KZnVuY3Rpb24gbG9nTF9ITSjOuDA6OlZlY3Rvciwgzrs6Ok51bWJlciwgzrI6Ok51bWJlciwgczo6VmVjdG9yLCBTdDo6VmVjdG9yLCBBOjpCaXRWZWN0b3IsIFQ6OkFycmF5LCBDQ1A6Ok1hdHJpeCk6Ok51bWJlcgogICAgIiIiQ29tcHV0ZSBsb2ctbGlrZWxpaG9vZCBmdW5jdGlvbiBmb3IgSE0gcHJvYmxlbSIiIgogICAgIyBDb21wdXRlIHN0YXRpYyB1dGlsaXR5CiAgICBVID0gY29tcHV0ZV9VKM64MCwgcykKCiAgICAjIEVzcGVjdGVkIHZhbHVlIGJ5IGludmVyc2lvbgogICAgRVZfID0gSE1faW52ZXJzaW9uKENDUCwgVCwgVSwgzrIpCgogICAgIyBJbXBsaWVzIGNob2ljZSBwcm9iYWJpbGl0aWVzCiAgICBFUF8gPSBmcm9tX0VWX3RvX0VQKEVWXywgVCwgVSwgzrIpCgogICAgIyBMaWtlbGlob29kCiAgICBsb2dMID0gc3VtKGxvZy4oRVBfW1N0W0EuPT0xXV0pKSArIHN1bShsb2cuKDEgLi0gRVBfW1N0W0EuPT0wXV0pKQogICAgcmV0dXJuIC1sb2dMCmVuZDsKYGBgCgojIyMgRXN0aW1hdGlvbgoKV2UgY2FuIG5vdyBlc3RpbWF0ZSB0aGUgcGFyYW1ldGVycwoKYGBge2p1bGlhfQojIE9wdGltaXplCs64MCA9IEZsb2F0NjRbMCwwLDBdOwrOuF9ITSA9IG9wdGltaXplKHggLT4gbG9nTF9ITSh4LCDOuywgzrIsIHMsIFN0LCBBLCBULCBDQ1ApLCDOuDApLm1pbmltaXplcjsKcHJpbnQoIkVzdGltYXRlZCB0aGV0YXM6ICTOuF9ITSAodHJ1ZSA9ICTOuCkiKQpgYGAKCgojIyMgQWd1aXJyZWdhYmlyaWEsIE1pcmEgKDIwMDIpCgpXaXRoIEhvdHogYW5kIE1pbGxlciwgd2UgaGF2ZSBnZW5lcmF0ZWQgYSBtYXBwaW5nIG9mIHRoZSBmb3JtCgokJApcYmFyIFAoXGNkb3QgOyBcdGhldGEpID0gZyhoKFxoYXQgUChcY2RvdCkgOyBcdGhldGEpOyBcdGhldGEpCiQkCgpAYWd1aXJyZWdhYmlyaWEyMDAyc3dhcHBpbmc6IHdoeSBkb24ndCB3ZSBpdGVyYXRlIGl0PwoKIyMjIEFNIExpa2VsaWhvb2QgRnVuY3Rpb24KClRoZSBsaWtlbGlob29kIGZ1bmN0aW9uIGluIEBhZ3VpcnJlZ2FiaXJpYTIwMDJzd2FwcGluZyBpcyBleHRyZW1lbHkgc2ltaWxhciB0byBAaG90ejE5OTNjb25kaXRpb25hbAoKYGBge2p1bGlhfQpmdW5jdGlvbiBsb2dMX0FNKM64MDo6VmVjdG9yLCDOuzo6TnVtYmVyLCDOsjo6TnVtYmVyLCBzOjpWZWN0b3IsIFN0OjpWZWN0b3IsIEE6OkJpdFZlY3RvciwgVDo6QXJyYXksIENDUDo6TWF0cml4LCBLOjpJbnQpOjpOdW1iZXIKICAgICIiIkNvbXB1dGUgbG9nLWxpa2VsaWhvb2QgZnVuY3Rpb24gZm9yIEFNIHByb2JsZW0iIiIKICAgICMgQ29tcHV0ZSBzdGF0aWMgdXRpbGl0eQogICAgVSA9IGNvbXB1dGVfVSjOuDAsIHMpCiAgICBFUF8gPSBDQ1BbOiwyXQoKICAgICMgSXRlcmF0ZSBITSBtYXBwaW5nCiAgICBmb3IgXz0xOksKICAgICAgICBFVl8gPSBITV9pbnZlcnNpb24oQ0NQLCBULCBVLCDOsikgICAgIyBFeHBlY3RlZCB2YWx1ZSBieSBpbnZlcnNpb24KICAgICAgICBFUF8gPSBmcm9tX0VWX3RvX0VQKEVWXywgVCwgVSwgzrIpICAgIyBJbXBsaWVzIGNob2ljZSBwcm9iYWJpbGl0aWVzCiAgICAgICAgQ0NQID0gWygxIC4tIEVQXykgRVBfXQogICAgZW5kCgogICAgIyBMaWtlbGlob29kCiAgICBsb2dMID0gc3VtKGxvZy4oRVBfW1N0W0EuPT0xXV0pKSArIHN1bShsb2cuKDEgLi0gRVBfW1N0W0EuPT0wXV0pKQogICAgcmV0dXJuIC1sb2dMCmVuZDsKYGBgCgojIyMgRXN0aW1hdGlvbgoKV2UgY2FuIG5vdyBlc3RpbWF0ZSB0aGUgcGFyYW1ldGVycwoKYGBge2p1bGlhfQojIFNldCBudW1iZXIgb2YgaXRlcmF0aW9ucwpLID0gMjsKCiMgT3B0aW1pemUKzrgwID0gRmxvYXQ2NFswLDAsMF07Cs64X0FNID0gb3B0aW1pemUoeCAtPiBsb2dMX0FNKHgsIM67LCDOsiwgcywgU3QsIEEsIFQsIENDUCwgSyksIM64MCkubWluaW1pemVyOwpwcmludCgiRXN0aW1hdGVkIHRoZXRhczogJM64X0FNICh0cnVlID0gJM64KSIpCmBgYAoKTm90IG11Y2ggY2hhbmdlcyBpbiBvdXIgY2FzZS4KCgojIyMgU3BlZWQKCgpXZSBjYW4gY29tcGFyZSB0aGUgbWV0aG9kcyBpbiB0ZXJtcyBvZiBzcGVlZC4KCmBgYHtqdWxpYX0KIyBDb21wYXJlIHRpbWVzCs64MCA9IEZsb2F0NjRbMCwwLDBdOwp0aW1lX1J1c3QgPSBvcHRpbWl6ZSh4IC0+IGxvZ0xfUnVzdCh4LCDOuywgzrIsIHMsIFN0LCBBKSwgzrgwKS50aW1lX3J1bjsKdGltZV9ITSA9IG9wdGltaXplKHggLT4gbG9nTF9ITSh4LCDOuywgzrIsIHMsIFN0LCBBLCBULCBDQ1ApLCDOuDApLnRpbWVfcnVuOwp0aW1lX0FNID0gb3B0aW1pemUoeCAtPiBsb2dMX0FNKHgsIM67LCDOsiwgcywgU3QsIEEsIFQsIENDUCwgSyksIM64MCkudGltZV9ydW47CnByaW50KCJUaW1lIFJ1c3Q6ICR0aW1lX1J1c3RcblRpbWUgSE06ICR0aW1lX0hNXG5UaW1lIEFNOiAkdGltZV9BTSIpCmBgYAoKRXZlbiBpbiB0aGlzIHNpbXBsZSBleGFtcGxlIHdpdGggYSB2ZXJ5IHNtYWxsIHN0YXRlIHNwYWNlLCB0aGUgZGlmZmVyZW5jZSBpcyBzaWduaWZpY2FudC4KCgojIyBBcHBlbmRpeAoKIyMjIFJlZmVyZW5jZXMK</div>
 
 
 
