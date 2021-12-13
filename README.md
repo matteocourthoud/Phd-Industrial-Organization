@@ -1,7 +1,9 @@
 # Graduate Industrial Organization
 ⚠️ **WORK IN PROGRESS!** ⚠️
 
-Welcome to my notes and code for a graduate course in Empirical Industrial Organization. All code is written in Julia. I borrow heavily from other sources (below), but all mistakes are mine. The RMarkdown notebooks can be found [here](https://github.com/matteocourthoud/Empirical-Industrial-Organization/tree/main/Rmd).
+Welcome to my notes and code for a graduate Empirical Industrial Organization! 
+
+All code is written in Julia. I borrow heavily from other sources (below), but all mistakes are mine. The RMarkdown notebooks can be found [here](https://github.com/matteocourthoud/Empirical-Industrial-Organization/tree/main/Rmd).
 
 Please, if you find any typos or mistakes, [open a new issue](https://help.github.com/articles/creating-an-issue/). Or even better, fork the repo and [submit a pull request](https://help.github.com/articles/creating-a-pull-request-from-a-fork/). I am happy to share my work and I am even happier if it can be useful.
 
